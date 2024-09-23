@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styles from '../../app/create/page.module.scss';
 import usePostJobStore from "@/stores/usePostJobStore";
+import axios from "axios";
+import { BASE_URL } from "@/helpers/constants";
 
 interface JobPosition {
   title: string;
@@ -39,6 +41,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [alternateMobile, setAlternateMobile] = useState<string>("");
 
   const setGlobalJobPositions = usePostJobStore((state) => state.setJobPositions);
+  const { agency, salaryFrom, salaryTo, expiryDate, selectedFacilities } = usePostJobStore();
 
   const handleAddMore = () => {
     const lastPosition = jobPositions[jobPositions.length - 1];
@@ -69,12 +72,48 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (contactNumber.length !== 10 || (showAlternateMobile && alternateMobile.length !== 10)) {
       setErrorMessage("Please enter valid 10-digit mobile numbers.");
       return;
     }
-    handleCreateJobClick();
+
+    try {
+      const jobData = {
+        agencyId: "CodeCraft",
+        location: "India", // Replace with actual location
+        min_Salary: salaryFrom,
+        max_Salary: salaryTo,
+        currency: "USD", // Replace with actual currency if needed
+        expiry: expiryDate,
+        imageUrl: "some url", // Replace with actual image URL if needed
+        jobType: "fulltime", // Adjust based on selection
+        positions: jobPositions.map(position => ({
+          positionId: "someId", // Set this according to your requirements
+          experience: position.experience,
+          min_Salary: position.salary,
+          max_Salary: position.salary,
+        })),
+        amenties: selectedFacilities,
+        contactNumbers: [contactNumber, showAlternateMobile ? alternateMobile : undefined].filter(Boolean),
+        email,
+        description,
+      };
+
+      await axios.post(`${BASE_URL}/jobs/JobsCreationId/`, jobData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Job created successfully');
+      handleCreateJobClick(); // Trigger your job creation success logic
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErrorMessage(error.response?.data?.message || "Error creating job");
+      } else {
+        setErrorMessage("An unexpected error occurred");
+      }
+    }
   };
 
   return (
@@ -116,7 +155,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
             />
           </div>
         ))}
-        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
         <button type="button" className={styles.addMoreButton} onClick={handleAddMore}>
           Add More
         </button>
@@ -158,6 +196,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
             </div>
           </>
         )}
+
+        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
 
         <label className={styles.formLabel}>Contact Email Address</label>
         <input
