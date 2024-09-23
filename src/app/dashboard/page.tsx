@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import styles from './Dashboard.module.scss';
+import Header from '../../components/common/Header';
 import Summary from '../../components/dashboard/Summary'; 
 import Insights from '../../components/dashboard/Insights'; 
 import RegisteredUsers from '../../components/dashboard/RegisterdUsers';
-import Header from '../../components/common/Header';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Dashboard = () => {

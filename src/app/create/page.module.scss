@@ -1,31 +1,25 @@
 @import "../variables";
 
-.modalContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: rgba(0, 0, 0, 0.1);
-    padding: 20px;
-  }
+
   
-  .modal {
-    width: 400px;
-    background: rgb(255, 255, 255);
-    padding: 16px;
-    border-radius: 8px;
-    margin: auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    position: relative;
-  }
-  
-  .modalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+.modal {
+  width: 400px;
+  background: rgb(255, 255, 255);
+  padding: 16px;
+  border-radius: 8px;
+  margin: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
   
   .modalHeader h2 {
     font-size: 20px;
