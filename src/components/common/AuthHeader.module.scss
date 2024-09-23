@@ -1,0 +1,11 @@
+@import "../../app/variables";
+
+.loginHeader{
+    padding: 10px 48px;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    box-shadow: $box-shadow-1;
+    left: 0px;
+    width: 100%;
+}

@@ -1,0 +1,653 @@
+@import "../variables";
+
+.modalContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .modal {
+    width: 400px;
+    background: rgb(255, 255, 255);
+    padding: 16px;
+    border-radius: 8px;
+    margin: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .modalHeader h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .formLabel {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    margin-top: -2px;
+    color: #5b5959;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .inputField {
+    width: calc(100% - 12px);
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .uploadSection {
+    border: 2px dashed #0045e6;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f4eaff;
+    text-align: left;
+    position: relative;
+  }
+  
+  .uploadHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #0045e6;
+  }
+  
+  .uploadIcon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .fileInfo {
+    font-size: 12px;
+    color: #555;
+    margin: 4px 0 12px;
+    white-space: normal;
+  }
+  
+  .fileInput {
+    display: none;
+  }
+  
+  .browseButton {
+    display: block;
+    margin-top: 8px;
+    background-color: white;
+    color: #0045e6;
+    border: 1px solid #0045e6;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .browseButton:hover {
+    background-color: #0045e6;
+    color: white;
+  }
+  
+  .createSection {
+    border: 2px dashed #ddd;
+    padding: 16px;
+    text-align: left;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .createButton {
+    background-color: white;
+    color: #0045e6;
+    border: 1px solid #0045e6;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+    display: block;
+  }
+  
+  .createButton:hover {
+    background-color: #0045e6;
+    color: white;
+  }
+  
+  .facilitiesContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 6px;
+  }
+  
+  .facilityButton {
+    background-color: #ffffff;
+    border: 1px solid #0045E6;
+    color: #0045E6;
+    padding: 4px 8px;
+    margin-right: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .facilityButton.selected {
+    background-color: #0045e6;
+    color: white;
+  }
+  
+  .descriptionSection {
+    text-align: left;
+    font-size: 12px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .jobDescriptionTitle {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px; 
+  }
+  
+  .jobDescriptionText {
+    margin: 8px 0;
+    text-align: left;
+  }
+  
+  .jobExperience {
+    display: block;
+    background-color: #f0f0f0;
+    padding: 6px 10px;
+    border-radius: 3px;
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+  .jobDetailsFooter {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+  }
+  .contactInfo {
+    flex: 1;
+    margin-right: 15px;
+  }
+  .agencyLogo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  .descriptionSection h6 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+  .contactDetails {
+    flex: 2;
+    text-align: left;
+    font-size: 12px;
+  }
+  .downloadButton,
+  .editButton,
+  .postJobButton {
+    background-color: #007bff;
+    flex: 1;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 0px 4px;
+    transition: background-color 0.3s;
+  }
+  .downloadButton:hover,
+  .editButton:hover,
+  .postJobButton:hover {
+    background: #0056b3;
+  }
+  
+  .contactSection {
+    margin-top: 15px;
+  }
+  .footerDetails,
+  .contactNumber,
+  .email,
+  .location {
+    margin: 1px 0;
+    font-size: 12px;
+  }
+  
+  .contactSection h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: green;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .h3{
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 8px; // Reduced padding
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 15px; 
+  }
+  
+  .selectedFileName {
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+  }
+  
+  .cancelButton {
+    background-color: white;
+    color: #0045e6;
+    border: 1px solid #0045e6;
+    padding: 8px 16px;
+    margin: 0 8px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .cancelButton:hover {
+    background-color: #0045e6;
+    color: white;
+  }
+  
+  .continueButton {
+    background-color: #d3d3d3;
+    color: white;
+    padding: 8px 16px;
+    margin: 0 8px;
+    border-radius: 25px;
+    cursor: not-allowed;
+    border: none;
+    font-weight: bold;
+  }
+  
+  .continueButton:enabled {
+    background-color: $color-brand-1;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  
+  .positionsContainer {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  
+  .disabled {
+    background-color: #d3d3d3;
+    color: white;
+    cursor: not-allowed;
+  }
+  
+  .addMoreButton {
+    display: inline-block;
+    background-color: transparent;
+    color: #4e60ff; /* Use the blue color as in the picture */
+    border: none; /* Remove border */
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: -13px;
+    margin-bottom: 1px;
+    text-align: left;
+  }
+  .addMoreButton:hover {
+    color: #3b4dc1; /* Darker shade of blue for hover effect */
+  }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .jobTitleInput,
+  .experienceInput,
+  .salaryInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    box-sizing: border-box;
+    width: 100%; 
+  }
+  .jobTitleInput {
+    flex: 3; /* Job title input takes up the most space */
+  }
+  
+  .experienceInput {
+    flex: 1.5; 
+    /* Experience dropdown takes less space */
+  }
+  .salaryInput {
+    flex: 1.5; /* Salary input takes a bit more space */
+  }
+  
+  
+  .salary {
+    text-align: center;
+    color: #666;
+  }
+  
+  .type {
+    text-align: right;
+    color: #333;
+   
+  }
+  
+  .benefitsSection {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    
+  }
+  
+  .benefitsSection h5 {
+    margin-right: 20px; /* Add spacing between the heading and buttons */
+    font-size: 13px; /* Adjust size if needed */
+  }
+  
+  .facilities {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  
+  .contactContainer {
+    display: flex;
+    gap: 8px;
+    
+  }
+  
+  .countryCodeInput {
+    border-radius: 50px;
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  
+  .phoneInput {
+    width: 73%;
+    border-radius: 3px;
+  }
+  
+  .createJobButton {
+    padding: 8px 16px;
+      background-color: #4429f4;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 0 8px;
+  }
+  
+  
+  .createJobButton.disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  .errorMessage {
+    color: red;
+    margin-top: -7px;
+    margin-bottom: 11px;
+    font-size: 12px;
+  }
+  
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  
+  .popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+    z-index: 1010;
+    pointer-events: auto;
+  }
+  
+  .popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .spinner {
+    margin-top: 20px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #000;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .successScreen {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .subHeader {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 5px;
+  }
+  
+  .message {
+    color: green;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .details {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .jobDetailsModal {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    width: 70%;
+    max-width: 500px;
+    border: 1px solid #007bff;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    font-size: 14px;
+  }
+  .headerContainer {
+    text-align: center;
+    background-color: #f1f1f1; /* Light background for the success message */
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+     /* Separate visually from the rest */
+  }
+  .innerCard {
+    padding: 20px;
+    background-color: white; /* Different background for the inner content */
+    border: 0px solid #007bff;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
+  .jobDetails {
+    border: 1px solid blue;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 16px;
+  }
+  .positionsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+  }
+  .positionsTable td,
+  .positionsTable th {
+    padding: 6px 8px; /* Increased padding for better readability */
+    border-bottom: 1px solid #ddd;
+    text-align: left; /* Align text to left */
+    background-color: #ffffff;
+    font-size: 13px;
+  }
+  .jobPositionTitle {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .fullScreenButton {
+    position: absolute;
+    top: 10px; /* Adjusted positioning for the full screen button */
+    right: 10px;
+    font-size: 18px; /* Larger size for the icon */
+    background-color: transparent; /* Transparent background */
+    color: #0045e6; /* Button font size */
+  }
+  .fullScreen {
+  
+    max-width: 30%;
+    max-height: 100%;
+  }
+  .fullScreenBackdrop {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  .expandButton {
+    position: absolute;
+    bottom:0% px;   /* Adjusted to keep enough distance from the Post Job button */
+    right: 40px;
+    top:79%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #090909;
+       /* Ensure the button appears above other elements */
+    transition: color 0.3s;
+  }
+  .expanded {
+     /* Full width within modal */
+    max-width: 95vw; /* No exceeding viewport width */
+    max-height: 90vh; /* No exceeding viewport height */
+    /* Optionally, you can adjust the height or add other styles */
+  }
+  .container {
+    position: relative;
+    padding-bottom: 60px;  /* Ensure there's space for the icon at the bottom */
+  }
+  
+  .expandButton:hover {
+    color: #0056b3;
+  }
+  
+  .actionButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+  .modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+  }
+  .hiddenBackdrop {
+    display: none; /* Completely hide the backdrop */
+  }

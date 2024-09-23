@@ -1,0 +1,64 @@
+
+{
+    "appUsers": [
+      {
+        "name": "Rajesh Mishra",
+        "mobile": "+91 7896543210",
+        "email": "rajesh.m@gmail.com",
+        "state": "AP",
+        "jobTitle": "Mason",
+        "industry": "Construction",
+        "experience": "7 Years",
+        "gulfExp": "No",
+        "cv": "Download CV",
+        "video": "View Video",
+        "regdDate": "10 Aug 2024",
+        "status": "Active"
+      },
+      {
+        "name": "Ramesh Naidu",
+        "mobile": "+91 7896543211",
+        "email": "ramesh.n@gmail.com",
+        "state": "TN",
+        "jobTitle": "Developer",
+        "industry": "IT",
+        "experience": "5 Years",
+        "gulfExp": "Yes",
+        "cv": "NA",
+        "video": "NA",
+        "regdDate": "15 Aug 2024",
+        "status": "Inactive"
+      },
+     
+      {
+        "name": "Praveen Agrawal",
+        "mobile": "+91 7896543212",
+        "email": "praveen.a@gmail.com",
+        "state": "UP",
+        "jobTitle": "Designer",
+        "industry": "Design",
+        "experience": "6 Years",
+        "gulfExp": "No",
+        "cv": "Download CV",
+        "video": "View Video",
+        "regdDate": "20 Aug 2024",
+        "status": "Active"
+      }
+    
+    ],
+    "adminUsers": [
+      {
+        "name": "Admin User 1",
+        "mobile": "+91 7896543200",
+        "email": "admin1@example.com"
+      },
+    
+      
+      {
+        "name": "Admin User 2",
+        "mobile": "+91 7896543201",
+        "email": "admin2@example.com"
+      }
+    ]
+  }
+  
