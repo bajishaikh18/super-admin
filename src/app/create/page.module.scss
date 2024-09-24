@@ -114,7 +114,7 @@
 
   h3 {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0px;
   }
 }
@@ -173,7 +173,7 @@
 
 .descriptionSection {
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 20px;
   margin-bottom: 15px;
 }
@@ -182,11 +182,21 @@
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 4px;
+  margin-left: 5px;
 }
 
 .jobDescriptionText {
   margin: 8px 0;
+  padding: 5px;
+  border-radius: 3px;
+  background: #eee;
   text-align: left;
+}
+.highlightText{
+  background: $color-brand-1;
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
 }
 
 .jobExperience {
@@ -268,12 +278,14 @@
   margin-bottom: 8px;
 }
 
+
 .h4 {
   font-size: 16px;
-  font-weight: bold;
-  color: green;
+  font-weight: 600;
+  color: $color-success;
   text-align: center;
-  margin-bottom: 8px;
+  line-height: 19px;
+  margin-bottom: 14px;
 }
 
 .h3 {
@@ -422,17 +434,24 @@
 
 .benefitsSection {
   display: flex;
+  background-color: #eee;
+  border-radius: 3px;
+  padding: 8px 5px;
+  font-size: 14px;
   align-items: center;
   margin-bottom: 20px;
-
+  h5{
+    font-size: 14px;
+    margin: 0px;
+  }
+  ul{
+    margin: 0px;
+  }
+  li{
+    display: inline-block;
+  }
 }
 
-.benefitsSection h5 {
-  margin-right: 20px;
-  /* Add spacing between the heading and buttons */
-  font-size: 13px;
-  /* Adjust size if needed */
-}
 
 .facilities {
   display: flex;
@@ -523,6 +542,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 500px;
+  .loadingContent{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    color: $color-grey-2;
+  }
 }
 
 .spinner {
@@ -582,42 +608,44 @@
 
 }
 
+
 .jobDetailsModal {
   background: #fff;
-  padding: 15px;
+  padding: 5px;
   border-radius: 8px;
-  width: 70%;
+  width: 600px;
   max-width: 500px;
-  border: 1px solid #007bff;
+  border: 2px solid rgba(236, 236, 236, 1);
   position: relative;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   font-size: 14px;
+  transform: scale(0.6);
+  margin: -80px auto;
+}
+.fullScreen{
+  transform: scale(1);
+  margin: 0px auto;
+
+}
+.positionText{
+  font-size: 14px !important;
 }
 
 .headerContainer {
   text-align: center;
-  background-color: #f1f1f1;
-  /* Light background for the success message */
   padding: 10px;
-  border-bottom: 1px solid #ccc;
-  /* Separate visually from the rest */
 }
 
 .innerCard {
-  padding: 20px;
+  padding: 0px;
   background-color: white;
-  /* Different background for the inner content */
-  border: 0px solid #007bff;
-  margin-top: 10px;
-  transition: all 0.3s ease;
 }
 
 .jobDetails {
-  border: 1px solid blue;
-  padding: 12px;
+  border: 2px solid $color-brand-1;
+  padding: 5px;
   border-radius: 8px;
-  margin-top: 16px;
+  margin-top: 0px;
 }
 
 .positionsTable {
@@ -656,9 +684,7 @@
 }
 
 .fullScreen {
-
-  max-width: 30%;
-  max-height: 100%;
+    transform: scale(1);  
 }
 
 .fullScreenBackdrop {
@@ -667,16 +693,27 @@
 
 .expandButton {
   position: absolute;
-  bottom: 0% px;
+  bottom: 0px;
   /* Adjusted to keep enough distance from the Post Job button */
-  right: 40px;
-  top: 79%;
-  background: transparent;
+  right: 0px;
+  background: rgba(0, 0, 0, 0.9);
   border: none;
+  padding: 10px;
+  border-radius: 3px;
   cursor: pointer;
-  color: #090909;
+  color: #fff;
   /* Ensure the button appears above other elements */
   transition: color 0.3s;
+}
+
+.closeFullscreen{
+  position: absolute;
+  right: -5px;
+  background: transparent;
+  box-sizing: none;
+  border: none;
+  top: -40px;
+  color: #fff;
 }
 
 .expanded {

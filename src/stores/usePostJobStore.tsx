@@ -2,10 +2,12 @@ import create from "zustand";
 
 type JobPosition ={
   title:string;
+  salary: string;
+  experience:string;
 }
 
 
-type PostJobFormData =  {
+export type PostJobFormData =  {
   agency?: string;
   location?: string;
   expiryDate?: string;
@@ -23,7 +25,6 @@ interface PostJobStoreState {
   isSecondJobScreen: boolean;
   isThirdScreenVisible: boolean;
   selectedFacilities: string[];
-  isFourthScreenVisible: boolean;
   formData: PostJobFormData | null;
   // New actions for state management
   setFormData: (formData: PostJobFormData | null) => void
@@ -69,14 +70,11 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   })),
   handleContinueClick: () => set({ isSecondJobScreen: true }),
   handleCreateJobClick: () => {
-    set({ isThirdScreenVisible: true });
-    setTimeout(() => {
-      set({ isThirdScreenVisible: false, isFourthScreenVisible: true });
-    }, 3000);
+      set({isThirdScreenVisible: true });
   },
   handleCloseThirdScreen: () => set({ isThirdScreenVisible: false }),
   handleCloseFourthScreen: () => set({
-    isFourthScreenVisible: false,
+    isThirdScreenVisible: false,
     isCreateJobScreen: false,
   }),
 }));

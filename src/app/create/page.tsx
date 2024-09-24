@@ -5,7 +5,6 @@ import styles from "./page.module.scss";
 import InitialScreen from "@/components/job-post/InitialScreen";
 import FirstJobScreen from "@/components/job-post/FirstJobScreen";
 import SecondJobScreen from "@/components/job-post/SecondJobScreen";
-import ThirdJobScreen from "@/components/job-post/ThirdJobScreen";
 import FourthJobScreen from "@/components/job-post/FourthJobScreen";
 import useStore from "@/stores/usePostJobStore";// Import Zustand store
 export default function Page() {
@@ -15,7 +14,6 @@ export default function Page() {
     isCreateJobScreen,
     isSecondJobScreen,
     isThirdScreenVisible,
-    isFourthScreenVisible,
     selectedFacilities,
     formData,
     handleFileChange,
@@ -46,7 +44,7 @@ export default function Page() {
 
   return (
     <div className={styles.modalContainer}>
-      {!isCreateJobScreen && !isSecondJobScreen && !isThirdScreenVisible && !isFourthScreenVisible && (
+      {!isCreateJobScreen && !isSecondJobScreen && !isThirdScreenVisible  && (
         <InitialScreen
           handleFileChange={handleFileChange}
           fileInputRef={fileInputRef}
@@ -54,30 +52,23 @@ export default function Page() {
           handleCreateNowClick={handleCreateNowClick}
         />
       )}
-      {isSecondJobScreen && !isThirdScreenVisible && !isFourthScreenVisible && (
+      {isSecondJobScreen && !isThirdScreenVisible && (
         <SecondJobScreen
           handleBackToPostJobClick={handleBackToPostJobClick}
           handleCreateJobClick={handleCreateJobClick}
         />
       )}
-      {isCreateJobScreen && !isSecondJobScreen && !isThirdScreenVisible && !isFourthScreenVisible && (
+      {isCreateJobScreen && !isSecondJobScreen && !isThirdScreenVisible && (
         <FirstJobScreen
           countries={countries}
           handleContinueClick={handleContinueClick}
           handleBackToPostJobClick={handleBackToPostJobClick}
         />
       )}
-      {isThirdScreenVisible && !isFourthScreenVisible && (
-        <ThirdJobScreen handleClose={handleCloseThirdScreen} />
-      )}
-      {isFourthScreenVisible && (
-        <div className={styles.overlay}>
-          <div className={styles.popup}>
+      {isThirdScreenVisible && (
             <FourthJobScreen
               handleClose={handleCloseFourthScreen}
             />
-          </div>
-        </div>
       )}
     </div>
   );

@@ -3,19 +3,14 @@ import styles from "../../app/create/page.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
 
-import {
-  Button,
-  Form,
-  InputGroup,
-  Table,
-} from "react-bootstrap";
+import { Button, Form, InputGroup, Table } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
 interface JobPosition {
   title: string;
   experience: string;
   salary: string;
-  deleted?:string;
+  deleted?: string;
 }
 
 interface FormValues {
@@ -30,6 +25,18 @@ interface SecondJobScreenProps {
   handleCreateJobClick: () => void;
 }
 
+const LoadingScreen = () => {
+  return (
+    <div className={styles.overlay}>
+      <div className={styles.popup}>
+        <div className={styles.popupHeader}>
+          <h2>Create a Job (2/2)</h2>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleBackToPostJobClick,
   handleCreateJobClick,
@@ -37,14 +44,18 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: "", experience: "0", salary: "" },
   ]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData, formData } =
-    usePostJobStore();
+  const { selectedFacilities, setFormData, formData } = usePostJobStore();
 
   const handleAddMore = () => {
-    const jobPositionsFromForm = getValues('jobPositions');
+    const jobPositionsFromForm = getValues("jobPositions");
     const lastPosition = jobPositionsFromForm[jobPositions.length - 1];
-    if (!lastPosition.deleted && (lastPosition.title.trim() === "" || lastPosition.experience.trim() === "")) {
+    if (
+      !lastPosition.deleted &&
+      (lastPosition.title.trim() === "" ||
+        lastPosition.experience.trim() === "")
+    ) {
       setErrorMessage(
         "Please fill in all fields before adding a new position."
       );
@@ -59,22 +70,22 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     // setGlobalJobPositions(newPositions);
   };
 
-  const handleRemove = (index:number) => {
+  const handleRemove = (index: number) => {
     setValue(`jobPositions.${index}.title`, "");
     setValue(`jobPositions.${index}.experience`, "");
     setValue(`jobPositions.${index}.salary`, "");
     setValue(`jobPositions.${index}.deleted`, "true");
     setErrorMessage("");
-    
-    const newPositions = jobPositions.map((x,i)=>{
-      if(i===index){
+
+    const newPositions = jobPositions.map((x, i) => {
+      if (i === index) {
         return {
           ...x,
-          deleted:"true"
-        }
+          deleted: "true",
+        };
       }
       return x;
-    })
+    });
     setJobPositions(newPositions);
     // setGlobalJobPositions(newPositions);
   };
@@ -87,16 +98,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     formState: { errors },
   } = useForm<FormValues>();
 
-
   const onSubmit = async (data: FormValues) => {
     try {
-      setFormData(data)
+      setFormData(data);
       const payload = {
         ...data,
-        facilities: selectedFacilities
-      }
-      console.log(payload)
-      handleCreateJobClick()
+        ...formData,
+        facilities: selectedFacilities,
+      };
+      console.log(payload);
+      setLoading(true);
+      handleCreateJobClick();
     } catch (error) {
     } finally {
     }
@@ -156,164 +168,159 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           &times;
         </button>
       </div>
-      <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className={styles.formGroup}>
-          <label className={styles.formLabel}>Add positions</label>
-          <Table>
-            <thead>
-              <tr>
-                <th className="w-50">Job Title</th>
-                <th className="w-30">Exp Required</th>
-                <th className="w-20">Salary</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobPositions.map((position, index) =>{
-                if(position.deleted){
-                  return null;
-                }
-                return (
-                  <tr key={index}>
-                    <td>
-                   
-                      <Form.Select
-                        className={styles.input}
-                        {...register(`jobPositions.${index}.title`, {
-                          required: "Job title is required",
-                        })}
-                      >
-                        <option value="1">Engineer</option>
-                        <option value="2">Plumber</option>
-                        <option value="3">Carpenter</option>
-                      </Form.Select>
-                    </td>
-                    <td>
-                    <Form.Select
-                        className={styles.input}
-                        {...register(`jobPositions.${index}.experience`, {
-                          required: "Job Experience is required",
-                        })}
-                      >
-                        <option value="1">0-1 Years</option>
-                        <option value="2">1-2 Years</option>
-                        <option value="3">2-5 Years</option>
-                      </Form.Select>
-                    </td>
-                    <td>
-                    <Form.Control type="text" placeholder="0-0"  className={styles.input}
-                    {...register(`jobPositions.${index}.salary`, {
-                      
-                    })}/>
-                    </td>
-                    <td>
-                      {
-                        index !=0 &&                       <AiOutlineDelete className={styles.positionDelete} onClick={()=>handleRemove(index)}/>
+      {loading ? (
+        <div className={styles.popupContent}>
+          <p className={styles.loadingContent}>Your job is creating please wait</p>
+          <div className={styles.spinner}></div>
+        </div>
+      ) : (
+        <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group className={styles.formGroup}>
+            <label className={styles.formLabel}>Add positions</label>
+            <Table>
+              <thead>
+                <tr>
+                  <th className="w-50">Job Title</th>
+                  <th className="w-30">Exp Required</th>
+                  <th className="w-20">Salary</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {jobPositions.map((position, index) => {
+                  if (position.deleted) {
+                    return null;
+                  }
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <Form.Select
+                          className={styles.input}
+                          {...register(`jobPositions.${index}.title`, {
+                            required: "Job title is required",
+                          })}
+                        >
+                          <option value="Engineer">Engineer</option>
+                          <option value="Plumber">Plumber</option>
+                          <option value="Carpenter">Carpenter</option>
+                        </Form.Select>
+                      </td>
+                      <td>
+                        <Form.Select
+                          className={styles.input}
+                          {...register(`jobPositions.${index}.experience`, {
+                            required: "Job Experience is required",
+                          })}
+                        >
+                          <option value="1">0-1 Years</option>
+                          <option value="2">1-2 Years</option>
+                          <option value="5">2-5 Years</option>
+                        </Form.Select>
+                      </td>
+                      <td>
+                        <Form.Control
+                          type="text"
+                          placeholder="0-0"
+                          className={styles.input}
+                          {...register(`jobPositions.${index}.salary`, {})}
+                        />
+                      </td>
+                      <td>
+                        {index != 0 && (
+                          <AiOutlineDelete
+                            className={styles.positionDelete}
+                            onClick={() => handleRemove(index)}
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+            {errorMessage && (
+              <div>
+                <Form.Text className="error">{errorMessage}</Form.Text>
+              </div>
+            )}
 
-                      }
-                    </td>
-                  </tr>
-                )
-              } )}
-            </tbody>
-          </Table>
-          {errorMessage && <div><Form.Text className='error'>
-          {errorMessage}
-          </Form.Text></div>}
-         
-          <button
-            type="button"
-            className={styles.addMoreButton}
-            onClick={handleAddMore}
-          >
-            Add More
-          </button>
-        </Form.Group>
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Contact Mobile Number</Form.Label>
-          <InputGroup className={`mb-3 contact-field`}>
-            <Form.Select
-              className={styles.input}
-              {...register("countryCode", {
-                required: "Agency is required",
-              })}
+            <button
+              type="button"
+              className={styles.addMoreButton}
+              onClick={handleAddMore}
             >
-              <option value="1">+91</option>
-              <option value="2">+94</option>
-              <option value="3">+99</option>
-            </Form.Select>
+              Add More
+            </button>
+          </Form.Group>
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Contact Mobile Number</Form.Label>
+            <InputGroup className={`mb-3 contact-field`}>
+              <Form.Select
+                className={styles.input}
+                {...register("countryCode", {
+                  required: "Agency is required",
+                })}
+              >
+                <option value="1">+91</option>
+                <option value="2">+94</option>
+                <option value="3">+99</option>
+              </Form.Select>
+              <Form.Control
+                aria-label="Contact number"
+                {...register("contactNumber", {
+                  required: "Contact number is required",
+                })}
+              />
+            </InputGroup>
+            {errors.contactNumber && (
+              <Form.Text className="error">
+                {errors.contactNumber.message}
+              </Form.Text>
+            )}
+          </Form.Group>
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Contact Email Address</Form.Label>
             <Form.Control
-              aria-label="Contact number"
-              {...register("contactNumber", {
-                required: "Contact number is required",
-                
+              type="text"
+              placeholder="Enter Email Id"
+              className={styles.input}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email address",
+                },
               })}
             />
-          </InputGroup>
-          {errors.contactNumber && (
-            <Form.Text className="error">
-              {errors.contactNumber.message}
-            </Form.Text>
-          )}
-        </Form.Group>
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Contact Email Address</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Email Id"
-            className={styles.input}
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
-            })}
-          />
-          {errors.email && (
-            <Form.Text className="error">{errors.email.message}</Form.Text>
-          )}
-        </Form.Group>
+            {errors.email && (
+              <Form.Text className="error">{errors.email.message}</Form.Text>
+            )}
+          </Form.Group>
 
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Description (Optional)</Form.Label>
-          <Form.Control as="textarea" rows={3} {...register("description")} />
-        </Form.Group>
-
-        {/* <label className={styles.formLabel}>Contact Email Address</label>
-        <input
-          type="email"
-          placeholder="Enter Email ID"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={styles.inputField}
-        />
-
-        <label className={styles.formLabel}>Description (Optional)</label>
-        <textarea
-          placeholder="Write job description here"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className={styles.inputField}
-        /> */}
-
-        <div className={styles.actions}>
-          <Button
-            type="button"
-            className={`outlined ${styles.actionButtons}`}
-            onClick={handleBackToPostJobClick}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className={`${styles.actionButtons} ${true ? "" : styles.disabled}`}
-            disabled={!true}
-          >
-            Create a Job
-          </Button>
-        </div>
-      </Form>
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Description (Optional)</Form.Label>
+            <Form.Control as="textarea" rows={3} {...register("description")} />
+          </Form.Group>
+          <div className={styles.actions}>
+            <Button
+              type="button"
+              className={`outlined ${styles.actionButtons}`}
+              onClick={handleBackToPostJobClick}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className={`${styles.actionButtons} ${
+                true ? "" : styles.disabled
+              }`}
+              disabled={!true}
+            >
+              Create a Job
+            </Button>
+          </div>
+        </Form>
+      )}
     </div>
   );
 };

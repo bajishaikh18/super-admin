@@ -3,39 +3,93 @@ import React, { useState } from "react";
 import html2canvas from "html2canvas";
 import styles from '../../app/create/page.module.scss';
 import Image from "next/image";
-import { AiOutlineExpand } from "react-icons/ai";
-import usePostJobStore from "@/stores/usePostJobStore";
+import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
+import { COUNTRIES } from "@/helpers/constants";
+import { Button, Modal } from "react-bootstrap";
 interface FourthJobScreenProps {
   handleClose: () => void;
 }
+
+const JobPostingImage = ({formData,selectedFacilities,handleFullScreen,isFullScreen}:{formData:PostJobFormData|null,selectedFacilities:string[],handleFullScreen:(fullScreen:boolean)=>void,isFullScreen:boolean})=>{
+  return  <div className={`${styles.jobDetailsModal} ${isFullScreen ? styles.fullScreen:''}`}>
+  {/* Header Container for the Success Message */}
+  
+  {/* Inner Container for the Job Details */}
+  <div className={styles.innerCard}>
+    {
+      isFullScreen ?  <button className={styles.closeFullscreen}>
+      <AiFillCloseCircle size={30} onClick={()=>handleFullScreen(false)} />
+    </button>: <button className={styles.expandButton}>
+      <AiOutlineExpand size={20} onClick={()=>handleFullScreen(true)} />
+    </button>
+    }
+    <div className={styles.jobDetails}>
+      <h3 className={styles.h3}>Jobs in {COUNTRIES[formData?.location as "bh"]}</h3>
+      <div>
+        {formData?.jobPositions && formData.jobPositions?.length > 0 ? (
+          <table className={styles.positionsTable}>
+            <thead>
+              <tr></tr>
+            </thead>
+            <tbody>
+              {formData.jobPositions.map((position, index) => (
+                <tr key={index}>
+                  <td className={styles.positionText}><b>{position.title}</b></td>
+                  <td className={styles.positionText}>{position.experience} years Exp</td>
+                  <td className={styles.positionText}>{position.salary}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No job positions available.</p>
+        )}
+      </div>
+      <div className={styles.benefitsSection}>
+        <h5>Benefits</h5>
+        <ul className={styles.facilities}>
+          {selectedFacilities.map((facility, index) => (
+            <li key={index}>
+              {facility}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className={styles.descriptionSection}>
+        <h5 className={styles.jobDescriptionTitle}>More Details</h5>
+        <p className={styles.jobDescriptionText}>Sometext with some values{formData?.description}</p>
+        <p className={styles.highlightText}>Sometext with some values{formData?.description}</p>
+
+      </div>
+      <div className={styles.jobDetailsFooter}>
+        <div className={styles.contactInfo}>
+          <Image
+            src="" // Add the URL for the agency logo
+            alt=""
+            className={styles.agencyLogo}
+          />
+        </div>
+        <div className={styles.contactDetails}>
+          <p className={styles.footerDetails}>{formData?.agency}</p>
+          <p className={styles.contactNumber}>{formData?.contactNumber}</p>
+          <p className={styles.email}>{formData?.email}</p>
+          <p className={styles.website}></p>
+          <p className={styles.location}>{formData?.location}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {/* Action Buttons */}
+
+</div>
+}
 const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleClose }) => {
   const {
-    agency,
-    location,
-    type,
-    salaryFrom,
-    salaryTo,
-    expiryDate,
-    selectedFacilities,
-    experienceRequired,
-    contactNumber,
-    email,
-    description,
-    jobPositions,
-  } = usePostJobStore((state) => ({
-    agency: state.agency,
-    location: state.location,
-    type: state.type,
-    salaryFrom: state.salaryFrom,
-    salaryTo: state.salaryTo,
-    expiryDate: state.expiryDate,
-    selectedFacilities: state.selectedFacilities,
-    experienceRequired: state.experienceRequired,
-    contactNumber: state.contactNumber,
-    email: state.email,
-    description: state.description,
-    jobPositions: state.jobPositions,
-  }));
+    formData,
+    selectedFacilities
+  } = usePostJobStore();
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const handleDownloadImage = () => {
     const element = document.querySelector(`.${styles.innerCard}`) as HTMLElement;
@@ -54,92 +108,51 @@ const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleClose }) => {
       console.error("Element not found");
     }
   };
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
+  const toggleFullScreen = (fullScreen:boolean) => {
+    setIsFullScreen(fullScreen);
   };
+
   return (
-    <div className={`${styles.modalBackdrop} ${isFullScreen ? styles.fullScreenBackdrop : ""}`}>
-      <div className={`${styles.jobDetailsModal} ${isFullScreen ? styles.fullScreen : ""}`}>
-        {/* Header Container for the Success Message */}
-        <div className={styles.headerContainer}>
-          <h4 className={styles.h4}>Your job is successfully created</h4>
-        </div>
-        {/* Inner Container for the Job Details */}
-        <div className={styles.innerCard}>
-          <button className={styles.expandButton} onClick={toggleFullScreen}>
-            <AiOutlineExpand size={20} />
-          </button>
-          <div className={styles.jobDetails}>
-            <h3 className={styles.h3}>Jobs in {location}</h3>
-            <div>
-              {jobPositions.length > 0 ? (
-                <table className={styles.positionsTable}>
-                  <thead>
-                    <tr></tr>
-                  </thead>
-                  <tbody>
-                    {jobPositions.map((position, index) => (
-                      <tr key={index}>
-                        <td className={styles.jobPositionTitle}>• {position.title}</td>
-                        <td>{salaryFrom} - {salaryTo}</td>
-                        <td className={styles.type}>{type}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p>No job positions available.</p>
-              )}
-            </div>
-            <div className={styles.benefitsSection}>
-              <h5>Benefits</h5>
-              <div className={styles.facilities}>
-                {selectedFacilities.map((facility, index) => (
-                  <button key={index} className={styles.facilityButton}>
-                    {facility}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className={styles.descriptionSection}>
-              <h5 className={styles.jobDescriptionTitle}>Job Description</h5>
-              <p className={styles.jobDescriptionText}>{description}</p>
-              <b className={styles.jobExperience}>
-                Minimum {experienceRequired} years experience required
-              </b>
-            </div>
-            <div className={styles.jobDetailsFooter}>
-              <div className={styles.contactInfo}>
-                <Image
-                  src="" // Add the URL for the agency logo
-                  alt=""
-                  className={styles.agencyLogo}
-                />
-              </div>
-              <div className={styles.contactDetails}>
-                <p className={styles.footerDetails}>{agency}</p>
-                <p className={styles.contactNumber}>{contactNumber}</p>
-                <p className={styles.email}>{email}</p>
-                <p className={styles.website}></p>
-                <p className={styles.location}>{location}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Action Buttons */}
-        <div className={styles.actionButtons}>
-          <button className={styles.downloadButton} onClick={handleDownloadImage}>
-            Download as Image
-          </button>
-          <button className={styles.editButton} onClick={handleClose}>
-            Edit
-          </button>
-          <button className={styles.postJobButton} onClick={() => console.log("Post Job Clicked")}>
-            Post Job
-          </button>
-        </div>
-      </div>
+    <>{
+      !isFullScreen &&<div className={styles.modal}>
+      <div className={styles.modalHeader}>
+      <h2>Create a Job (2/2)</h2>
+      <button
+        className={styles.closeButton}
+      >
+        &times;
+      </button>
     </div>
+    <div className={styles.headerContainer}>
+        <h4 className={styles.h4}>Your job is successfully created</h4>
+      </div>
+      
+   <JobPostingImage formData={formData} selectedFacilities={selectedFacilities} handleFullScreen={toggleFullScreen} isFullScreen={false} />
+   <div className={styles.actions}>
+            <Button
+              type="button"
+              className={`outlined ${styles.actionButtons}`}
+              
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className={`${styles.actionButtons} ${
+                true ? "" : styles.disabled
+              }`}
+              disabled={!true}
+            >
+              Post Job
+            </Button>
+          </div>
+  </div>
+    }
+    
+     <Modal show={isFullScreen} onHide={()=>toggleFullScreen(false)} size="xl" centered className="full-screen-modal">
+          <JobPostingImage formData={formData} selectedFacilities={selectedFacilities} handleFullScreen={toggleFullScreen} isFullScreen={true} /> 
+      </Modal>
+    </>
   );
 };
 export default FourthJobScreen;
