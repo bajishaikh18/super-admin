@@ -1,11 +1,11 @@
 'use client';
-
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { resetPassword } from "@/apis/auth";
 import { useRouter } from "next/navigation";
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import styles from './resetPassword.module.scss';
+import Image from 'next/image';
 
 interface ResetProps {
   onBackToLogin: () => void;
@@ -62,7 +62,6 @@ function Reset({ onBackToLogin }: ResetProps) {
       });
       console.log("Password reset successful:", response.data);
       setResetSuccess(true);
-      window.location.replace('/dashboard');
     } catch (error) {
       console.error("Error resetting password:", error);
       alert("Error resetting password. Please try again.");
@@ -81,8 +80,8 @@ function Reset({ onBackToLogin }: ResetProps) {
 
   return (
     <Container>
-      <Card className={styles.formContainer}>
-      {resetSuccess ? (
+    <Card className={`${styles.formContainer} ${resetSuccess ? styles.formContainerSuccess : ''}`}>     
+     {resetSuccess ? (
       <div className={styles.resetSuccessContainer}>
       <h5 className={styles.header}>SUCCESS</h5>
         <p className={styles.resetPasswordmessage}>Password has been successfully changed</p>
@@ -96,10 +95,9 @@ function Reset({ onBackToLogin }: ResetProps) {
         </Button>
       </div>
     ) : (
-          <div className={styles.resetPasswordContainer}>
-            <h5 className={styles.header}>RESET PASSWORD</h5>
-            <p className={styles.resetPasswordmessage}>Please create a new password</p>
-            <Form onSubmit={handleSubmit(onResetPasswordSubmit)}>
+      <Form onSubmit={handleSubmit(onResetPasswordSubmit)}>
+        <h5 className={styles.resetPasswordHeader}>RESET PASSWORD</h5>
+         <p className={styles.resetPasswordmessage}>Please create a new password</p>
               <Form.Group className={styles.formGroup}>
                 <Form.Label>Password</Form.Label>
                 <div className={styles.passwordField}>
@@ -138,11 +136,13 @@ function Reset({ onBackToLogin }: ResetProps) {
                     onClick={togglePasswordVisibility}
                     className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
                   />
-                  <img
+                  <Image
                     src="/eye.png"
                     alt={showPassword ? 'Hide password' : 'Show password'}
                     onClick={togglePasswordVisibility}
-                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
+                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`} 
+                    width={24} 
+                    height={24}
                   />
                 </div>
                 {errors.confirmPassword && <Form.Text className='error'>{errors.confirmPassword.message}</Form.Text>}
@@ -162,7 +162,6 @@ function Reset({ onBackToLogin }: ResetProps) {
                 Back to Login
               </a>
             </Form>
-          </div>
         )}
       </Card>
     </Container>

@@ -61,7 +61,7 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
         {emailSent ? (
           <div className={styles.emailSentContainer}>
             <h5 className={styles.header}>EMAIL SENT</h5>
-            <p>We've sent you a reset password link to your registered email address:</p>
+            <p>We&apos;ve sent you a reset password link to your registered email address:</p>
             <p className={styles.emailsentMessage}>{email}</p>
             <button
               type="button"
@@ -86,7 +86,7 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
         ) : (
           <Form onSubmit={handleSubmit(onForgotPasswordSubmit)}>
             <h5 className={styles.forgotPasswordHeader}>FORGOT PASSWORD?</h5>
-            <p className={styles.forgotPasswordMessage}>Don't worry</p>
+            <p className={styles.forgotPasswordMessage}>Don&apos;t worry</p>
             <p className={styles.forgotPasswordInstructions}>
               We will send you an email with instructions on how to reset your password.
             </p>
