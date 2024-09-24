@@ -17,19 +17,7 @@ export default function Page() {
     isThirdScreenVisible,
     isFourthScreenVisible,
     selectedFacilities,
-    experienceRequired,
-    contactNumber,
-    email,
-    description,
-    agency,
-    location,
-    type,
-    salaryFrom,
-    salaryTo,
-    expiryDate,
-    setContactNumber,
-    setEmail,
-    setDescription,
+    formData,
     handleFileChange,
     handleCreateNowClick,
     handleBackToPostJobClick,
@@ -52,14 +40,9 @@ export default function Page() {
     "China",
     "Brazil",
   ];
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+ 
   const isContinueButtonEnabled = selectedFacilities.length > 0;
   // Explicitly check that experienceRequired, contactNumber, and email are non-empty strings to return a boolean
-  const isCreateJobButtonEnabled = !!(experienceRequired && contactNumber && email);
 
   return (
     <div className={styles.modalContainer}>
@@ -67,21 +50,13 @@ export default function Page() {
         <InitialScreen
           handleFileChange={handleFileChange}
           fileInputRef={fileInputRef}
-          handleButtonClick={handleButtonClick}
           selectedFile={selectedFile}
           handleCreateNowClick={handleCreateNowClick}
         />
       )}
       {isSecondJobScreen && !isThirdScreenVisible && !isFourthScreenVisible && (
         <SecondJobScreen
-          contactNumber={contactNumber}
-          email={email}
-          description={description}
-          setContactNumber={setContactNumber}
-          setEmail={setEmail}
-          setDescription={setDescription}
           handleBackToPostJobClick={handleBackToPostJobClick}
-          isCreateJobButtonEnabled={isCreateJobButtonEnabled}
           handleCreateJobClick={handleCreateJobClick}
         />
       )}

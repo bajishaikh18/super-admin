@@ -85,9 +85,8 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
       </Navbar>
 
         
-      <Modal show={showPostJobModal} onHide={handleModalClose} size="sm" centered>
+      <Modal show={showPostJobModal} onHide={handleModalClose} centered>
           <Page /> 
-      
       </Modal>
 
     </>

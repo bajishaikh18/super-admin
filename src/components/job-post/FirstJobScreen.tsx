@@ -1,11 +1,19 @@
 import React from "react";
-import styles from '../../app/create/page.module.scss';
+import styles from "../../app/create/page.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
+import { Button, Form } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 
 interface FirstJobScreenProps {
   countries?: string[]; // Make the countries prop optional
   handleContinueClick: () => void;
   handleBackToPostJobClick: () => void;
+}
+
+interface FormValues {
+  agency: string;
+  location: string;
+  expiryDate: string;
 }
 
 const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
@@ -14,30 +22,32 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   handleBackToPostJobClick,
 }) => {
   // Zustand store management
-  const {
-    selectedFacilities,
-    handleFacilityClick,
-    agency,
-    setAgency,
-    type,
-    setType,
-    salaryFrom,
-    setSalaryFrom,
-    salaryTo,
-    setSalaryTo,
-    expiryDate,
-    setExpiryDate,
-    location,
-    setLocation,
+  const { selectedFacilities, handleFacilityClick, setFormData, formData } =
+    usePostJobStore();
 
-  } = usePostJobStore();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setFormData(data);
+      handleContinueClick();
+    } catch (error) {
+    } finally {
+    }
+  };
 
   const isContinueButtonEnabled = selectedFacilities.length > 0;
 
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>Create a Job (1/2)</h2>
+        <h2>
+          Create a Job <span>(1/2)</span>
+        </h2>
         <button
           className={styles.closeButton}
           onClick={handleBackToPostJobClick}
@@ -45,122 +55,106 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
           &times;
         </button>
       </div>
-      <form>
+      <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
         {/* Agency Selection */}
-        <label className={styles.formLabel}>Agency</label>
-        <select
-          className={styles.inputField}
-          value={agency}
-          onChange={(e) => setAgency(e.target.value)}
-        >
-          <option value="">Select Agency</option>
-          <option value="CodeCraft">CodeCraft</option>
-          <option value="ByteBridge">ByteBridge</option>
-          <option value="AgileTech Solutions">AgileTech Solutions</option>
-        </select>
-
-        {/* Working Location */}
-        <label className={styles.formLabel}>Working Location</label>
-        <select
-          className={styles.inputField}
-          value={location} // Use Zustand location state
-          onChange={(e) => setLocation(e.target.value)} // Update Zustand store
-        >
-          {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Agency</Form.Label>
+          <Form.Select
+            className={styles.input}
+            {...register("agency", {
+              required: "Agency is required",
+            })}
+          >
+            <option value="" selected>
+              Select Agency
             </option>
-          ))}
-        </select>
-        
-
-        {/* Type Selection */}
-        <label className={styles.formLabel}>Type</label>
-        <select
-          className={styles.inputField}
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="Full Time">Full Time</option>
-          <option value="Part Time">Part Time</option>
-        </select>
-
-        {/* Salary From */}
-        <label className={styles.formLabel}>Salary From</label>
-        <input
-          type="number"
-          placeholder="0"
-          className={styles.inputField}
-          step="1"
-          value={salaryFrom}
-          onChange={(e) => setSalaryFrom(e.target.value)}
-        />
-
-        {/* Salary To */}
-        <label className={styles.formLabel}>Salary To</label>
-        <input
-          type="number"
-          placeholder="0"
-          className={styles.inputField}
-          step="1"
-          value={salaryTo}
-          onChange={(e) => setSalaryTo(e.target.value)}
-        />
-
-        {/* Expiry Date */}
-        <label className={styles.formLabel}>Expiry Date</label>
-        <input
-          type="date"
-          className={styles.inputField}
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
-        />
-
-        {/* Facility Buttons */}
-        <label className={styles.formLabel}>Free Facilities</label>
-        <div className={styles.facilitiesContainer}>
-          {["Food", "Transportation", "Stay", "Recruitment"].map(
-            (facility) => (
-              <button
-                key={facility}
-                type="button"
-                className={`${styles.facilityButton} ${
-                  selectedFacilities.includes(facility) ? styles.selected : ""
-                }`}
-                onClick={() => handleFacilityClick(facility)}
-              >
-                {selectedFacilities.includes(facility)
-                  ? `- ${facility}`
-                  : `+ ${facility}`}
-              </button>
-            )
+            <option value="1">Agency1</option>
+            <option value="2">Agency2</option>
+            <option value="3">Agency3</option>
+          </Form.Select>
+          {errors.agency && (
+            <Form.Text className="error">{errors.agency.message}</Form.Text>
           )}
-        </div>
+        </Form.Group>
+
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Work Location</Form.Label>
+          <Form.Select
+            className={styles.input}
+            {...register("location", {
+              required: "Work location is required",
+            })}
+          >
+            <option value="" selected>
+              Select country
+            </option>
+            <option value="ae">UAE</option>
+            <option value="sa">Saudi Arabia</option>
+            <option value="qa">Qatar</option>
+            <option value="bh">Bahrain</option>
+            <option value="om">Oman</option>
+          </Form.Select>
+          {errors.location && (
+            <Form.Text className="error">{errors.location.message}</Form.Text>
+          )}
+        </Form.Group>
+
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Expiry date</Form.Label>
+          <Form.Control
+            type="date"
+            {...register("expiryDate", {
+              required: "Expiry date is required",
+            })}
+          />
+          {errors.expiryDate && (
+            <Form.Text className="error">{errors.expiryDate.message}</Form.Text>
+          )}
+        </Form.Group>
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Free Facilities</Form.Label>
+          <div className={styles.facilitiesContainer}>
+            {["Food", "Transportation", "Stay", "Recruitment"].map(
+              (facility) => (
+                <button
+                  key={facility}
+                  type="button"
+                  className={`${styles.facilityButton} ${
+                    selectedFacilities.includes(facility) ? styles.selected : ""
+                  }`}
+                  onClick={() => handleFacilityClick(facility)}
+                >
+                  {selectedFacilities.includes(facility)
+                    ? `- ${facility}`
+                    : `+ ${facility}`}
+                </button>
+              )
+            )}
+          </div>
+        </Form.Group>
 
         {/* Action Buttons */}
         <div className={styles.actions}>
-          <button
+          <Button
             type="button"
-            className={styles.cancelButton}
+            className={`outlined ${styles.actionButtons}`}
             onClick={handleBackToPostJobClick}
           >
             Cancel
-          </button>
-          <button
-            type="button"
-            className={`${styles.continueButton} ${
+          </Button>
+          <Button
+            type="submit"
+            className={`${styles.actionButtons} ${
               isContinueButtonEnabled ? "" : styles.disabled
             }`}
-            onClick={handleContinueClick}
             disabled={!isContinueButtonEnabled}
           >
             Continue
-          </button>
+          </Button>
         </div>
-      </form>
+      </Form>
     </div>
   );
 };
 
 export default FirstJobScreen;
-

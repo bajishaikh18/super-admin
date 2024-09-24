@@ -1,205 +1,286 @@
 import React, { useState } from "react";
-import styles from '../../app/create/page.module.scss';
+import styles from "../../app/create/page.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
-import axios from "axios";
-import { BASE_URL } from "@/helpers/constants";
+import { AiOutlineDelete } from "react-icons/ai";
+
+import {
+  Button,
+  Form,
+  InputGroup,
+  Table,
+} from "react-bootstrap";
+import { useForm } from "react-hook-form";
 
 interface JobPosition {
   title: string;
   experience: string;
   salary: string;
+  deleted?:string;
 }
 
-interface SecondJobScreenProps {
+interface FormValues {
   contactNumber: string;
   email: string;
-  description: string;
-  setContactNumber: (value: string) => void;
-  setEmail: (value: string) => void;
-  setDescription: (value: string) => void;
+  countryCode: string;
+  jobPositions: JobPosition[];
+  description?: string;
+}
+interface SecondJobScreenProps {
   handleBackToPostJobClick: () => void;
-  isCreateJobButtonEnabled: boolean;
   handleCreateJobClick: () => void;
 }
 
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
-  contactNumber,
-  email,
-  description,
-  setContactNumber,
-  setEmail,
-  setDescription,
   handleBackToPostJobClick,
-  isCreateJobButtonEnabled,
   handleCreateJobClick,
 }) => {
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: "", experience: "0", salary: "" },
   ]);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [showAlternateMobile, setShowAlternateMobile] = useState(false);
-  const [alternateMobile, setAlternateMobile] = useState<string>("");
-
-  const setGlobalJobPositions = usePostJobStore((state) => state.setJobPositions);
-  const { agency, salaryFrom, salaryTo, expiryDate, selectedFacilities } = usePostJobStore();
+  const { selectedFacilities, setFormData, formData } =
+    usePostJobStore();
 
   const handleAddMore = () => {
-    const lastPosition = jobPositions[jobPositions.length - 1];
-    if (lastPosition.title.trim() === "" || lastPosition.salary.trim() === "") {
-      setErrorMessage("Please fill in all fields before adding a new position.");
+    const jobPositionsFromForm = getValues('jobPositions');
+    const lastPosition = jobPositionsFromForm[jobPositions.length - 1];
+    if (!lastPosition.deleted && (lastPosition.title.trim() === "" || lastPosition.experience.trim() === "")) {
+      setErrorMessage(
+        "Please fill in all fields before adding a new position."
+      );
       return;
     }
     setErrorMessage("");
-    const newPositions = [...jobPositions, { title: "", experience: "0", salary: "" }];
+    const newPositions = [
+      ...jobPositions,
+      { title: "", experience: "0", salary: "" },
+    ];
     setJobPositions(newPositions);
-    setGlobalJobPositions(newPositions);
-
-    if (!showAlternateMobile) {
-      setShowAlternateMobile(true);
-    }
+    // setGlobalJobPositions(newPositions);
   };
 
-  const handlePositionChange = (index: number, field: keyof JobPosition, value: string) => {
-    const updatedPositions = [...jobPositions];
-    updatedPositions[index][field] = value;
-    setJobPositions(updatedPositions);
-    setGlobalJobPositions(updatedPositions);
-  };
-
-  const handlePhoneNumberChange = (setter: (value: string) => void, value: string) => {
-    if (/^\d*$/.test(value) && value.length <= 10) {
-      setter(value);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (contactNumber.length !== 10 || (showAlternateMobile && alternateMobile.length !== 10)) {
-      setErrorMessage("Please enter valid 10-digit mobile numbers.");
-      return;
-    }
-
-    try {
-      const jobData = {
-        agencyId: "CodeCraft",
-        location: "India", // Replace with actual location
-        min_Salary: salaryFrom,
-        max_Salary: salaryTo,
-        currency: "USD", // Replace with actual currency if needed
-        expiry: expiryDate,
-        imageUrl: "some url", // Replace with actual image URL if needed
-        jobType: "fulltime", // Adjust based on selection
-        positions: jobPositions.map(position => ({
-          positionId: "someId", // Set this according to your requirements
-          experience: position.experience,
-          min_Salary: position.salary,
-          max_Salary: position.salary,
-        })),
-        amenties: selectedFacilities,
-        contactNumbers: [contactNumber, showAlternateMobile ? alternateMobile : undefined].filter(Boolean),
-        email,
-        description,
-      };
-
-      await axios.post(`${BASE_URL}/jobs/JobsCreationId/`, jobData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('Job created successfully');
-      handleCreateJobClick(); // Trigger your job creation success logic
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(error.response?.data?.message || "Error creating job");
-      } else {
-        setErrorMessage("An unexpected error occurred");
+  const handleRemove = (index:number) => {
+    setValue(`jobPositions.${index}.title`, "");
+    setValue(`jobPositions.${index}.experience`, "");
+    setValue(`jobPositions.${index}.salary`, "");
+    setValue(`jobPositions.${index}.deleted`, "true");
+    setErrorMessage("");
+    
+    const newPositions = jobPositions.map((x,i)=>{
+      if(i===index){
+        return {
+          ...x,
+          deleted:"true"
+        }
       }
+      return x;
+    })
+    setJobPositions(newPositions);
+    // setGlobalJobPositions(newPositions);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setFormData(data)
+      const payload = {
+        ...data,
+        facilities: selectedFacilities
+      }
+      console.log(payload)
+      handleCreateJobClick()
+    } catch (error) {
+    } finally {
     }
   };
+  // const handleSubmit = async () => {
+  //   // if (contactNumber.length !== 10 || (showAlternateMobile && alternateMobile.length !== 10)) {
+  //   //   setErrorMessage("Please enter valid 10-digit mobile numbers.");
+  //   //   return;
+  //   // }
+
+  //   try {
+  //     // const jobData = {
+  //     //   agencyId: "CodeCraft",
+  //     //   location: "India", // Replace with actual location
+  //     //   min_Salary: salaryFrom,
+  //     //   max_Salary: salaryTo,
+  //     //   currency: "USD", // Replace with actual currency if needed
+  //     //   expiry: expiryDate,
+  //     //   imageUrl: "some url", // Replace with actual image URL if needed
+  //     //   jobType: "fulltime", // Adjust based on selection
+  //     //   positions: jobPositions.map(position => ({
+  //     //     positionId: "someId", // Set this according to your requirements
+  //     //     experience: position.experience,
+  //     //     min_Salary: position.salary,
+  //     //     max_Salary: position.salary,
+  //     //   })),
+  //     //   amenties: selectedFacilities,
+  //     //   contactNumbers: [contactNumber, showAlternateMobile ? alternateMobile : undefined].filter(Boolean),
+  //     //   email,
+  //     //   description,
+  //     // };
+
+  //     // await axios.post(`${BASE_URL}/jobs`, jobData, {
+  //     //   headers: {
+  //     //     'Content-Type': 'application/json',
+  //     //   },
+  //     // });
+  //     console.log('Job created successfully');
+  //     handleCreateJobClick(); // Trigger your job creation success logic
+  //   } catch (error: unknown) {
+  //     if (axios.isAxiosError(error)) {
+  //       setErrorMessage(error.response?.data?.message || "Error creating job");
+  //     } else {
+  //       setErrorMessage("An unexpected error occurred");
+  //     }
+  //   }
+  // };
 
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>Create a Job (2/2)</h2>
-        <button className={styles.closeButton} onClick={handleBackToPostJobClick}>
+        <button
+          className={styles.closeButton}
+          onClick={handleBackToPostJobClick}
+        >
           &times;
         </button>
       </div>
-      <form className={styles.form}>
-        <label className={styles.formLabel}>Add positions</label>
-        {jobPositions.map((position, index) => (
-          <div className={styles.positionsContainer} key={index}>
-            <input
-              type="text"
-              placeholder="Add Job Title"
-              className={styles.jobTitleInput}
-              value={position.title}
-              onChange={(e) => handlePositionChange(index, "title", e.target.value)}
-            />
-            <select
-              className={styles.experienceInput}
-              value={position.experience}
-              onChange={(e) => handlePositionChange(index, "experience", e.target.value)}
+      <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+        <Form.Group className={styles.formGroup}>
+          <label className={styles.formLabel}>Add positions</label>
+          <Table>
+            <thead>
+              <tr>
+                <th className="w-50">Job Title</th>
+                <th className="w-30">Exp Required</th>
+                <th className="w-20">Salary</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobPositions.map((position, index) =>{
+                if(position.deleted){
+                  return null;
+                }
+                return (
+                  <tr key={index}>
+                    <td>
+                   
+                      <Form.Select
+                        className={styles.input}
+                        {...register(`jobPositions.${index}.title`, {
+                          required: "Job title is required",
+                        })}
+                      >
+                        <option value="1">Engineer</option>
+                        <option value="2">Plumber</option>
+                        <option value="3">Carpenter</option>
+                      </Form.Select>
+                    </td>
+                    <td>
+                    <Form.Select
+                        className={styles.input}
+                        {...register(`jobPositions.${index}.experience`, {
+                          required: "Job Experience is required",
+                        })}
+                      >
+                        <option value="1">0-1 Years</option>
+                        <option value="2">1-2 Years</option>
+                        <option value="3">2-5 Years</option>
+                      </Form.Select>
+                    </td>
+                    <td>
+                    <Form.Control type="text" placeholder="0-0"  className={styles.input}
+                    {...register(`jobPositions.${index}.salary`, {
+                      
+                    })}/>
+                    </td>
+                    <td>
+                      {
+                        index !=0 &&                       <AiOutlineDelete className={styles.positionDelete} onClick={()=>handleRemove(index)}/>
+
+                      }
+                    </td>
+                  </tr>
+                )
+              } )}
+            </tbody>
+          </Table>
+          {errorMessage && <div><Form.Text className='error'>
+          {errorMessage}
+          </Form.Text></div>}
+         
+          <button
+            type="button"
+            className={styles.addMoreButton}
+            onClick={handleAddMore}
+          >
+            Add More
+          </button>
+        </Form.Group>
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Contact Mobile Number</Form.Label>
+          <InputGroup className={`mb-3 contact-field`}>
+            <Form.Select
+              className={styles.input}
+              {...register("countryCode", {
+                required: "Agency is required",
+              })}
             >
-              {[...Array(21)].map((_, i) => (
-                <option key={i} value={i}>
-                  {i} Years
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              placeholder="0-0"
-              className={styles.salaryInput}
-              value={position.salary}
-              onChange={(e) => handlePositionChange(index, "salary", e.target.value)}
+              <option value="1">+91</option>
+              <option value="2">+94</option>
+              <option value="3">+99</option>
+            </Form.Select>
+            <Form.Control
+              aria-label="Contact number"
+              {...register("contactNumber", {
+                required: "Contact number is required",
+                
+              })}
             />
-          </div>
-        ))}
-        <button type="button" className={styles.addMoreButton} onClick={handleAddMore}>
-          Add More
-        </button>
-
-        <label className={styles.formLabel}>Contact Mobile Number</label>
-        <div className={styles.contactContainer}>
-          <select className={styles.countryCodeInput}>
-            <option value="+1">+1</option>
-            <option value="+44">+44</option>
-            <option value="+91">+91</option>
-          </select>
-          <input
-            type="tel"
-            placeholder="  984892801"
-            value={contactNumber}
-            onChange={(e) => handlePhoneNumberChange(setContactNumber, e.target.value)}
-            className={styles.phoneInput}
-            maxLength={10}
+          </InputGroup>
+          {errors.contactNumber && (
+            <Form.Text className="error">
+              {errors.contactNumber.message}
+            </Form.Text>
+          )}
+        </Form.Group>
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Contact Email Address</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Email Id"
+            className={styles.input}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid email address",
+              },
+            })}
           />
-        </div>
+          {errors.email && (
+            <Form.Text className="error">{errors.email.message}</Form.Text>
+          )}
+        </Form.Group>
 
-        {showAlternateMobile && (
-          <>
-            <label className={styles.formLabel}>Alternate Mobile Number</label>
-            <div className={styles.contactContainer}>
-              <select className={styles.countryCodeInput}>
-                <option value="+1">+1</option>
-                <option value="+44">+44</option>
-                <option value="+91">+91</option>
-              </select>
-              <input
-                type="tel"
-                placeholder="Enter alternate mobile number"
-                value={alternateMobile}
-                onChange={(e) => handlePhoneNumberChange(setAlternateMobile, e.target.value)}
-                className={styles.phoneInput}
-                maxLength={10}
-              />
-            </div>
-          </>
-        )}
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Description (Optional)</Form.Label>
+          <Form.Control as="textarea" rows={3} {...register("description")} />
+        </Form.Group>
 
-        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
-
-        <label className={styles.formLabel}>Contact Email Address</label>
+        {/* <label className={styles.formLabel}>Contact Email Address</label>
         <input
           type="email"
           placeholder="Enter Email ID"
@@ -214,24 +295,25 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className={styles.inputField}
-        />
+        /> */}
 
         <div className={styles.actions}>
-          <button type="button" className={styles.cancelButton} onClick={handleBackToPostJobClick}>
-            Cancel
-          </button>
-          <button
+          <Button
             type="button"
-            className={`${styles.createJobButton} ${
-              isCreateJobButtonEnabled ? "" : styles.disabled
-            }`}
-            onClick={handleSubmit}
-            disabled={!isCreateJobButtonEnabled}
+            className={`outlined ${styles.actionButtons}`}
+            onClick={handleBackToPostJobClick}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className={`${styles.actionButtons} ${true ? "" : styles.disabled}`}
+            disabled={!true}
           >
             Create a Job
-          </button>
+          </Button>
         </div>
-      </form>
+      </Form>
     </div>
   );
 };

@@ -1,13 +1,14 @@
 
 // InitialScreen.tsx
-import React, { useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styles from '../../app/create/page.module.scss';
 import Image from "next/image";
+import { Button } from 'react-bootstrap';
+import {useDropzone} from 'react-dropzone'
 
 interface InitialScreenProps {
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  handleButtonClick: () => void;
   selectedFile: File | null;
   handleCreateNowClick: () => void;
 }
@@ -15,52 +16,69 @@ interface InitialScreenProps {
 const InitialScreen: React.FC<InitialScreenProps> = ({
   handleFileChange,
   fileInputRef,
-  handleButtonClick,
   selectedFile,
   handleCreateNowClick,
 }) => {
+  const onDrop = useCallback((acceptedFiles:any) => {
+    const file = acceptedFiles[0];
+    if(!file){
+      return
+    }
+    handleFileChange(file)
+  }, [])
+  
+  const {getRootProps, getInputProps, isDragActive,open,fileRejections} = useDropzone({ accept: {
+    'image/png': ['.png'],
+    'image/jpg': ['.jpg', '.jpeg'],
+  },
+  maxFiles:1,
+  onDrop})
+
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>Post a Job</h2>
         <button className={styles.closeButton}>&times;</button>
       </div>
-      <div className={styles.uploadSection}>
+      <div className={styles.uploadSection} {...getRootProps()}>
+
+        <input accept=".docx,.pdf"  {...getInputProps()} />
+       
         <div className={styles.uploadHeader}>
           <Image
-            src="" // Ensure you have an image at this path
+            src="/upload.png" // Ensure you have an image at this path
             alt="Upload Icon"
+            width={24}
+            height={24}
             className={styles.uploadIcon}
           />
-          <span>Upload Media</span>
+           {
+          isDragActive ?
+            <p>Drop the files here ...</p> :
+            <p>Upload Media</p>
+        }
         </div>
-        <p className={styles.fileInfo}>
-          .docx, pdf are allowed. File size should not exceed 5mb
+        <p className={`${styles.fileInfo} ${fileRejections.length >0 ? styles.error : ''}`}>
+          .jpeg, .jpg & .png are allowed. File size should not exceed 5mb
         </p>
-        <input
-          type="file"
-          accept=".docx,.pdf"
-          onChange={handleFileChange}
-          ref={fileInputRef}
-          className={styles.fileInput}
-        />
-        <button className={styles.browseButton} onClick={handleButtonClick}>
-          Browse Files
-        </button>
-        {selectedFile && (
+       
+      
+        {selectedFile ? (
           <p className={styles.selectedFileName}>
             Selected file: {selectedFile.name}
           </p>
-        )}
+        ) :   <Button className={`outlined bg-white ${styles.outlinedButton}`}  onClick={open}>
+        Browse Files
+      </Button>}
       </div>
       <div className={styles.createSection}>
-        <b>Don’t have a media ready?</b>
-        <button
-          className={styles.createButton}
+        <h3>Don’t have a media ready?</h3>
+        <Button
+        className={`outlined ${styles.outlinedButton}`}
           onClick={handleCreateNowClick}
         >
           Create Now
-        </button>
+        </Button>
       </div>
     </div>
   );
