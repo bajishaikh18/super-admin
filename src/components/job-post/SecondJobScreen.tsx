@@ -25,18 +25,6 @@ interface SecondJobScreenProps {
   handleCreateJobClick: () => void;
 }
 
-const LoadingScreen = () => {
-  return (
-    <div className={styles.overlay}>
-      <div className={styles.popup}>
-        <div className={styles.popupHeader}>
-          <h2>Create a Job (2/2)</h2>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleBackToPostJobClick,
   handleCreateJobClick,
