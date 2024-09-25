@@ -6,7 +6,7 @@ import Forgot from '../../components/login/Forgot';
 import { login } from '@/apis/auth';
 import { Button, Card, CardBody, CardHeader, Container, Form } from 'react-bootstrap';
 import Image from 'next/image';
-
+import { useRouter } from 'next/navigation';
 
 interface FormValues {
   email: string;
@@ -18,12 +18,17 @@ function Page() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
       const response = await login(data);
       console.log("Respone",response);
+      if (response.token) { 
+        localStorage.setItem('token', response.token);
+        router.push('/dashboard'); 
+     }
     } catch (error) {
       console.error('Login failed:', error);
     } finally {
@@ -72,8 +77,8 @@ function Page() {
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {
-                        value: 6,
-                        message: 'Password must be at least 6 characters',
+                        value: 4,
+                        message: 'Password must be at least 4 characters',
                       },
                       maxLength: {
                         value: 15,
