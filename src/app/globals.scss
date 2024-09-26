@@ -175,3 +175,10 @@ a {
 .dropdown-item{
   font-size: 14px;
 }
+.nav-list-item{
+  .dropdown-toggle{
+    padding: 0px !important;
+    border: none !important;
+    color: #000 !important;
+  }
+}

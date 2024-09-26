@@ -12,7 +12,7 @@ export interface AuthUser {
 
 interface UserStore {
     authUser: AuthUser | null;
-    setAuthUser: (user:AuthUser) => Promise<void>;
+    setAuthUser: (user:AuthUser|null) => Promise<void>;
 }
 
 export const useAuthUserStore = create<UserStore>((set) => ({
