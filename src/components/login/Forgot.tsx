@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import styles from "../../app/login/page.module.scss";
 import { forgotPassword } from "@/apis/auth";
 import { useRouter } from "next/navigation";
-import { Button, Card, Container, Form } from 'react-bootstrap';
+import { Button, Card, CardHeader, Container, Form } from 'react-bootstrap';
+import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface ForgotValues {
   email: string;
@@ -35,7 +37,8 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
 
       console.log("Password reset email sent:", response.data);
       setEmailSent(true);
-    } catch (error) {
+    } catch (error) {    
+      toast.error('Something went wrong! Please try again later')
       console.error("Error sending password reset email:", error);
     } finally {
       setLoading(false);
@@ -60,10 +63,14 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
       <Card className={styles.formContainer}>
         {emailSent ? (
           <div className={styles.emailSentContainer}>
-            <h5 className={styles.header}>EMAIL SENT</h5>
-            <p>We've sent you a reset password link to your registered email address:</p>
+             <CardHeader className={styles.cardHeader}>
+              <Image src={'/email-sent.png'} alt='admin' width={66} height={121}/>
+              <h5 className={styles.header}>EMAIL SENT</h5>
+            </CardHeader>
+            <p className={styles.emailSentSuccess}>We&apos;ve sent you a reset password link to your registered email address:</p>
             <p className={styles.emailsentMessage}>{email}</p>
-            <button
+      
+            <Button
               type="button"
               className={`btn ${loading ? 'btn-loading' : ''} ${styles.button}`}
               disabled={loading}
@@ -71,7 +78,7 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
               >
               {loading ? <div className={styles.spinner}></div> : "Back to Login"}
               
-            </button>
+            </Button>
             <a
               href="#"
               onClick={(e) => {
@@ -86,14 +93,14 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
         ) : (
           <Form onSubmit={handleSubmit(onForgotPasswordSubmit)}>
             <h5 className={styles.forgotPasswordHeader}>FORGOT PASSWORD?</h5>
-            <p className={styles.forgotPasswordMessage}>Don't worry</p>
+            <p className={styles.forgotPasswordInstructions}>Don&apos;t worry</p>
             <p className={styles.forgotPasswordInstructions}>
               We will send you an email with instructions on how to reset your password.
             </p>
-            <p className={styles.forgotPasswordEmailPrompt}>
+            <p className={`${styles.forgotPasswordInstructions} ${styles.forgotPasswordEmailPrompt}`}>
               Enter your registered Email ID.
             </p>
-            <Form.Group>
+            <Form.Group className={styles.forgotPasswordFormGroup}>
               <Form.Label>Email ID</Form.Label>
               <Form.Control
                 type="email"

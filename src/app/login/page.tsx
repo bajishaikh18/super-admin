@@ -5,7 +5,11 @@ import styles from "./page.module.scss";
 import Forgot from '../../components/login/Forgot';
 import { login } from '@/apis/auth';
 import { Button, Card, CardBody, CardHeader, Container, Form } from 'react-bootstrap';
-
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useAuthUserStore } from '@/stores/useAuthUserStore';
+import { getTokenClaims } from '@/helpers/jwt';
 
 interface FormValues {
   email: string;
@@ -16,15 +20,28 @@ function Page() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {setAuthUser} = useAuthUserStore()
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const router = useRouter();
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
     try {
       const response = await login(data);
       console.log("Respone",response);
-    } catch (error) {
-      console.error('Login failed:', error);
+      if (response.token) { 
+        localStorage.setItem('token', response.token);
+        const user = getTokenClaims(response.token)
+        setAuthUser(user);
+        router.push('/dashboard'); 
+     }
+    } catch (error:any) {
+      if(error.status === 404){
+        toast.error('Looks like credentials are wrong')
+      }else{
+        toast.error('Something went wrong! Please try again later')
+      }
+
     } finally {
       setLoading(false);
     }
@@ -45,17 +62,14 @@ function Page() {
         <Card className={styles.card}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <CardHeader className={styles.cardHeader}>
-            <img
-                    src="/admin.png"
-                    alt={showPassword ? 'Hide password' : 'Show password'}
-                    onClick={togglePasswordVisibility}
-                  />
+            <Image src={'/admin.png'} alt='admin' width={80} height={80}/>
             <h5 className={styles.header}>SUPER ADMIN</h5>
             </CardHeader>
             <CardBody className={styles.cardBody}>
             <Form.Group>
               <Form.Label>Email</Form.Label>
-              <Form.Control type="text" placeholder="name@example.com"  className={styles.input}
+              <Form.Control type="text" placeholder="name@example.com"                 isInvalid={!!errors.email}
+ className={styles.input}
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -72,12 +86,13 @@ function Page() {
                 <div className={styles.passwordField}>
                 <Form.Control  type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
+                    isInvalid={!!errors.password}
                     className={styles.input}
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {
-                        value: 6,
-                        message: 'Password must be at least 6 characters',
+                        value: 4,
+                        message: 'Password must be at least 4 characters',
                       },
                       maxLength: {
                         value: 15,
@@ -89,11 +104,13 @@ function Page() {
                     onClick={togglePasswordVisibility}
                     className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}>
                   </span>
-                  <img
+                  <Image
                     src="/eye.png"
                     alt={showPassword ? 'Hide password' : 'Show password'}
                     onClick={togglePasswordVisibility}
-                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
+                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`} 
+                    width={24}  
+                    height={24}
                   />
                 </div>
                 {errors.password &&  <Form.Text className='error'>
@@ -106,7 +123,6 @@ function Page() {
               >
                 Forgot Password?
               </a>
-            
             <Button
               type="submit"
               className={`btn ${loading ? 'btn-loading' : ''} ${styles.button}`}

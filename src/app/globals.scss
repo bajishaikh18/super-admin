@@ -75,3 +75,23 @@ a {
     padding: 20px 48px 0px 48px;
   }
 }
+
+.dropdown-menu{
+  box-shadow: $box-shadow-1;
+  padding: 0px !important;
+  border: 1px solid rgba(217, 217, 217, 1) !important;
+  a{
+    padding: 15px;
+    border-bottom: 1px solid rgba(217, 217, 217, 1);
+    &:last-child{
+      border-bottom: none;
+    }
+  }
+}
+.dropdown-toggle{
+  padding-left: 0px !important;
+  color: #000 !important;
+}
+.dropdown-item{
+  font-size: 14px;
+}
