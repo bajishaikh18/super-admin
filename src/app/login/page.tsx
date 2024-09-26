@@ -8,7 +8,7 @@ import { Button, Card, CardBody, CardHeader, Container, Form } from 'react-boots
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { useAuthUserStore } from '@/stores/useAuthUserStore';
+import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getTokenClaims } from '@/helpers/jwt';
 
 interface FormValues {
@@ -32,7 +32,7 @@ function Page() {
       if (response.token) { 
         localStorage.setItem('token', response.token);
         const user = getTokenClaims(response.token)
-        setAuthUser(user);
+        setAuthUser(user as AuthUser);
         router.push('/dashboard'); 
      }
     } catch (error:any) {

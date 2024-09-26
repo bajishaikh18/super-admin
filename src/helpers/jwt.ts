@@ -6,8 +6,10 @@ export const isTokenValid = () => {
         if(!token)
          return false;
         const decodedToken = jwtDecode(token);
+        if(!decodedToken)
+            return false
         const currentTime = Date.now() / 1000;
-        return decodedToken.exp > currentTime;
+        return (decodedToken.exp||0) > currentTime;
     }catch(e){
         return false;
     }  

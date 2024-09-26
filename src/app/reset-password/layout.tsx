@@ -5,6 +5,7 @@ import { AuthHeader
 
  } from "@/components/common/AuthHeader";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -18,7 +19,9 @@ export default function RootLayout({
       <Toaster position="top-right"
         />
         <AuthHeader />
+        <Suspense>
         {children}
+        </Suspense>
       </body>
     </html>
   );
