@@ -5,6 +5,7 @@ import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import styles from './Header.module.scss'
 import Image from 'next/image';
+import { isTokenValid } from "@/helpers/jwt";
 
 
 interface HeaderProps {
@@ -19,11 +20,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const isTokenValid = () => {
-    const token = localStorage.getItem('token');
-    return token !== null;
-  };
-
+ 
   const handleDashboardNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     if (isTokenValid()) {
@@ -35,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
   };
 
   useEffect(() => {
-    if (window.location.pathname === '/dashboard' && !isTokenValid()) {
+    if (!isTokenValid()) {
       router.push('/login');
     }
   }, [router]);
@@ -46,31 +43,36 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
           src="/logo.png" 
           className={styles.logo} 
           alt="Logo" 
-          width={100} 
-          height={40} 
+          width={136} 
+          height={27} 
         />
       </div>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className={styles.navContainer}>
-        <Nav.Link className={styles.navListItem} onClick={handleDashboardNavigation} style={{ color: 'blue' }}>Dashboard</Nav.Link>          <Nav.Link className={styles.navListItem} href="#posted-jobs">Posted Jobs</Nav.Link>
+        <Nav.Link className={`${styles.navListItem} ${styles.active}`} onClick={handleDashboardNavigation}>Dashboard</Nav.Link>          <Nav.Link className={styles.navListItem} href="#posted-jobs">Posted Jobs</Nav.Link>
           <Nav.Link className={styles.navListItem} href="#agencies">Agencies</Nav.Link>
           <Nav.Link className={styles.navListItem} href="#candidates">Candidates</Nav.Link>
           <Nav.Link className={styles.navListItem} href="#employers">Employers</Nav.Link>
-          
-          <Nav.Link className={styles.navListItem} href="#reports">
-            <span>Reports</span>
-            <i className={`${styles.ReportsDownIcon} fas fa-chevron-down`} style={{ marginLeft: '1px' }}></i>
-          </Nav.Link>
+          <NavDropdown title="Reports" className={styles.navListItem}>
+              <NavDropdown.Item href="#action/3.1" className={styles.navListItem}>Report Item</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.2" className={styles.navListItem}>
+              Report Item
+              </NavDropdown.Item>
+          </NavDropdown>
+         
         </Nav>
 
         <Nav className={styles.rightNavItems}>
-          <Nav.Link href="#post-job" className={`${styles.postJob} d-flex align-items-center gap-2`}>
-            <i className="fas fa-upload"></i> Post Job
-          </Nav.Link>
           <Nav.Link onClick={onNotificationToggle} className={styles.faBell}>
-            <i className="fas fa-bell"></i>
+            <Image src='/bell.png' alt='bell' width={16} height={19}/>
           </Nav.Link>
+          <Nav.Link href="#post-job" className={`${styles.postJob} d-flex align-items-center gap-2`}>
+          <Image src='/_Upload.png' alt='bell' width={16} height={16}/>
+
+          Post Job
+          </Nav.Link>
+          
 
           <NavDropdown 
             title={

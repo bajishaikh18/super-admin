@@ -9,7 +9,7 @@
 
 .card{
   min-width: 400px;
-  height: 480px; 
+  min-height: 480px; 
   margin-top: 30px;
 }
 
@@ -45,7 +45,7 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 40px; 
+  padding: 48px; 
   max-width: 400px; 
   width: 100%; 
   margin: 20px auto; 
@@ -60,6 +60,19 @@
 .successmessage {
     margin-bottom: 17px;
 }
+.emailSentContainer{
+  padding-top: 30px;
+  .cardHeader{
+    img{
+      margin-bottom: 32px;
+    }
+  }
+  .emailSentSuccess{
+    font-size: 16px;
+    text-align: center;
+    line-height: 19px;
+  }
+}
   
 .emailSentContainer h5 {
     margin-bottom: 17px;
@@ -68,8 +81,10 @@
 }
   
 .emailsentMessage {
-    font-size: 17px;
-    margin-bottom: 13px;
+    font-size: 16px;
+    text-align: center;
+    color: $color-dark-grey;
+    margin-bottom: 16px;
 }
   
 .email {
@@ -85,20 +100,22 @@
 .forgotPasswordHeader {
   text-align: left; 
   font-weight: 700;
+  font-size: 20px;
+  margin: 8px 0px 32px 0px;
 } 
-.forgotPasswordMessage {
-    margin-bottom: 15px;
-}
-  
+
   .forgotPasswordInstructions {
-    margin-bottom: 15px;
+    line-height: 16px;
     font-size: 14px;
+    &.forgotPasswordEmailPrompt {
+      margin-bottom: 44px;
+    }
   }
   
-  .forgotPasswordEmailPrompt {
-    margin-bottom: 35px;
+  .forgotPasswordFormGroup{
+    margin-bottom: 8px;
   }
-  
+
   .emailField {
     width: 100%;
     max-width: 400px;
@@ -176,16 +193,16 @@
   
   
 
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #0045E6;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-    display: block;
-  }
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 1);
+  border-left: 4px solid #0045E6;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+  display: block;
+}
   
   @keyframes spin {
     0% { transform: rotate(0deg); }

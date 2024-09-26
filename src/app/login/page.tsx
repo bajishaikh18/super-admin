@@ -7,6 +7,9 @@ import { login } from '@/apis/auth';
 import { Button, Card, CardBody, CardHeader, Container, Form } from 'react-bootstrap';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useAuthUserStore } from '@/stores/useAuthUserStore';
+import { getTokenClaims } from '@/helpers/jwt';
 
 interface FormValues {
   email: string;
@@ -17,6 +20,7 @@ function Page() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {setAuthUser} = useAuthUserStore()
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
   const router = useRouter();
 
@@ -27,10 +31,17 @@ function Page() {
       console.log("Respone",response);
       if (response.token) { 
         localStorage.setItem('token', response.token);
+        const user = getTokenClaims(response.token)
+        setAuthUser(user);
         router.push('/dashboard'); 
      }
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (error:any) {
+      if(error.status === 404){
+        toast.error('Looks like credentials are wrong')
+      }else{
+        toast.error('Something went wrong! Please try again later')
+      }
+
     } finally {
       setLoading(false);
     }
@@ -51,12 +62,14 @@ function Page() {
         <Card className={styles.card}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <CardHeader className={styles.cardHeader}>
+            <Image src={'/admin.png'} alt='admin' width={80} height={80}/>
             <h5 className={styles.header}>SUPER ADMIN</h5>
             </CardHeader>
             <CardBody className={styles.cardBody}>
             <Form.Group>
               <Form.Label>Email</Form.Label>
-              <Form.Control type="text" placeholder="name@example.com"  className={styles.input}
+              <Form.Control type="text" placeholder="name@example.com"                 isInvalid={!!errors.email}
+ className={styles.input}
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -73,6 +86,7 @@ function Page() {
                 <div className={styles.passwordField}>
                 <Form.Control  type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
+                    isInvalid={!!errors.password}
                     className={styles.input}
                     {...register('password', {
                       required: 'Password is required',
@@ -109,7 +123,6 @@ function Page() {
               >
                 Forgot Password?
               </a>
-            
             <Button
               type="submit"
               className={`btn ${loading ? 'btn-loading' : ''} ${styles.button}`}
