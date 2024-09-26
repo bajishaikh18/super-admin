@@ -158,3 +158,20 @@ a {
     background: none;
   }
 }
+
+.dropdown-menu{
+  box-shadow: $box-shadow-1;
+  padding: 0px !important;
+  border: 1px solid rgba(217, 217, 217, 1) !important;
+  a{
+    padding: 15px;
+    border-bottom: 1px solid rgba(217, 217, 217, 1);
+    &:last-child{
+      border-bottom: none;
+    }
+  }
+}
+
+.dropdown-item{
+  font-size: 14px;
+}

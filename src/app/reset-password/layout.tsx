@@ -4,6 +4,7 @@ import "../globals.scss";
 import { AuthHeader
 
  } from "@/components/common/AuthHeader";
+import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -14,6 +15,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <Toaster position="top-right"
+        />
         <AuthHeader />
         {children}
       </body>
