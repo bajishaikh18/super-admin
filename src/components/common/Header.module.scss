@@ -1,6 +1,4 @@
-
-
-
+@import "../../app/variables";
 
 .header {
   background-color: #fff;
@@ -9,18 +7,20 @@
   justify-content: space-between;
   margin: 0;
   padding: 32px 50px;
-  width: 100vw;
+  width: 100%;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
+  height: 88px;
+  width: 1440px;
 }
 
 
 .logo{
   top:-10px;
-  position: relative; 
+  position: relative;
 }
 
 
@@ -123,9 +123,3 @@
 .dropdownItem:hover {
   background-color: #f0f0f0;
 }
-
-
-
-
-
-

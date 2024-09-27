@@ -1,13 +1,14 @@
-"use client";
+'use client'
 import React, { useState } from "react";
-import styles from './Dashboard.module.scss';
 import Header from '../../components/common/Header';
-import Summary from '../../components/dashboard/Summary'; 
-import Insights from '../../components/dashboard/Insights'; 
-import RegisteredUsers from '../../components/dashboard/RegisterdUsers';
+import JobSummary from "../Summary/jobsummary";
+import PostedJobs from "../Summary/postedjobs";
+import styles from '../../app/dashboard/Dashboard.module.scss'
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import Image from "next/image";
+import { Button } from "react-bootstrap";
 
-const Dashboard = () => {
+const PostJob = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState('dashboard'); 
 
@@ -73,24 +74,55 @@ const Dashboard = () => {
         </div>
       )}
 
-      <main>
-        <section className={styles.summaryText}>
-          <p>Summary</p>
-        </section>
-        <Summary />
-
-        <section className={styles.sideText}>
-          <p>Insights</p>
-        </section>
-        <Insights />
-
-        <section className={styles.thirdText}>
-          <p>Registered users</p>
-        </section>
-        <RegisteredUsers />
+<main>
+        <div className={styles.jobSummaryContainer}>
+          <section className={styles.summaryText}>
+            <p>Jobs Summary</p>
+          </section>
+          <JobSummary /> 
+        </div>
+        <>
+          <section className={styles.postedJobsHeader}>
+            <p>Posted Jobs</p>
+            <div className={styles.searchContainer}>
+              <input 
+                type="text" 
+                placeholder="Search" 
+                className={styles.searchInput} 
+              />
+              <Image 
+                src="/Search.png" 
+                alt="Search" 
+                width={16} 
+                height={16}
+                className={styles.searchImg}
+              />
+              <div className={styles.groupContainer}>
+                <Image 
+                  src="/Group.png" 
+                  alt="Group" 
+                  width={16} 
+                  height={16}
+                  className={styles.groupImg}
+                />
+              </div>
+              <Button type="submit" className={`btn ${styles.button}`}>
+                <Image 
+                  src="/Upload.png" 
+                  alt="Upload"
+                  width={16} 
+                  height={16} 
+                  className={styles.buttonIcon} 
+                />
+                Post A New Job
+              </Button>
+            </div>
+          </section>
+          <PostedJobs /> 
+        </>
       </main>
     </div>
   );
 };
 
-export default Dashboard;
+export default PostJob;

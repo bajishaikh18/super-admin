@@ -1,8 +1,9 @@
-
 .dashboard {
   padding: 20px;
   font-family: Arial, sans-serif;
   background-color: #f4f6f9;
+  width: 1440px;
+  margin: 0 auto;
 }
 
 .summaryText {
@@ -48,7 +49,6 @@
   min-width: 160px; 
   height: 100px; 
 }
-
 
 .iconContainer {
   font-size: 1.4em;
@@ -224,6 +224,7 @@
 
 .registeredUsers {
   padding: 1rem;
+  width: 1392px;
 }
 
 .card {
@@ -333,7 +334,7 @@
 
 .tabButton {
   background-color: transparent;
-  color: black;
+  color: #757575;
   font-weight: bold;
   cursor: pointer;
   padding: 0.5rem 1rem;
@@ -349,11 +350,11 @@
   color: black; 
   border-bottom: 2px solid #0045E6; 
 }
-
-
-
-
-
+.userTable {
+  th {
+    color: #757575; 
+  }
+}
 .notificationPanel {
   position: absolute;
   top: 60px; 
@@ -444,10 +445,6 @@
   margin-left: 5px; 
 }
 
-
-
-
-
 .blueName {
   color: blue;
 }
@@ -475,4 +472,164 @@
   border-radius: 70px; 
   padding: 4px 18px; 
   display: inline-block; 
+}
+.jobSummaryContainer{
+  width: 1392px;
+}
+.postedJobsHeader {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+
+  p {
+  color: black;
+  margin-top: 30px;
+  padding-left: 15px;
+  font-size: 1.2em;
+  }
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative; 
+  margin-left: auto; 
+}
+  
+.searchInput {
+  padding: 8px 30px 8px 30px;
+  width: 180px;
+  height: 44px;
+  border: 1px solid #ccc; 
+  box-sizing: border-box; 
+  margin-top: 19px;
+}
+
+.searchImg {
+  position: absolute;
+  margin-left: 8px;
+  top: 50%; 
+  transform: translateY(-50%); 
+  pointer-events: none; 
+  margin-top: 10px;
+}
+}
+
+.groupContainer {
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  width: 44px; 
+  height: 44px;
+  background-color: #FFFFFF; 
+  border: 1px solid #ccc; 
+  border-radius: 8px;
+  margin-top: 19px;
+}
+.button {
+  background-color: #0045E6;
+  margin-right: 26px;
+  margin-top: 19px;
+  height: 44px;
+  width: 179px;
+}
+.buttonIcon{
+  margin-right: 10px;
+}
+@media (max-width: 1920px) and (min-width: 1366px) {
+  .dashboard {
+    width: 100%;
+    padding: 15px; 
+    margin: 0 20px; 
+  }
+
+  .summaryItem {
+    padding: 15px; 
+    min-width: 140px; 
+    height: 90px; 
+  }
+
+  .iconContainer {
+    font-size: 1.2em; 
+    padding: 5px; 
+  }
+
+  .value {
+    font-size: 1.5em; 
+  }
+
+  .summaryText,
+  .sideText,
+  .thirdText {
+    font-size: 1em; 
+    padding-left: 10px; 
+  }
+
+  .summary {
+    padding: 0 10px; 
+    gap: 10px;
+  }
+
+  .insights {
+    padding: 15px; 
+  }
+
+  .insightCard {
+    padding: 15px;
+    min-height: 300px; 
+  }
+
+  .largeCard {
+    height: 280px;
+  }
+
+  .smallCard {
+    height: 280px; 
+  }
+
+  .userTable th,
+  .userTable td {
+    padding: 0.8rem; 
+    font-size: 14px; 
+  }
+
+  .searchContainer {
+    gap: 5px; 
+  }
+
+  .searchInput {
+    width: 200px;
+  }
+
+  .button {
+    width: 160px; 
+    margin-right: 20px; 
+  }
+
+  .groupContainer {
+    width: 40px; 
+    height: 40px; 
+    margin-top: 15px; 
+  }
+
+  .notificationPanel {
+    width: 260px; 
+    padding: 10px;
+  }
+
+  .notificationContent p {
+    font-size: 12px; 
+  }
+
+  .notificationItem time {
+    font-size: 9px; 
+    margin-left: 180px; 
+  }
+
+  .totalLabel .totalValue {
+    font-size: 1.8rem; 
+  }
+
+  .totalLabel .totalText {
+    font-size: 0.9em; 
+  }
 }

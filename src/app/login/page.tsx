@@ -5,6 +5,7 @@ import styles from "./page.module.scss";
 import Forgot from '../../components/login/Forgot';
 import { login } from '@/apis/auth';
 import { Button, Card, CardBody, CardHeader, Container, Form } from 'react-bootstrap';
+import Image from 'next/image';
 
 
 interface FormValues {
@@ -45,10 +46,12 @@ function Page() {
         <Card className={styles.card}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <CardHeader className={styles.cardHeader}>
-            <img
+            <Image
                     src="/admin.png"
                     alt={showPassword ? 'Hide password' : 'Show password'}
                     onClick={togglePasswordVisibility}
+                    height={80}
+                    width={80}
                   />
             <h5 className={styles.header}>SUPER ADMIN</h5>
             </CardHeader>
@@ -89,12 +92,14 @@ function Page() {
                     onClick={togglePasswordVisibility}
                     className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}>
                   </span>
-                  <img
+                  <Image
                     src="/eye.png"
                     alt={showPassword ? 'Hide password' : 'Show password'}
                     onClick={togglePasswordVisibility}
-                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
-                  />
+                    className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`} 
+                    width={24}  
+                    height={24}                  
+                    />
                 </div>
                 {errors.password &&  <Form.Text className='error'>
                   {errors.password.message}                </Form.Text>}

@@ -1,0 +1,131 @@
+
+{
+    "active": [
+      {
+        "postid": "12801",
+        "agencyname": "Muthu International",
+        "jobtype": "Full Time",
+        "location": "Oman",
+        "salary": "130-150 KD",
+        "benefits": "Food,Transport",
+        "noofpositions": "3",
+        "media": "View Image",
+        "posteddate": "10 Aug 2024",
+        "expiry": "10 Sep 2024"
+     },
+      {
+        "postid": "12802",
+        "agencyname": "Aldhia HR Consultants",
+        "jobtype": "Full Time",
+        "location": "Dubai",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay,Recruitment",
+        "noofpositions": "8",
+        "media": "View Image",
+        "posteddate": "9 Aug 2024",
+        "expiry": "28 Sep 2024"
+      },
+     
+      {
+        "postid": "12803",
+        "agencyname": "Falcon Human Resources",
+        "jobtype": "Full Time",
+        "location": "Behrain",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay",
+        "noofpositions": "5",
+        "media": "View Image",
+        "posteddate": "8 Aug 2024",
+        "expiry": "25 Sep 2024"
+      },
+      {
+        "postid": "12804",
+        "agencyname": "Aldhia HR Consultants",
+        "jobtype": "Full Time",
+        "location": "Dubai",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay,Recruitment",
+        "noofpositions": "8",
+        "media": "View Image",
+        "posteddate": "9 Aug 2024",
+        "expiry": "28 Sep 2024"
+      },
+      {
+        "postid": "12805",
+        "agencyname": "Falcon Human Resources",
+        "jobtype": "Full Time",
+        "location": "Behrain",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay",
+        "noofpositions": "5",
+        "media": "View Image",
+        "posteddate": "8 Aug 2024",
+        "expiry": "25 Sep 2024"
+      },
+      {
+        "postid": "12806",
+        "agencyname": "Aldhia HR Consultants",
+        "jobtype": "Full Time",
+        "location": "Dubai",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay,Recruitment",
+        "noofpositions": "8",
+        "media": "View Image",
+        "posteddate": "9 Aug 2024",
+        "expiry": "28 Sep 2024"
+      },
+      {
+        "postid": "12807",
+        "agencyname": "Falcon Human Resources",
+        "jobtype": "Behrain",
+        "location": "Oman",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay",
+        "noofpositions": "5",
+        "media": "View Image",
+        "posteddate": "8 Aug 2024",
+        "expiry": "25 Sep 2024"
+      },
+      {
+        "postid": "12808",
+        "agencyname": "Aldhia HR Consultants",
+        "jobtype": "Full Time",
+        "location": "Dubai",
+        "salary": "1200-1600 Dhs",
+        "benefits": "Food,Transport,Stay,Recruitment",
+        "noofpositions": "8",
+        "media": "View Image",
+        "posteddate": "9 Aug 2024",
+        "expiry": "28 Sep 2024"
+      }
+
+    
+    ],
+    "pending": [
+      {
+        "postid": "11801",
+        "agencyname": "Muthu International"
+      },
+    
+      
+      {
+        "postid": "11802",
+        "agencyname": "Falcon Human Resources"
+      }
+      
+    ],
+    "expired": [
+      {
+        "postid": "12401",
+        "agencyname": "Falcon Human Resources"
+      },
+    
+      
+      {
+        "postid": "12402",
+        "agencyname": "Muthu International"
+      }
+      
+    ]
+  }
+  

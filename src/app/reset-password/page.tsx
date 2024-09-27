@@ -6,6 +6,8 @@ import { resetPassword } from "@/apis/auth";
 import { useRouter } from "next/navigation";
 import { Button, Form, Container, Card } from 'react-bootstrap';
 import styles from './resetPassword.module.scss';
+import Image from 'next/image';
+
 
 interface ResetProps {
   onBackToLogin: () => void;
@@ -138,11 +140,13 @@ function Reset({ onBackToLogin }: ResetProps) {
                     onClick={togglePasswordVisibility}
                     className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
                   />
-                  <img
+                  <Image
                     src="/eye.png"
                     alt={showPassword ? 'Hide password' : 'Show password'}
                     onClick={togglePasswordVisibility}
                     className={`${styles.togglePasswordIcon} ${showPassword ? styles.hideIcon : ''}`}
+                    width={24}  
+                    height={24}   
                   />
                 </div>
                 {errors.confirmPassword && <Form.Text className='error'>{errors.confirmPassword.message}</Form.Text>}
