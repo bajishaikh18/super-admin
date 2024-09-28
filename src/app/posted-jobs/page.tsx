@@ -7,10 +7,12 @@ import styles from "../../app/dashboard/Dashboard.module.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Image from "next/image";
 import { Button } from "react-bootstrap";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const PostJob = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const queryClient = new QueryClient()
 
   const toggleNotification = () => {
     setNotificationVisible(!notificationVisible);
@@ -68,7 +70,9 @@ const PostJob = () => {
               </Button>
             </div>
           </section>
+          <QueryClientProvider client={queryClient}>
           <PostedJobs />
+          </QueryClientProvider>
         </>
       </main>
     </div>

@@ -81,6 +81,7 @@ export const useUserStore = create<UserStore>((set) => ({
                 pending: data.pending || [],
                 expired: data.expired || [],
             });
+            return data;
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }

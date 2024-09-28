@@ -34,16 +34,16 @@ function Page() {
         const user = getTokenClaims(response.token)
         setAuthUser(user as AuthUser);
         router.push('/dashboard'); 
+        setLoading(false);
      }
     } catch (error:any) {
+      setLoading(false);
       if(error.status === 404){
         toast.error('Looks like credentials are wrong')
       }else{
         toast.error('Something went wrong! Please try again later')
       }
 
-    } finally {
-      setLoading(false);
     }
   };
 
