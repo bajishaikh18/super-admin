@@ -81,7 +81,7 @@ const PostedJobs: React.FC = () => {
       queryKey: [
         "people",
         sorting, //refetch when sorting changes
-        activeTab
+        activeTab,
       ],
       queryFn: async ({ pageParam = 0 }) => {
         const start = (pageParam as number) * fetchSize;
@@ -94,22 +94,26 @@ const PostedJobs: React.FC = () => {
       placeholderData: keepPreviousData,
     });
 
-  const { data:expiredData, fetchNextPage:fetchNextPageExpired, isFetching:isFetchingExpired, isLoading:isLoadingExpired } =
-    useInfiniteQuery<PersonApiResponse>({
-      queryKey: [
-        "people",
-        sorting, //refetch when sorting changes
-      ],
-      queryFn: async ({ pageParam = 0 }) => {
-        const start = (pageParam as number) * fetchSize;
-        const fetchedData = await fetchData(start, fetchSize, sorting); //pretend api call
-        return fetchedData;
-      },
-      initialPageParam: 0,
-      getNextPageParam: (_lastGroup, groups) => groups.length,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-    });
+  const {
+    data: expiredData,
+    fetchNextPage: fetchNextPageExpired,
+    isFetching: isFetchingExpired,
+    isLoading: isLoadingExpired,
+  } = useInfiniteQuery<PersonApiResponse>({
+    queryKey: [
+      "people",
+      sorting, //refetch when sorting changes
+    ],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = (pageParam as number) * fetchSize;
+      const fetchedData = await fetchData(start, fetchSize, sorting); //pretend api call
+      return fetchedData;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
   const handleTabClick = (tab: TabType) => {
     setActiveTab(tab);
@@ -146,15 +150,42 @@ const PostedJobs: React.FC = () => {
             </button>
           </div>
         </div>
-        <DataTable
-          columns={columns}
-          sorting={sorting}
-          sortingChanged={(updater: any) => setSorting(updater)}
-          data={activeTab === "Expired" ? expiredData: data}
-          fetchNextPage={activeTab === "Expired" ? fetchNextPageExpired:fetchNextPage}
-          isLoading={activeTab === "Expired" ? isLoadingExpired:isLoading}
-          isFetching={activeTab === "Expired" ? isFetchingExpired:isFetching}
-        />
+        {
+          {
+            Active: (
+                <div className="fadeIn">
+              <DataTable
+                columns={columns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => setSorting(updater)}
+                data={data}
+                fetchNextPage={fetchNextPage}
+                isLoading={isLoading}
+                isFetching={isFetching}
+              />
+              </div>
+            ),
+            Expired: (
+                <div className="fadeIn">
+
+              <DataTable
+                columns={columns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => setSorting(updater)}
+                data={expiredData}
+                fetchNextPage={fetchNextPageExpired}
+                isLoading={isLoadingExpired}
+                isFetching={isFetchingExpired}
+              />
+              </div>
+            ),
+            Pending: (
+                <div className="fadeIn">
+
+              </div>
+            ),
+          }[activeTab]
+        }
       </Card>
     </section>
   );
