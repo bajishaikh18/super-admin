@@ -32,10 +32,6 @@ interface PostJobStoreState {
 const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
-  isCreateJobScreen: false,
-  isSecondJobScreen: false,
-  isThirdScreenVisible: false,
-  isFourthScreenVisible: false,
   selectedFacilities: [],
   formData: null,
   // New actions for setting state
@@ -44,7 +40,7 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
   resetData:()=>{
-    set(()=>({formData:null,selectedFacilities:[]}))
+    set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
   },
   
   // Existing actions

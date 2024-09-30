@@ -303,6 +303,7 @@
   margin-top: 8px;
 }
 
+
 .cancelButton {
   background-color: white;
   color: #0045e6;
@@ -550,7 +551,7 @@
   }
 }
 
-.spinner {
+.createSpinner {
   margin-top: 20px;
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-left-color: #000;
@@ -626,6 +627,10 @@
   margin: 0px auto;
 
 }
+.imageContainer{
+  position: relative;
+
+}
 .positionText{
   font-size: 14px !important;
 }
@@ -691,13 +696,14 @@
 
 .expandButton {
   position: absolute;
-  bottom: 0px;
+  bottom: 65px;
   /* Adjusted to keep enough distance from the Post Job button */
-  right: 0px;
+  right: 95px;
   background: rgba(0, 0, 0, 0.9);
   border: none;
-  padding: 10px;
+  padding:5px 10px;
   border-radius: 3px;
+  z-index: 1;
   cursor: pointer;
   color: #fff;
   /* Ensure the button appears above other elements */
@@ -755,4 +761,35 @@
 .hiddenBackdrop {
   display: none;
   /* Completely hide the backdrop */
+}
+.colorLabel{
+  text-align: left ;
+  width: 100%;
+  margin-top: 30px;
+}
+.colorInput{
+  display: flex;
+  align-items: center;
+  .pickerIcon{
+    cursor: pointer;
+  }
+}
+.colorPicker{
+  display: flex;
+  margin-top: 10px;
+  justify-content: right;
+}
+.download{
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  img{
+    margin-right: 8px;
+  }
+  &:hover{
+    opacity: 0.8;
+  }
 }

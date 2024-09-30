@@ -4,8 +4,8 @@ import styles from "./CreateJob.module.scss";
 import InitialScreen from "@/components/create-job/InitialScreen";
 import FirstJobScreen from "@/components/create-job/FirstJobScreen";
 import SecondJobScreen from "@/components/create-job/SecondJobScreen";
-import FourthJobScreen from "@/components/create-job/FourthJobScreen";
 import useStore from "@/stores/usePostJobStore"; // Import Zustand store
+import PostJobScreen from "@/components/create-job/PostJobScreen";
 export default function CreateJob({
   handleModalClose,
 }: {
@@ -50,7 +50,6 @@ export default function CreateJob({
               selectedFile={selectedFile}
               handleClose={handleClose}
               handleCreateNowClick={() => {
-                reset();
                 setScreen(1);
               }}
             />
@@ -67,11 +66,17 @@ export default function CreateJob({
             <SecondJobScreen
               handleBackToPostJobClick={() => setScreen(1)}
               handleClose={handleClose}
-              handleCreateJobClick={() => setScreen(3)}
+              handleCreateJobClick={() => {
+                if(selectedFile){
+                  handleClose()
+                }else{
+                  setScreen(3)
+                }
+              }}
             />
           ),
           3: (
-            <FourthJobScreen
+            <PostJobScreen
               handleBack={() => setScreen(2)}
               handleClose={handleClose}
             />

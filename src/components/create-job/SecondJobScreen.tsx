@@ -8,6 +8,9 @@ import { useForm } from "react-hook-form";
 import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 import { IoClose } from "react-icons/io5";
+import { getSignedUrl, uploadFile } from "@/apis/common";
+import toast from "react-hot-toast";
+import { createJob } from "@/apis/job";
 
 interface JobPosition {
   title: string;
@@ -39,7 +42,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData, formData } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -112,6 +115,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 
   const onSubmit = async (data: FormValues) => {
     try {
+      setLoading(true);
       setFormData(data);
       const payload = {
         ...data,
@@ -120,9 +124,36 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         facilities: selectedFacilities,
       };
       console.log(payload);
-      setLoading(true);
+      if(selectedFile){
+        const resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
+        if (resp) {
+          await uploadFile(resp.uploadurl, selectedFile!);
+        }
+      }
+      const jobData = {
+        agencyId: formData?.agency,
+        location: formData?.location,
+        currency: "",
+        expiry: formData?.expiryDate,
+        positions: formData?.jobPositions?.filter(x=>x).map(position => ({
+          positionId: position.title,
+          experience: position.experience,
+          min_Salary: position.salary,
+          max_Salary: position.salary,
+        })),
+        amenties: selectedFacilities,
+        contactNumbers: formData?.contactNumber,
+        email:formData?.email,
+        description:formData?.description,
+      }
+
+      // await createJob(jobData);
+      toast.success('Job created successfully')
       handleCreateJobClick();
+      setLoading(false);
     } catch (error) {
+      toast.error('Error while posting job. Please try again')
+      setLoading(false);
     } finally {
     }
   };
@@ -143,7 +174,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           <p className={styles.loadingContent}>
             Your job is creating please wait
           </p>
-          <div className={styles.spinner}></div>
+          <div className={styles.createSpinner}></div>
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
