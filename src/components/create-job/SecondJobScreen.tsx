@@ -42,7 +42,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -91,17 +91,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   };
 
   const jobTitle = [
-    { label: "Engineer", value: "Engineer" },
-    { label: "Doctor", value: "Doctor" },
-    { label: "Plumber", value: "Plumber" },
-    { label: "Electrician", value: "Electrician" },
+    { label: "Engineer", value: "5f2c6e02e4b0a914d4a9fcb5" },
+    { label: "Doctor", value: "5f2c6e02e4b0a914d4a9fcb1" },
+    { label: "Plumber", value: "5f2c6e02e4b0a914d4a9fcb2" },
+    { label: "Electrician", value: "5f2c6e02e4b0a914d4a9fcb3" },
   ];
 
   const experienceLevels = [
-    { label: "0", value: "0 Years" },
-    { label: "1", value: "0-1 Year" },
-    { label: "2", value: "1-2 Years" },
-    { label: "3", value: "3-4 Years" },
+    { value: "0", label: "0 Years" },
+    { value: "1", label: "0-1 Year" },
+    { value: "2", label: "1-2 Years" },
+    { value: "3", label: "3-4 Years" },
   ];
 
   const {
@@ -117,13 +117,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     try {
       setLoading(true);
       setFormData(data);
-      const payload = {
-        ...data,
-        ...formData,
-        jobPositions: jobPositions.filter(x=>!x.deleted),
-        facilities: selectedFacilities,
-      };
-      console.log(payload);
       if(selectedFile){
         const resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
         if (resp) {
@@ -133,21 +126,20 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       const jobData = {
         agencyId: formData?.agency,
         location: formData?.location,
-        currency: "",
         expiry: formData?.expiryDate,
-        positions: formData?.jobPositions?.filter(x=>x).map(position => ({
+        positions: data?.jobPositions.filter(x=>x).map(position => ({
           positionId: position.title,
-          experience: position.experience,
-          min_Salary: position.salary,
-          max_Salary: position.salary,
+          experience: Number(position.experience),
+          salary: position.salary,
         })),
         amenties: selectedFacilities,
-        contactNumbers: formData?.contactNumber,
-        email:formData?.email,
-        description:formData?.description,
+        contactNumbers: [`${data.countryCode} ${data.contactNumber}`],
+        email:data.email,
+        description:data.description,
       }
 
-      // await createJob(jobData);
+      const res = await createJob(jobData);
+      setNewlyCreatedJob(res.job)
       toast.success('Job created successfully')
       handleCreateJobClick();
       setLoading(false);
@@ -200,7 +192,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                         <MultiSelect
                           name={`jobPositions.${index}.title`}
                           control={control}
-                          error={errors[`jobPositions.${index}.title`] as any}
+                          error={errors[`jobPositions.${index}.title` as any] as any}
                           options={jobTitle}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}

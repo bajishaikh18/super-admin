@@ -36,8 +36,15 @@ export const MultiSelect = ({
                 borderRadius: "8px",
                 border: "1px solid rgba(189, 189, 189, 1)",
                 minHeight: "44px",
-                ...customStyles
+                ...customStyles,
+                svg: {
+                  path: {
+                    fill: "#000",
+                  },
+                },
               }),
+              indicatorSeparator: () => ({ display: "none" }),
+
             }}
             defaultValue={options.find((c) => c.value === defaultValue)}
             options={options}

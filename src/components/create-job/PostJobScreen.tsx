@@ -142,7 +142,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleBack,
   handleClose,
 }) => {
-  const { formData, selectedFacilities } = usePostJobStore();
+  const { formData, selectedFacilities,newlyCreatedJob } = usePostJobStore();
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [loading,setLoading] = useState(false);
@@ -186,7 +186,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           resolve(blob);
         })
       );
-      const resp = await getSignedUrl("jobImage", blob?.type!, "testJob");
+      const resp = await getSignedUrl("jobImage", blob?.type!, newlyCreatedJob?._id);
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
         toast.success('Job posted successfully')

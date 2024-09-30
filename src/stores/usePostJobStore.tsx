@@ -7,6 +7,28 @@ type JobPosition ={
 }
 
 
+export interface Job {
+  agencyId: string
+  location: string
+  expiry: string
+  positions: Position[]
+  amenities: any[]
+  contactNumbers: string[]
+  email: string
+  description: string
+  viewed: any[]
+  status: string
+  _id: string
+  __v: number
+}
+
+export interface Position {
+  positionId: string
+  experience: number
+  salary: string
+}
+
+
 export type PostJobFormData =  {
   agency?: string;
   location?: string;
@@ -22,8 +44,10 @@ export type PostJobFormData =  {
 interface PostJobStoreState {
   selectedFile: File | null;
   selectedFacilities: string[];
+  newlyCreatedJob: Job | null;
   formData: PostJobFormData | null;
   setFormData: (formData: PostJobFormData | null) => void
+  setNewlyCreatedJob: (job:Job)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
@@ -33,12 +57,14 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
   selectedFacilities: [],
+  newlyCreatedJob: null,
   formData: null,
   // New actions for setting state
   setFormData: (formData)=>{
     const newData = formData || {}
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
+  setNewlyCreatedJob:(job)=>set(() => ({ newlyCreatedJob:job})),
   resetData:()=>{
     set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
   },
