@@ -1,21 +1,24 @@
 
 // InitialScreen.tsx
 import React, { useCallback, useRef, useState } from "react";
-import styles from '../../app/create/page.module.scss';
+import styles from "./CreateJob.module.scss";
 import Image from "next/image";
 import { Button } from 'react-bootstrap';
 import {useDropzone} from 'react-dropzone'
+import { IoClose } from "react-icons/io5";
 
 interface InitialScreenProps {
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
   selectedFile: File | null;
   handleCreateNowClick: () => void;
+  handleClose: () => void;
 }
 
 const InitialScreen: React.FC<InitialScreenProps> = ({
   handleFileChange,
   fileInputRef,
+  handleClose,
   selectedFile,
   handleCreateNowClick,
 }) => {
@@ -38,8 +41,12 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>Post a Job</h2>
-        <button className={styles.closeButton}>&times;</button>
-      </div>
+        <IoClose
+          className={styles.closeButton}
+          onClick={handleClose}
+        >
+          
+        </IoClose>          </div>
       <div className={styles.uploadSection} {...getRootProps()}>
 
         <input accept=".docx,.pdf"  {...getInputProps()} />

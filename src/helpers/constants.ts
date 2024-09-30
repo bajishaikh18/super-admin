@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://ec2-3-110-88-68.ap-south-1.compute.amazonaws.com:3030';
+export const BASE_URL = 'http://ec2-3-110-104-29.ap-south-1.compute.amazonaws.com:3030';
 
 export const COUNTRIES = {
     "sa":"Saudi Arabia",
@@ -7,3 +7,4 @@ export const COUNTRIES = {
     "om":"Oman",
     "bh":"Bahrain"
 }
+

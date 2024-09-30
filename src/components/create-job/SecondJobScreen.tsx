@@ -1,10 +1,13 @@
-import React, { useState } from "react";
-import styles from "../../app/create/page.module.scss";
+import React, { useEffect, useState } from "react";
+import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
 
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
+import { IoClose } from "react-icons/io5";
 
 interface JobPosition {
   title: string;
@@ -23,11 +26,13 @@ interface FormValues {
 interface SecondJobScreenProps {
   handleBackToPostJobClick: () => void;
   handleCreateJobClick: () => void;
+  handleClose: () => void;
 }
 
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleBackToPostJobClick,
   handleCreateJobClick,
+  handleClose
 }) => {
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: "", experience: "0", salary: "" },
@@ -36,13 +41,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { selectedFacilities, setFormData, formData } = usePostJobStore();
 
+  useEffect(()=>{
+    if(formData?.jobPositions){
+      setJobPositions(formData.jobPositions);
+    }
+  },[formData])
   const handleAddMore = () => {
     const jobPositionsFromForm = getValues("jobPositions");
     const lastPosition = jobPositionsFromForm[jobPositions.length - 1];
     if (
       !lastPosition.deleted &&
-      (lastPosition.title.trim() === "" ||
-        lastPosition.experience.trim() === "")
+      (!lastPosition.title || !lastPosition.experience)
     ) {
       setErrorMessage(
         "Please fill in all fields before adding a new position."
@@ -78,12 +87,27 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     // setGlobalJobPositions(newPositions);
   };
 
+  const jobTitle = [
+    { label: "Engineer", value: "Engineer" },
+    { label: "Doctor", value: "Doctor" },
+    { label: "Plumber", value: "Plumber" },
+    { label: "Electrician", value: "Electrician" },
+  ];
+
+  const experienceLevels = [
+    { label: "0", value: "0 Years" },
+    { label: "1", value: "0-1 Year" },
+    { label: "2", value: "1-2 Years" },
+    { label: "3", value: "3-4 Years" },
+  ];
+
   const {
     register,
     handleSubmit,
     getValues,
+    control,
     setValue,
-    formState: { errors },
+    formState: { errors,isValid },
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {
@@ -92,6 +116,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       const payload = {
         ...data,
         ...formData,
+        jobPositions: jobPositions.filter(x=>!x.deleted),
         facilities: selectedFacilities,
       };
       console.log(payload);
@@ -101,64 +126,23 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     } finally {
     }
   };
-  // const handleSubmit = async () => {
-  //   // if (contactNumber.length !== 10 || (showAlternateMobile && alternateMobile.length !== 10)) {
-  //   //   setErrorMessage("Please enter valid 10-digit mobile numbers.");
-  //   //   return;
-  //   // }
-
-  //   try {
-  //     // const jobData = {
-  //     //   agencyId: "CodeCraft",
-  //     //   location: "India", // Replace with actual location
-  //     //   min_Salary: salaryFrom,
-  //     //   max_Salary: salaryTo,
-  //     //   currency: "USD", // Replace with actual currency if needed
-  //     //   expiry: expiryDate,
-  //     //   imageUrl: "some url", // Replace with actual image URL if needed
-  //     //   jobType: "fulltime", // Adjust based on selection
-  //     //   positions: jobPositions.map(position => ({
-  //     //     positionId: "someId", // Set this according to your requirements
-  //     //     experience: position.experience,
-  //     //     min_Salary: position.salary,
-  //     //     max_Salary: position.salary,
-  //     //   })),
-  //     //   amenties: selectedFacilities,
-  //     //   contactNumbers: [contactNumber, showAlternateMobile ? alternateMobile : undefined].filter(Boolean),
-  //     //   email,
-  //     //   description,
-  //     // };
-
-  //     // await axios.post(`${BASE_URL}/jobs`, jobData, {
-  //     //   headers: {
-  //     //     'Content-Type': 'application/json',
-  //     //   },
-  //     // });
-  //     console.log('Job created successfully');
-  //     handleCreateJobClick(); // Trigger your job creation success logic
-  //   } catch (error: unknown) {
-  //     if (axios.isAxiosError(error)) {
-  //       setErrorMessage(error.response?.data?.message || "Error creating job");
-  //     } else {
-  //       setErrorMessage("An unexpected error occurred");
-  //     }
-  //   }
-  // };
 
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>Create a Job (2/2)</h2>
-        <button
+        <IoClose
           className={styles.closeButton}
-          onClick={handleBackToPostJobClick}
+          onClick={handleClose}
         >
-          &times;
-        </button>
+          
+        </IoClose> 
       </div>
       {loading ? (
         <div className={styles.popupContent}>
-          <p className={styles.loadingContent}>Your job is creating please wait</p>
+          <p className={styles.loadingContent}>
+            Your job is creating please wait
+          </p>
           <div className={styles.spinner}></div>
         </div>
       ) : (
@@ -182,34 +166,51 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                   return (
                     <tr key={index}>
                       <td>
-                        <Form.Select
-                          className={styles.input}
-                          {...register(`jobPositions.${index}.title`, {
-                            required: "Job title is required",
-                          })}
-                        >
-                          <option value="Engineer">Engineer</option>
-                          <option value="Plumber">Plumber</option>
-                          <option value="Carpenter">Carpenter</option>
-                        </Form.Select>
+                        <MultiSelect
+                          name={`jobPositions.${index}.title`}
+                          control={control}
+                          error={errors[`jobPositions.${index}.title`] as any}
+                          options={jobTitle}
+                          defaultValue={formData?.jobPositions?.[index]?.title}
+                          rules={{ required: "Job title is required" }}
+                          customStyles={{
+                            border: "none !important",
+                            boxShadow: "none !important",
+                            fontSize: "14px",
+                            "&:focus": {
+                              border: "none",
+                            },
+                          }}
+                        />
                       </td>
                       <td>
-                        <Form.Select
-                          className={styles.input}
-                          {...register(`jobPositions.${index}.experience`, {
-                            required: "Job Experience is required",
-                          })}
-                        >
-                          <option value="1">0-1 Years</option>
-                          <option value="2">1-2 Years</option>
-                          <option value="5">2-5 Years</option>
-                        </Form.Select>
+                        <MultiSelect
+                          name={`jobPositions.${index}.experience`}
+                          control={control}
+                          error={
+                            errors[`jobPositions.${index}.experience`] as any
+                          }
+                          options={experienceLevels}
+                          defaultValue={
+                            formData?.jobPositions?.[index]?.experience
+                          }
+                          rules={{ required: "Job Experience is required" }}
+                          customStyles={{
+                            border: "none !important",
+                            boxShadow: "none !important",
+                            fontSize: "14px",
+                            "&:focus": {
+                              border: "none",
+                            },
+                          }}
+                        />
                       </td>
                       <td>
                         <Form.Control
                           type="text"
                           placeholder="0-0"
                           className={styles.input}
+                          defaultValue={formData?.jobPositions?.[index]?.salary}
                           {...register(`jobPositions.${index}.salary`, {})}
                         />
                       </td>
@@ -242,18 +243,20 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           </Form.Group>
           <Form.Group className={styles.formGroup}>
             <Form.Label>Contact Mobile Number</Form.Label>
-            <InputGroup className={`mb-3 contact-field`}>
+            <InputGroup className={`contact-field`}>
               <Form.Select
                 className={styles.input}
                 {...register("countryCode", {
                   required: "Agency is required",
                 })}
+                defaultValue={formData?.countryCode}
               >
                 <option value="1">+91</option>
                 <option value="2">+94</option>
                 <option value="3">+99</option>
               </Form.Select>
               <Form.Control
+                defaultValue={formData?.contactNumber}
                 aria-label="Contact number"
                 {...register("contactNumber", {
                   required: "Contact number is required",
@@ -272,6 +275,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               type="text"
               placeholder="Enter Email Id"
               className={styles.input}
+              defaultValue={formData?.email}
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -287,7 +291,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 
           <Form.Group className={styles.formGroup}>
             <Form.Label>Description (Optional)</Form.Label>
-            <Form.Control as="textarea" rows={3} {...register("description")} />
+            <Form.Control
+              as="textarea"
+              rows={3}
+              defaultValue={formData?.description}
+              {...register("description")}
+            />
           </Form.Group>
           <div className={styles.actions}>
             <Button
@@ -295,14 +304,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               className={`outlined ${styles.actionButtons}`}
               onClick={handleBackToPostJobClick}
             >
-              Cancel
+              Back
             </Button>
             <Button
               type="submit"
               className={`${styles.actionButtons} ${
-                true ? "" : styles.disabled
+                isValid ? "" : styles.disabled
               }`}
-              disabled={!true}
+              disabled={!isValid}
             >
               Create a Job
             </Button>

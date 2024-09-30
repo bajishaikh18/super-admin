@@ -11,6 +11,7 @@ export type PostJobFormData =  {
   agency?: string;
   location?: string;
   expiryDate?: string;
+  countryCode?:string;
   contactNumber?: string;
   email?: string;
   description?: string;
@@ -19,24 +20,13 @@ export type PostJobFormData =  {
 }
 
 interface PostJobStoreState {
-  // Existing state
   selectedFile: File | null;
-  isCreateJobScreen: boolean;
-  isSecondJobScreen: boolean;
-  isThirdScreenVisible: boolean;
   selectedFacilities: string[];
   formData: PostJobFormData | null;
-  // New actions for state management
   setFormData: (formData: PostJobFormData | null) => void
-  // Existing actions
   handleFileChange: (file:any) => void;
-  handleCreateNowClick: () => void;
-  handleBackToPostJobClick: () => void;
+  resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
-  handleContinueClick: () => void;
-  handleCreateJobClick: () => void;
-  handleCloseThirdScreen: () => void;
-  handleCloseFourthScreen: () => void;
 }
 
 const usePostJobStore = create<PostJobStoreState>((set) => ({
@@ -53,30 +43,19 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     const newData = formData || {}
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
+  resetData:()=>{
+    set(()=>({formData:null,selectedFacilities:[]}))
+  },
   
   // Existing actions
   handleFileChange: (file) => {
     set({ selectedFile: file });
   },
-  handleCreateNowClick: () => set({ isCreateJobScreen: true }),
-  handleBackToPostJobClick: () => set((state) => ({
-    isSecondJobScreen: false,
-    isCreateJobScreen: state.isCreateJobScreen ? false : state.isCreateJobScreen,
-  })),
   handleFacilityClick: (facility) => set((state) => ({
     selectedFacilities: state.selectedFacilities.includes(facility)
       ? state.selectedFacilities.filter((f) => f !== facility)
       : [...state.selectedFacilities, facility],
-  })),
-  handleContinueClick: () => set({ isSecondJobScreen: true }),
-  handleCreateJobClick: () => {
-      set({isThirdScreenVisible: true });
-  },
-  handleCloseThirdScreen: () => set({ isThirdScreenVisible: false }),
-  handleCloseFourthScreen: () => set({
-    isThirdScreenVisible: false,
-    isCreateJobScreen: false,
-  }),
+  }))
 }));
 
 export default usePostJobStore;

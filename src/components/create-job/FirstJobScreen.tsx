@@ -1,15 +1,21 @@
 import React from "react";
-import styles from "../../app/create/page.module.scss";
+import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { Button, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { IoClose } from "react-icons/io5";
 
 interface FirstJobScreenProps {
   countries?: string[]; // Make the countries prop optional
   handleContinueClick: () => void;
+  handleClose: () => void;
   handleBackToPostJobClick: () => void;
 }
 
+import Select from "react-select";
+import { COUNTRIES } from "@/helpers/constants";
+import { CustomDatePicker } from "../common/form-fields/DatePicker";
 interface FormValues {
   agency: string;
   location: string;
@@ -19,16 +25,30 @@ interface FormValues {
 const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   countries = [], // Provide a default value of an empty array
   handleContinueClick,
+  handleClose,
   handleBackToPostJobClick,
 }) => {
   // Zustand store management
   const { selectedFacilities, handleFacilityClick, setFormData, formData } =
     usePostJobStore();
-
+  const agencies = [
+    { label: "Agency 1", value: "5f2c6e02e4b0a914d4a9fcb8" },
+    { label: "Agency 2", value: "5f2c6e02e4b0a914d4a9fcb5" },
+    { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
+    { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
+  ];
+  const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
+    return {
+      label: val,
+      value: key,
+    };
+  });
   const {
+    control,
     register,
     handleSubmit,
-    formState: { errors },
+    
+    formState: { errors,isValid },
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {
@@ -48,68 +68,52 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
         <h2>
           Create a Job <span>(1/2)</span>
         </h2>
-        <button
+        
+        <IoClose
           className={styles.closeButton}
-          onClick={handleBackToPostJobClick}
+          onClick={handleClose}
         >
-          &times;
-        </button>
+          
+        </IoClose>
       </div>
       <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
         {/* Agency Selection */}
         <Form.Group className={styles.formGroup}>
           <Form.Label>Agency</Form.Label>
-          <Form.Select
-            className={styles.input}
-            {...register("agency", {
-              required: "Agency is required",
-            })}
-          >
-            <option value="" selected>
-              Select Agency
-            </option>
-            <option value="1">Agency1</option>
-            <option value="2">Agency2</option>
-            <option value="3">Agency3</option>
-          </Form.Select>
-          {errors.agency && (
-            <Form.Text className="error">{errors.agency.message}</Form.Text>
-          )}
+          <MultiSelect
+            name="agency"
+            control={control}
+            error={errors.agency}
+            options={agencies}
+            rules={{ required: "Agency is required" }}
+            customStyles={{}}
+            defaultValue={formData?.agency}
+          />
         </Form.Group>
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Work Location</Form.Label>
-          <Form.Select
-            className={styles.input}
-            {...register("location", {
-              required: "Work location is required",
-            })}
-          >
-            <option value="" selected>
-              Select country
-            </option>
-            <option value="ae">UAE</option>
-            <option value="sa">Saudi Arabia</option>
-            <option value="qa">Qatar</option>
-            <option value="bh">Bahrain</option>
-            <option value="om">Oman</option>
-          </Form.Select>
-          {errors.location && (
-            <Form.Text className="error">{errors.location.message}</Form.Text>
-          )}
+          <MultiSelect
+            name="location"
+            control={control}
+            error={errors.location}
+            options={workLocations}
+            rules={{ required: "Location is required" }}
+            customStyles={{}}
+            defaultValue={formData?.location}
+          />
         </Form.Group>
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Expiry date</Form.Label>
-          <Form.Control
-            type="date"
-            {...register("expiryDate", {
-              required: "Expiry date is required",
-            })}
+          <CustomDatePicker
+            name="expiryDate"
+            control={control}
+            error={errors.expiryDate}
+            defaultValue={formData?.expiryDate}
+            minDate={new Date()}
+            rules={{ required: "Expiry date is required" }}
           />
-          {errors.expiryDate && (
-            <Form.Text className="error">{errors.expiryDate.message}</Form.Text>
-          )}
         </Form.Group>
         <Form.Group className={styles.formGroup}>
           <Form.Label>Free Facilities</Form.Label>
@@ -140,14 +144,14 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
             className={`outlined ${styles.actionButtons}`}
             onClick={handleBackToPostJobClick}
           >
-            Cancel
+            Back
           </Button>
           <Button
             type="submit"
             className={`${styles.actionButtons} ${
-              isContinueButtonEnabled ? "" : styles.disabled
+              isValid ? "" : styles.disabled
             }`}
-            disabled={!isContinueButtonEnabled}
+            disabled={!isValid}
           >
             Continue
           </Button>

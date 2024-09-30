@@ -2,12 +2,11 @@
 import React, { useState ,useEffect} from "react";
 import { useRouter } from 'next/navigation';
 import { Navbar, Nav, NavDropdown, Modal } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
 import styles from './Header.module.scss'
 import Image from 'next/image';
 import { isTokenValid } from "@/helpers/jwt";
-import Page from "@/app/create/page";
 import { useAuthUserStore } from "@/stores/useAuthUserStore";
+import CreateJob from "@/components/create-job/CreateJob";
 
 
 interface HeaderProps {
@@ -100,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
       </Navbar.Collapse>
     </Navbar>
     <Modal show={showPostJobModal} onHide={handleModalClose} centered>
-         <Page /> 
+        {showPostJobModal && <CreateJob handleModalClose={handleModalClose} /> } 
     </Modal>
   </>
   );

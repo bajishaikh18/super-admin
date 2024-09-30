@@ -1,15 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import html2canvas from "html2canvas";
-import styles from "../../app/create/page.module.scss";
+import styles from "./CreateJob.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
 import { COUNTRIES } from "@/helpers/constants";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
+import { createJob } from "@/apis/job";
+import { IoClose } from "react-icons/io5";
 
 interface FourthJobScreenProps {
+  handleBack: () => void;
   handleClose: () => void;
 }
 
@@ -116,9 +119,9 @@ const JobPostingImage = ({
     </div>
   );
 };
-const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleClose }) => {
+const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleBack,handleClose }) => {
   const { formData, selectedFacilities } = usePostJobStore();
-  const [color, setColor] = useState("#aabbcc");
+  const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
  
   const handleDownloadImage = () => {
@@ -145,14 +148,41 @@ const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleClose }) => {
     setIsFullScreen(fullScreen);
   };
 
+  const handleSubmit = async () => {
+    try {
+      const jobData = {
+        agencyId: formData?.agency,
+        location: formData?.location,
+        currency: "",
+        expiry: formData?.expiryDate,
+        positions: formData?.jobPositions?.filter(x=>x).map(position => ({
+          positionId: position.title,
+          experience: position.experience,
+          min_Salary: position.salary,
+          max_Salary: position.salary,
+        })),
+        amenties: selectedFacilities,
+        contactNumbers: formData?.contactNumber,
+        email:formData?.email,
+        description:formData?.description,
+      }
+      await createJob(jobData);
+    } catch (error: unknown) {
+     
+    }
+  };
   return (
     <>
       {!isFullScreen && (
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
             <h2>Create a Job (2/2)</h2>
-            <button className={styles.closeButton}>&times;</button>
-          </div>
+            <IoClose
+          className={styles.closeButton}
+          onClick={handleClose}
+        >
+          
+        </IoClose>          </div>
           <div className={styles.headerContainer}>
             <h4 className={styles.h4}>Your job is successfully created</h4>
           </div>
@@ -164,23 +194,27 @@ const FourthJobScreen: React.FC<FourthJobScreenProps> = ({ handleClose }) => {
             isFullScreen={false}
             color={color}
           />
-          <HexColorPicker color={color} onChange={setColor} />;
+          <HexColorPicker color={color} onChange={setColor} />
+          <Form.Label>Select Color</Form.Label>
+          <FormControl value={color} placeholder="#0045E6" onChange={(e)=>setColor(e.target.value)} />
           <div className={styles.actions}>
-          <Button
+          {/* <Button
               type="button"
               className={`outlined ${styles.actionButtons}`}
               onClick={handleDownloadImage}
             >
-              Download
-            </Button>
+              Cancel
+            </Button> */}
             <Button
               type="button"
+              onClick={handleBack}
               className={`outlined ${styles.actionButtons}`}
             >
-              Cancel
+              Back
             </Button>
             <Button
               type="submit"
+              onClick={handleSubmit}
               className={`${styles.actionButtons} ${
                 true ? "" : styles.disabled
               }`}
