@@ -1,0 +1,24 @@
+@import "../../../app/variables";
+
+.react-datepicker-wrapper{
+    display: block;
+   
+}
+.calendar-icon{
+    position: absolute;
+    right: 10px;
+    bottom: 13px;
+}
+.custom-date-picker{
+    .react-datepicker{
+      font-family: "Inter", sans-serif;
+
+      border: 1px solid rgba(189, 189, 189, 1);
+
+    }
+    .react-datepicker__header {
+      background-color: $color-brand-2;
+      border-bottom: 1px dashed $color-brand-1;
+    }
+  }
+

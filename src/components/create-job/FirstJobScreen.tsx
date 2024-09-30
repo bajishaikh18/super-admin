@@ -1,0 +1,164 @@
+import React from "react";
+import styles from "./CreateJob.module.scss";
+import usePostJobStore from "@/stores/usePostJobStore";
+import { Button, Form } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { IoClose } from "react-icons/io5";
+
+interface FirstJobScreenProps {
+  countries?: string[]; // Make the countries prop optional
+  handleContinueClick: () => void;
+  handleClose: () => void;
+  handleBackToPostJobClick: () => void;
+}
+
+import Select from "react-select";
+import { COUNTRIES } from "@/helpers/constants";
+import { CustomDatePicker } from "../common/form-fields/DatePicker";
+interface FormValues {
+  agency: string;
+  location: string;
+  expiryDate: string;
+}
+
+const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
+  countries = [], // Provide a default value of an empty array
+  handleContinueClick,
+  handleClose,
+  handleBackToPostJobClick,
+}) => {
+  // Zustand store management
+  const { selectedFacilities, handleFacilityClick, setFormData, formData } =
+    usePostJobStore();
+  const agencies = [
+    { label: "Agency 1", value: "5f2c6e02e4b0a914d4a9fcb8" },
+    { label: "Agency 2", value: "5f2c6e02e4b0a914d4a9fcb5" },
+    { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
+    { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
+  ];
+  const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
+    return {
+      label: val,
+      value: key,
+    };
+  });
+  const {
+    control,
+    register,
+    handleSubmit,
+    
+    formState: { errors,isValid },
+  } = useForm<FormValues>();
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setFormData(data);
+      handleContinueClick();
+    } catch (error) {
+    } finally {
+    }
+  };
+
+  const isContinueButtonEnabled = selectedFacilities.length > 0;
+
+  return (
+    <div className={styles.modal}>
+      <div className={styles.modalHeader}>
+        <h2>
+          Create a Job <span>(1/2)</span>
+        </h2>
+        
+        <IoClose
+          className={styles.closeButton}
+          onClick={handleClose}
+        >
+          
+        </IoClose>
+      </div>
+      <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+        {/* Agency Selection */}
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Agency</Form.Label>
+          <MultiSelect
+            name="agency"
+            control={control}
+            error={errors.agency}
+            options={agencies}
+            rules={{ required: "Agency is required" }}
+            customStyles={{}}
+            defaultValue={formData?.agency}
+          />
+        </Form.Group>
+
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Work Location</Form.Label>
+          <MultiSelect
+            name="location"
+            control={control}
+            error={errors.location}
+            options={workLocations}
+            rules={{ required: "Location is required" }}
+            customStyles={{}}
+            defaultValue={formData?.location}
+          />
+        </Form.Group>
+
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Expiry date</Form.Label>
+          <CustomDatePicker
+            name="expiryDate"
+            control={control}
+            error={errors.expiryDate}
+            defaultValue={formData?.expiryDate}
+            minDate={new Date()}
+            rules={{ required: "Expiry date is required" }}
+          />
+        </Form.Group>
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Free Facilities</Form.Label>
+          <div className={styles.facilitiesContainer}>
+            {["Food", "Transportation", "Stay", "Recruitment"].map(
+              (facility) => (
+                <button
+                  key={facility}
+                  type="button"
+                  className={`${styles.facilityButton} ${
+                    selectedFacilities.includes(facility) ? styles.selected : ""
+                  }`}
+                  onClick={() => handleFacilityClick(facility)}
+                >
+                  {selectedFacilities.includes(facility)
+                    ? `- ${facility}`
+                    : `+ ${facility}`}
+                </button>
+              )
+            )}
+          </div>
+        </Form.Group>
+
+        {/* Action Buttons */}
+        <div className={styles.actions}>
+          <Button
+            type="button"
+            className={`outlined ${styles.actionButtons}`}
+            onClick={handleBackToPostJobClick}
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            className={`${styles.actionButtons} ${
+              isValid ? "" : styles.disabled
+            }`}
+            disabled={!isValid}
+          >
+            Continue
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+};
+
+export default FirstJobScreen;
