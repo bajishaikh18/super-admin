@@ -28,3 +28,33 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getSignedUrl = async (fileType: string,contentType:string,jobId?:string) => {
+  try {
+    const response = await apiClient.get("/file/getUploadUrl", {
+      params: {
+        fileType: fileType,
+        contentType: contentType,
+        jobId: jobId
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update user details:", error);
+    throw error;
+  }
+};
+
+export const uploadFile = async (url: string, file:File|Blob) => {
+  try {
+    const response = await axios.put(url, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update user details:", error);
+    throw error;
+  }
+};

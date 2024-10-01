@@ -2,16 +2,18 @@
 import React, { useState } from "react";
 import styles from './Dashboard.module.scss';
 import Header from '../../components/common/Header';
-import Summary from '../../components/dashboard/Summary'; 
 import Insights from '../../components/dashboard/Insights'; 
 import RegisteredUsers from '../../components/dashboard/RegisterdUsers';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import SummarySection from "@/components/common/Summary";
+import useDashboardStore from "@/stores/useDashboardStore";
 
 const Dashboard = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState('dashboard'); 
 
 
+  const {summaryData} = useDashboardStore();
   const toggleNotification = () => {
     setNotificationVisible(!notificationVisible);
     
@@ -73,16 +75,15 @@ const Dashboard = () => {
         </div>
       )}
 
-      <main>
-        <section className={styles.summaryText}>
-          <p>Summary</p>
-        </section>
-        <Summary />
-
-        <section className={styles.sideText}>
-          <p>Insights</p>
-        </section>
+      <main className="main-section">
+        <div className="page-block">
+          <h3 className="section-heading">Summary</h3>
+          <SummarySection summaryData={summaryData}/>
+        </div>
+        <div className="page-block">
+        <h3 className="section-heading">Insights</h3>
         <Insights />
+        </div>
 
         <section className={styles.thirdText}>
           <p>Registered users</p>
