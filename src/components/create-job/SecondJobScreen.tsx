@@ -4,7 +4,7 @@ import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
 
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { FieldError, useForm } from "react-hook-form";
 import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 import { IoClose } from "react-icons/io5";
@@ -192,7 +192,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                         <MultiSelect
                           name={`jobPositions.${index}.title`}
                           control={control}
-                          error={errors[`jobPositions.${index}.title` as any] as any}
+                          // @ts-ignore
+                          error={errors[`jobPositions.${index}.title`]}
                           options={jobTitle}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}
@@ -210,9 +211,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                         <MultiSelect
                           name={`jobPositions.${index}.experience`}
                           control={control}
-                          error={
-                            errors[`jobPositions.${index}.experience`] as any
-                          }
+                          // @ts-ignore
+                          error={errors[`jobPositions.${index}.experience`]}
                           options={experienceLevels}
                           defaultValue={
                             formData?.jobPositions?.[index]?.experience
