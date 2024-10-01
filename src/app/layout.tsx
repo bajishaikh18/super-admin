@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.scss";
 import { AuthCheck } from "@/components/common/AuthCheck";
-import Header from "@/components/common/Header";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+      <Toaster position="top-right"
+        />
         <AuthCheck>
+          
            {children}
         </AuthCheck>
         </body>

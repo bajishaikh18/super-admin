@@ -4,10 +4,13 @@ import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
 
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { FieldError, useForm } from "react-hook-form";
 import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 import { IoClose } from "react-icons/io5";
+import { getSignedUrl, uploadFile } from "@/apis/common";
+import toast from "react-hot-toast";
+import { createJob } from "@/apis/job";
 
 interface JobPosition {
   title: string;
@@ -39,7 +42,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData, formData } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -88,17 +91,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   };
 
   const jobTitle = [
-    { label: "Engineer", value: "Engineer" },
-    { label: "Doctor", value: "Doctor" },
-    { label: "Plumber", value: "Plumber" },
-    { label: "Electrician", value: "Electrician" },
+    { label: "Engineer", value: "5f2c6e02e4b0a914d4a9fcb5" },
+    { label: "Doctor", value: "5f2c6e02e4b0a914d4a9fcb1" },
+    { label: "Plumber", value: "5f2c6e02e4b0a914d4a9fcb2" },
+    { label: "Electrician", value: "5f2c6e02e4b0a914d4a9fcb3" },
   ];
 
   const experienceLevels = [
-    { label: "0", value: "0 Years" },
-    { label: "1", value: "0-1 Year" },
-    { label: "2", value: "1-2 Years" },
-    { label: "3", value: "3-4 Years" },
+    { value: "0", label: "0 Years" },
+    { value: "1", label: "0-1 Year" },
+    { value: "2", label: "1-2 Years" },
+    { value: "3", label: "3-4 Years" },
   ];
 
   const {
@@ -112,17 +115,37 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 
   const onSubmit = async (data: FormValues) => {
     try {
-      setFormData(data);
-      const payload = {
-        ...data,
-        ...formData,
-        jobPositions: jobPositions.filter(x=>!x.deleted),
-        facilities: selectedFacilities,
-      };
-      console.log(payload);
       setLoading(true);
+      setFormData(data);
+      if(selectedFile){
+        const resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
+        if (resp) {
+          await uploadFile(resp.uploadurl, selectedFile!);
+        }
+      }
+      const jobData = {
+        agencyId: formData?.agency,
+        location: formData?.location,
+        expiry: formData?.expiryDate,
+        positions: data?.jobPositions.filter(x=>x).map(position => ({
+          positionId: position.title,
+          experience: Number(position.experience),
+          salary: position.salary,
+        })),
+        amenties: selectedFacilities,
+        contactNumbers: [`${data.countryCode} ${data.contactNumber}`],
+        email:data.email,
+        description:data.description,
+      }
+
+      const res = await createJob(jobData);
+      setNewlyCreatedJob(res.job)
+      toast.success('Job created successfully')
       handleCreateJobClick();
+      setLoading(false);
     } catch (error) {
+      toast.error('Error while posting job. Please try again')
+      setLoading(false);
     } finally {
     }
   };
@@ -143,7 +166,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           <p className={styles.loadingContent}>
             Your job is creating please wait
           </p>
-          <div className={styles.spinner}></div>
+          <div className={styles.createSpinner}></div>
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
@@ -169,7 +192,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                         <MultiSelect
                           name={`jobPositions.${index}.title`}
                           control={control}
-                          error={errors[`jobPositions.${index}.title`] as any}
+                          // @ts-ignore
+                          error={errors[`jobPositions.${index}.title`]}
                           options={jobTitle}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}
@@ -187,9 +211,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                         <MultiSelect
                           name={`jobPositions.${index}.experience`}
                           control={control}
-                          error={
-                            errors[`jobPositions.${index}.experience`] as any
-                          }
+                          // @ts-ignore
+                          error={errors[`jobPositions.${index}.experience`]}
                           options={experienceLevels}
                           defaultValue={
                             formData?.jobPositions?.[index]?.experience

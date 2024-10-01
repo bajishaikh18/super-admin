@@ -1,7 +1,7 @@
 
 import { create } from 'zustand';
 
-interface SummaryData {
+export interface SummaryData {
   jobsPosted: number;
   agenciesRegistered: number;
   usersRegistered: number;

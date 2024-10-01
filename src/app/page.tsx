@@ -6,10 +6,7 @@ const HomePage = () => {
   const router = useRouter();
   
   useEffect(() => {
-
   router.push('/login');
-
-
   }, [router]);
   return null;
 };

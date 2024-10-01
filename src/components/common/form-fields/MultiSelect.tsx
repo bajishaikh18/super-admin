@@ -9,7 +9,9 @@ export const MultiSelect = ({
   error,
   rules,
   defaultValue,
-  customStyles
+  customStyles,
+  valueContainerStyles={},
+  menuListStyles={}
 }: {
   name: string;
   control: Control<any, any>;
@@ -21,6 +23,8 @@ export const MultiSelect = ({
   >;
   defaultValue?: string,
   customStyles:any
+  valueContainerStyles?: any,
+  menuListStyles?:any
 }) => {
   return (
     <>
@@ -29,6 +33,7 @@ export const MultiSelect = ({
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
+
             styles={{
               control: (baseStyles, state) => ({
                 ...baseStyles,
@@ -36,8 +41,17 @@ export const MultiSelect = ({
                 borderRadius: "8px",
                 border: "1px solid rgba(189, 189, 189, 1)",
                 minHeight: "44px",
-                ...customStyles
+                ...customStyles,
+                svg: {
+                  path: {
+                    fill: "#000",
+                  },
+                },
               }),
+              menuList:(baseStyles, state) =>({...baseStyles,...menuListStyles}),
+              valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
+              indicatorSeparator: () => ({ display: "none" }),
+
             }}
             defaultValue={options.find((c) => c.value === defaultValue)}
             options={options}
