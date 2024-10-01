@@ -19,13 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-      <Toaster position="top-right"
-        />
-        <AuthCheck>
-          
-           {children}
-        </AuthCheck>
-        </body>
+        <Toaster position="top-right" />
+        <AuthCheck>{children}</AuthCheck>
+      </body>
     </html>
   );
 }

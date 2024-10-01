@@ -6,7 +6,7 @@ import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/DataTable";
 import Link from "next/link";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { fetchData, PersonApiResponse } from "./makeData";
+import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Card } from "react-bootstrap";
 
 type TabType = "Active" | "Pending" | "Expired";

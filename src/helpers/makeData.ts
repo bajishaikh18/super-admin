@@ -39,12 +39,42 @@ const newPerson = (index: number): Person => {
   }
 }
 
+const newUser = (index: number): any => {
+  return {
+    "name": `Rajesh Mishra${index}`,
+    "mobile": "+91 7896543210",
+    "email": "rajesh.m@gmail.com",
+    "state": "AP",
+    "jobTitle": "Mason",
+    "industry": "Construction",
+    "experience": "7 Years",
+    "gulfExp": "No",
+    "cv": "Download CV",
+    "video": "View Video",
+    "regdDate": "10 Aug 2024",
+    "status": "Active"
+  }
+}
+
 export function makeData(...lens: number[]) {
   const makeDataLevel = (depth = 0): Person[] => {
     const len = lens[depth]!
     return range(len).map((d): Person => {
       return {
         ...newPerson(d),
+      }
+    })
+  }
+
+  return makeDataLevel()
+}
+
+export function makeUserData(...lens: number[]) {
+  const makeDataLevel = (depth = 0): Person[] => {
+    const len = lens[depth]!
+    return range(len).map((d): Person => {
+      return {
+        ...newUser(d),
       }
     })
   }
@@ -61,6 +91,37 @@ export const fetchData = async (
   sorting: SortingState
 ) => {
   const dbData = [...data]
+  if (sorting.length) {
+    const sort = sorting[0] as ColumnSort
+    const { id, desc } = sort as { id: keyof Person; desc: boolean }
+    dbData.sort((a, b) => {
+      if (desc) {
+        return a[id] < b[id] ? 1 : -1
+      }
+      return a[id] > b[id] ? 1 : -1
+    })
+  }
+
+  //simulate a backend api
+  await new Promise(resolve => setTimeout(resolve, 200))
+
+  return {
+    data: dbData.slice(start, start + size),
+    meta: {
+      totalRowCount: dbData.length,
+    },
+  }
+}
+
+
+const userData = makeUserData(1000)
+
+export const fetchUsers = async (
+  start: number,
+  size: number,
+  sorting: SortingState
+) => {
+  const dbData = [...userData]
   if (sorting.length) {
     const sort = sorting[0] as ColumnSort
     const { id, desc } = sort as { id: keyof Person; desc: boolean }

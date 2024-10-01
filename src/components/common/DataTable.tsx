@@ -12,7 +12,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import styles from "./DataTable.module.scss";
 import {
   Person,
-} from "../../app/Summary/makeData";
+} from "../../helpers/makeData";
 import { BsSortUp,BsSortDown } from "react-icons/bs";
 
 
@@ -39,10 +39,11 @@ export function DataTable({
 
   //flatten the array of arrays from the useInfiniteQuery hook
   const flatData = React.useMemo(
-    () => data?.pages?.flatMap((page: any) => page.data) ?? [],
+    () => data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
     [data]
   );
-  const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0;
+  console.log(flatData);
+  const totalDBRowCount = data?.pages?.[0]?.paginatedUsers?.total ?? 0;
   const totalFetched = flatData.length;
 
   //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of tablehandleSortingChange
@@ -199,7 +200,10 @@ export function DataTable({
                         key={cell.id}
                         style={{
                           display: "flex",
-                          width: "100%",
+                          width: "400px",
+                          overflow:'hidden',
+                          whiteSpace: "pre-line",
+                          wordWrap:"break-word"
                         }}
                       >
                         {flexRender(

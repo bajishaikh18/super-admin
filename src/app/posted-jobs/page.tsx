@@ -8,6 +8,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Image from "next/image";
 import { Button } from "react-bootstrap";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import SummarySection from "@/components/common/Summary";
 
 const PostJob = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
@@ -26,12 +27,10 @@ const PostJob = () => {
         setCurrentPage={setCurrentPage}
       />
 
-      <main>
-        <div className={styles.jobSummaryContainer}>
-          <section className={styles.summaryText}>
-            <p>Jobs Summary</p>
-          </section>
-          <JobSummary />
+      <main className="main-section">
+        <div className="page-block">
+            <h3 className="section-heading">Summary</h3>
+            <SummarySection summaryData={{} as any}/>
         </div>
         <>
           <section className={styles.postedJobsHeader}>
