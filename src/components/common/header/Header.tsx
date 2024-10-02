@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { Navbar, Nav, NavDropdown, Modal } from 'react-bootstrap';
 import styles from './Header.module.scss'
 import Image from 'next/image';
-import { isTokenValid } from "@/helpers/jwt";
-import { useAuthUserStore } from "@/stores/useAuthUserStore";
+import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
+import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
 import CreateJob from "@/components/create-job/CreateJob";
 
 
@@ -18,11 +18,20 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setCurrentPage }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
-  const {setAuthUser}= useAuthUserStore();
+  const {authUser,setAuthUser}= useAuthUserStore();
   const [showPostJobModal,setShowPostJobModal] = useState(false);
+  
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+
+  useEffect(()=>{
+    if(isTokenValid() && !authUser){
+      const token = localStorage.getItem('token');
+      const user = getTokenClaims(token!);
+      setAuthUser(user as AuthUser)
+    }
+  },[])
 
   const handleModalClose= ()=>{
     setShowPostJobModal(false);

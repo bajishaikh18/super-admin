@@ -3,7 +3,7 @@ import styles from "../../app/dashboard/Dashboard.module.scss";
 import dataTableStyles from "../../components/common/DataTable.module.scss";
 import { useUserStore } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
-import { DataTable } from "@/components/common/DataTable";
+import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { fetchData, PersonApiResponse } from "../../helpers/makeData";

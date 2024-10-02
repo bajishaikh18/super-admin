@@ -63,6 +63,12 @@ a {
     box-shadow: none !important;
     border-color: $color-brand-1;
   }
+  &.extra-small{
+    min-height: 32px;
+    height: 32px;
+    width: 180px;
+    font-size: 14px;
+  }
 }
 
 .btn-loading {
@@ -149,11 +155,13 @@ a {
 }
 
 .input-group{
+
   &.contact-field{
     .form-select{
       flex: 0.1;
     }
   }
+ 
 }
 
 .full-screen-modal{
@@ -214,6 +222,11 @@ a {
   animation: spin 1s linear infinite;
   margin: 0 auto;
   display: block;
+  &.black{
+    border-left-color: $color-brand-1 !important;
+    border-radius: 50%;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+  }
 }
   
   @keyframes spin {
@@ -236,4 +249,24 @@ a {
 
   .page-block{
     margin-bottom: 40px;
+  }
+
+  .filter-section{
+    padding:0px 24px 0px 0px;
+    .input-group{
+      .input-group-text{
+        background: #fff; 
+        border: 1px solid rgba(189, 189, 189, 1) !important;
+        svg{
+          path{
+            fill: $color-grey-1;
+          }
+        }
+      }
+      .form-control{
+        color: $color-grey-1 !important;
+        border-left: none !important;
+        padding-left: 0px;
+      }
+    }
   }

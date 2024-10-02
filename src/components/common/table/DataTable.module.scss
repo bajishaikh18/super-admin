@@ -1,4 +1,4 @@
-@import "../../app/variables";
+@import "../../../app/variables";
 .tableContainer{
     height: 50vh;
     overflow: auto;
@@ -39,8 +39,6 @@
         }
     }
 }
-
-
 
 
 .userTable tbody tr:nth-child(odd) {

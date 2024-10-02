@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "../globals.scss";
-import { AuthHeader } from "@/components/common/AuthHeader";
+import { AuthHeader } from "@/components/common/header/AuthHeader";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });

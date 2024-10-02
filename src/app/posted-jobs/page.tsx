@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Header from "../../components/common/Header";
+import Header from "../../components/common/header/Header";
 import JobSummary from "../Summary/jobsummary";
 import PostedJobs from "../Summary/postedjobs";
 import styles from "../../app/dashboard/Dashboard.module.scss";

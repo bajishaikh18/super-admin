@@ -12,7 +12,7 @@ export function getGradient(ctx: any, chartArea: any, direction:any) {
     }else{
         gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
     }
-    gradient.addColorStop(1, "rgba(0, 69, 230, 1)");
+    gradient.addColorStop(0.7, "rgba(0, 69, 230, 1)");
     gradient.addColorStop(0, "rgba(183, 182, 252, 1)");
   }
 

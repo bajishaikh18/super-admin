@@ -10,8 +10,8 @@ export interface User {
     industry: string,
     state: string,
     totalExperience: string,
-    resume: boolean,
-    workVideo: boolean,
+    resume: string,
+    workVideo: string,
     status: string,
     dob: string
     country: string

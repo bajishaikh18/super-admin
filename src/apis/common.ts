@@ -10,7 +10,7 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -45,6 +45,20 @@ export const getSignedUrl = async (fileType: string,contentType:string,jobId?:st
   }
 };
 
+export const getDownloadUrl = async (keyName: string) => {
+  try {
+    const response = await apiClient.get("/file/getDownloadUrl", {
+      params: {
+        keyName: keyName
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get download url", error);
+    throw error;
+  }
+};
+
 export const uploadFile = async (url: string, file:File|Blob) => {
   try {
     const response = await axios.put(url, file, {
@@ -54,7 +68,7 @@ export const uploadFile = async (url: string, file:File|Blob) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Failed to update user details:", error);
+    console.error("Failed to get upload url", error);
     throw error;
   }
 };

@@ -116,7 +116,7 @@ const AppDownloads: React.FC = () => {
         },
         borderWidth: 2,
         borderRadius: 5,
-        barThickness: 20,
+        barThickness: 15,
       },
     ],
   };

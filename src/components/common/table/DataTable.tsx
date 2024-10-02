@@ -12,8 +12,9 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import styles from "./DataTable.module.scss";
 import {
   Person,
-} from "../../helpers/makeData";
+} from "../../../helpers/makeData";
 import { BsSortUp,BsSortDown } from "react-icons/bs";
+import { Loader, NotFound } from "../Feedbacks";
 
 
 export function DataTable({
@@ -24,12 +25,16 @@ export function DataTable({
   fetchNextPage,
   isFetching,
   isLoading,
+  isSearch,
+  totalCount
 }: {
+  totalCount:number
   columns: any;
   sorting: SortingState;
   data: any;
   fetchNextPage: any;
   isFetching: boolean;
+  isSearch: boolean;
   isLoading: boolean;
   sortingChanged: (updater: any) => void;
 }) {
@@ -38,13 +43,9 @@ export function DataTable({
   //react-query has a useInfiniteQuery hook that is perfect for this use case
 
   //flatten the array of arrays from the useInfiniteQuery hook
-  const flatData = React.useMemo(
-    () => data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
-    [data]
-  );
-  console.log(flatData);
-  const totalDBRowCount = data?.pages?.[0]?.paginatedUsers?.total ?? 0;
-  const totalFetched = flatData.length;
+
+  const totalDBRowCount = totalCount;
+  const totalFetched = data.length || 0;
 
   //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of tablehandleSortingChange
   const fetchMoreOnBottomReached = React.useCallback(
@@ -55,7 +56,7 @@ export function DataTable({
         if (
           scrollHeight - scrollTop - clientHeight < 500 &&
           !isFetching &&
-          totalFetched < totalDBRowCount
+          totalFetched < totalDBRowCount && !isSearch
         ) {
           fetchNextPage();
         }
@@ -70,15 +71,16 @@ export function DataTable({
   }, [fetchMoreOnBottomReached]);
 
   const table = useReactTable({
-    data: flatData,
+    data: data,
     columns,
     state: {
       sorting,
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    manualSorting: true,
+    manualSorting: false,
     debugTable: true,
+    manualFiltering:true,
   });
 
   //scroll to top of table when sorting changes
@@ -110,8 +112,12 @@ export function DataTable({
     overscan: 5,
   });
 
-  if (isLoading) {
-    return <>Loading...</>;
+  if (isLoading || (isFetching && isSearch)) {
+    return <Loader text="Fetching user data" size="lg" textSize="md"/>
+  }
+  
+  if(data.length === 0){
+    return <NotFound text="No data found"/>
   }
 
   return (
@@ -219,7 +225,10 @@ export function DataTable({
           </tbody>
         </table>
       </div>
-      {isFetching && <div>Fetching More...</div>}
+      {
+        isFetching && <Loader size="sm"/>
+      }
+     
     </div>
   );
 }

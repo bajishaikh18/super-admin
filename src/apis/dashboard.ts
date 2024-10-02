@@ -1,11 +1,13 @@
 import { apiClient } from "./common";
 
-export const getUsers = async (start: number,size:number) => {
+export const getUsers = async (type:string,start: number,size:number,filter:string) => {
   try {
-    const response = await apiClient.get(`/dashboard`,{
+    const response = await apiClient.get(`/dashboard/${type}`,{
         params:{
             "page": start+1,
-            "limit": size
+            "limit": size,
+            "field":"email",
+            "filterTerm": filter
         }
     });
     return response.data;
