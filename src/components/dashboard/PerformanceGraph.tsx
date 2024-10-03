@@ -45,6 +45,7 @@ import { GraphFormValues } from "./Insights";
 import { useQuery } from "@tanstack/react-query";
 import { getSitePerformance } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";
+import { DateTime } from "luxon";
 
 const durations = [
   {
@@ -73,9 +74,8 @@ const PerformanceGraph = ({
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["performance", "dashboard", duration],
     queryFn: () => {
-      let timeFrame = new Date(
-        new Date().setMonth(-1 * Number(duration))
-      ).toISOString();
+      const month = DateTime.now().month;
+      const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
       return getSitePerformance(timeFrame);
     },
     retry: 3,
@@ -166,7 +166,7 @@ const PerformanceGraph = ({
 
     scales: {
       x: {
-        max:max+10,
+        max:max+max/4,
         beginAtZero: true,
         grid: {
           display: false,

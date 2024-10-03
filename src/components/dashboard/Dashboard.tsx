@@ -24,8 +24,6 @@ const Dashboard = () => {
     setNotificationVisible(!notificationVisible);
   };
 
- 
-
   const dashboardSummary = [
     {
       label: "Jobs Posted",
@@ -49,7 +47,7 @@ const Dashboard = () => {
     },
   ];
   return (
-    <div className={styles.dashboard}>
+    <div className=''>
       <Header
         onNotificationToggle={toggleNotification}
         currentPage={currentPage}

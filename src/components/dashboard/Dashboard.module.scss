@@ -1,12 +1,5 @@
 @import "../../app/variables";
 
-.dashboard {
-  padding: 20px;
-  background-color: #f4f6f9;
-  width: 100%;
-  margin: 0 auto;
-}
-
 .summaryText {
   color: black;
   margin-top: 100px;
@@ -173,17 +166,8 @@
   height: 100%;
 }
 
-.headerRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px;
-  border-bottom: 1px solid rgba(224, 224, 224, 1);
-}
 
-.tabContainer {
-  display: flex;
-}
+
 
 .searchContainer {
   display: flex;
@@ -229,23 +213,6 @@
   font-weight: bold;
 }
 
-.tabButton {
-  background-color: transparent;
-  color: rgba(117, 117, 117, 1);
-  font-weight: 500;
-  cursor: pointer;
-  padding: 20px 40px 12px 40px;
-  border-radius: 0px;
-  transition: color 0.3s;
-  border: none;
-  border-bottom: 4px solid transparent;
-  font-size: 16px;
-}
-
-.tabButton.active {
-  color: rgba(33, 33, 33, 1);
-  border-bottom: 4px solid $color-brand-1;
-}
 
 .userTable {
   th {

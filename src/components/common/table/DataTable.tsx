@@ -151,10 +151,8 @@ export function DataTable({
                   return (
                     <th
                       key={header.id}
-                      style={{
-                        display: "flex",
-                        width: "100%",
-                      }}
+                    
+                      className={(header.column.columnDef?.meta as any)?.classes || ""}
                     >
                       <div
                         {...{
@@ -204,13 +202,7 @@ export function DataTable({
                     return (
                       <td
                         key={cell.id}
-                        style={{
-                          display: "flex",
-                          width: "400px",
-                          overflow:'hidden',
-                          whiteSpace: "pre-line",
-                          wordWrap:"break-word"
-                        }}
+                        className={(cell.column.columnDef?.meta as any)?.classes || ""}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

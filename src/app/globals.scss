@@ -244,6 +244,7 @@ a {
 
   .main-section{
     padding: 117px 24px 30px 24px;
+    background: rgba(250, 248, 255, 1);
 
   }
 
@@ -269,4 +270,47 @@ a {
         padding-left: 0px;
       }
     }
+  }
+
+  .tab-container {
+    display: flex;
+  }
+  
+  .tab-button {
+    background-color: transparent;
+    color: rgba(117, 117, 117, 1);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 20px 40px 12px 40px;
+    border-radius: 0px;
+    transition: color 0.3s;
+    border: none;
+    border-bottom: 4px solid transparent;
+    font-size: 16px;
+  }
+  
+  .tab-button.active {
+    color: rgba(33, 33, 33, 1);
+    border-bottom: 4px solid $color-brand-1;
+  }
+  
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+  }
+  .px-0{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  .px-10{
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .capitalize{
+    text-transform: capitalize;
   }

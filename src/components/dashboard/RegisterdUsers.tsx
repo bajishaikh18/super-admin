@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import styles from "./Dashboard.module.scss";
+import React, { useState, useMemo } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
-import { User, useUserStore } from "../../stores/useUserStore";
+import { User } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Card, Form, FormControl, InputGroup } from "react-bootstrap";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
+import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { getSummary, getUsers } from "@/apis/dashboard";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import { downloadMedia } from "@/helpers/mediaDownload";
-import { BsSearch } from "react-icons/bs";
-import { debounce } from "lodash";
+
 import { useDebounce } from "@uidotdev/usehooks";
-import Select, { GroupBase, StylesConfig } from "react-select";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 
@@ -21,15 +22,17 @@ type TabType = "admin" | "app";
 
 const columnHelper = createColumnHelper<User>();
 
-const fetchSize = 50;
+const fetchSize = 100;
 
 const RegisteredUsers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("app");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
   const [searchAdmin, setSearchAdmin] = React.useState<string>("");
-  
+
   const debouncedSearchTerm = useDebounce(search, 300);
+  const debouncedSearchTermAdmin = useDebounce(searchAdmin, 300);
+
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
@@ -45,7 +48,16 @@ const RegisteredUsers: React.FC = () => {
       }),
       columnHelper.accessor("email", {
         header: () => "Email Id",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) => (
+          <OverlayTrigger
+            overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
+          >
+            <>{info.renderValue() || "N/A"}</>
+          </OverlayTrigger>
+        ),
+        meta: {
+          classes: "px-10",
+        },
       }),
       columnHelper.accessor("state", {
         header: () => "State",
@@ -60,6 +72,7 @@ const RegisteredUsers: React.FC = () => {
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => info.renderValue() || "N/A",
+        meta:{classes:"capitalize"}
       }),
       columnHelper.accessor("totalExperience", {
         header: "Experience",
@@ -71,43 +84,60 @@ const RegisteredUsers: React.FC = () => {
         cell: (info) => (info.renderValue() === true ? "Yes" : "No"),
       }),
       columnHelper.accessor("resume", {
-        cell: (info) =>{
-          const [,extn] = info.getValue()?.keyName?.split('') || [];
+        cell: (info) => {
+          const [, extn] = info.getValue()?.keyName?.split("") || [];
           return info.getValue()?.keyName ? (
             <Link
               href={`javascript:;`}
-              onClick={() => downloadMedia(info.getValue()?.keyName, `${info.row.getValue('firstName')}_${info.row.getValue('lastName')}.${extn}`)}
+              onClick={() =>
+                downloadMedia(
+                  info.getValue()?.keyName,
+                  `${info.row.getValue("firstName")}_${info.row.getValue(
+                    "lastName"
+                  )}.${extn}`
+                )
+              }
               className={dataTableStyles.normalLink}
             >
-              View Resume
+              Download CV
             </Link>
           ) : (
             "N/A"
-          )
+          );
         },
+
         header: "CV Availability",
       }),
       columnHelper.accessor("workVideo", {
-        cell: (info) =>{
+        cell: (info) => {
           return info.getValue()?.keyName ? (
             <Link
               href={`javascript:;`}
-              onClick={() => downloadMedia(info.getValue()?.keyName, `${info.row.getValue('firstName')}_${info.row.getValue('lastName')}.mp4`)}
+              onClick={() =>
+                downloadMedia(
+                  info.getValue()?.keyName,
+                  `${info.row.getValue("firstName")}_${info.row.getValue(
+                    "lastName"
+                  )}.mp4`
+                )
+              }
               className={dataTableStyles.normalLink}
             >
               View Video
             </Link>
           ) : (
             "N/A"
-          )
+          );
         },
+
         header: "Work Video",
       }),
       columnHelper.accessor("createdAt", {
         header: "Regd. date",
         cell: (info) =>
-          info.renderValue() ?  DateTime.fromISO(info.renderValue()!).toFormat('dd-MM-yyyy'):"N/A"
-            
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd-MM-yyyy")
+            : "N/A",
       }),
       columnHelper.accessor("status", {
         header: "Status",
@@ -121,8 +151,11 @@ const RegisteredUsers: React.FC = () => {
     data: summaryData,
     isLoading: summaryLoading,
     error: summaryError,
-  } = useQuery({ queryKey: ["summary", "dashboard"], queryFn: getSummary,retry:3 });
- 
+  } = useQuery({
+    queryKey: ["summary", "dashboard"],
+    queryFn: getSummary,
+    retry: 3,
+  });
 
   const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
     User[]
@@ -130,31 +163,44 @@ const RegisteredUsers: React.FC = () => {
     queryKey: ["people", activeTab, debouncedSearchTerm, sorting],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
-      const fetchedData = await getUsers(activeTab,start, fetchSize, debouncedSearchTerm);
+      const fetchedData = await getUsers(
+        activeTab,
+        start,
+        fetchSize,
+        debouncedSearchTerm
+      );
       return fetchedData;
     },
-    retry:3,
+    retry: 3,
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
   });
 
-  const { data:adminData, fetchNextPage:fetchAdminNextPage, isFetching: isAdminFetching, isLoading:isAdminLoading } = useInfiniteQuery<
-  User[]
->({
-  queryKey: ["people", activeTab, debouncedSearchTerm, sorting],
-  queryFn: async ({ pageParam = 0 }) => {
-    const start = pageParam as number;
-    const fetchedData = await getUsers(activeTab,start, fetchSize, debouncedSearchTerm);
-    return fetchedData;
-  },
-  refetchInterval: 100000,
-  initialPageParam: 0,
-  getNextPageParam: (_lastGroup, groups) => groups.length,
-  refetchOnWindowFocus: false,
-  placeholderData: keepPreviousData,
-});
+  const {
+    data: adminData,
+    fetchNextPage: fetchAdminNextPage,
+    isFetching: isAdminFetching,
+    isLoading: isAdminLoading,
+  } = useInfiniteQuery<User[]>({
+    queryKey: ["people", activeTab, debouncedSearchTermAdmin, sorting],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = pageParam as number;
+      const fetchedData = await getUsers(
+        activeTab,
+        start,
+        fetchSize,
+        debouncedSearchTermAdmin
+      );
+      return fetchedData;
+    },
+    refetchInterval: 100000,
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
   const flatData = React.useMemo(
     () =>
@@ -165,82 +211,89 @@ const RegisteredUsers: React.FC = () => {
 
   const flatDataAdmin = React.useMemo(
     () =>
-      data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
-    [data]
+      adminData?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ??
+      [],
+    [adminData]
   );
   const totalCountAdmin = summaryData?.adminCount ?? 0;
-  
+
   const handleTabClick = (tab: TabType) => {
     setActiveTab(tab);
   };
 
   return (
-    <section className={styles.registeredUsers}>
-      <Card className={styles.card}>
-        <div className={styles.headerRow}>
-          <div className={styles.tabContainer}>
-            <button
-              className={`${styles.tabButton} ${
-                activeTab === "app" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("app")}
-            >
-              App Users ({summaryData?.usersRegistered || 0})
-            </button>
-            <button
-              className={`${styles.tabButton} ${
-                activeTab === "admin" ? styles.active : ""
-              }`}
-              onClick={() => handleTabClick("admin")}
-            >
-              Admin Users ({summaryData?.adminCount || 0})
-            </button>
-          </div>
-          <TableFilter
-            search={search}
-            handleChange={(e: any) => setSearch(e.target.value)}
-          />
+    <Card>
+      <div className={"header-row"}>
+        <div className={"tab-container"}>
+          <button
+            className={`tab-button ${activeTab === "app" ? "active" : ""}`}
+            onClick={() => handleTabClick("app")}
+          >
+            App Users ({summaryData?.usersRegistered || 0})
+          </button>
+          <button
+            className={`tab-button ${activeTab === "admin" ? "active" : ""}`}
+            onClick={() => handleTabClick("admin")}
+          >
+            Admin Users ({summaryData?.adminCount || 0})
+          </button>
         </div>
         {
           {
             app: (
-              <div className="fadeIn">
-                <DataTable
-                  totalCount={totalCount}
-                  columns={columns}
-                  sorting={sorting}
-                  sortingChanged={(updater: any) => {
-                    setSorting(updater);
-                  }}
-                  data={flatData}
-                  isSearch={!!search}
-                  fetchNextPage={fetchNextPage}
-                  isLoading={isLoading}
-                  isFetching={isFetching}
-                />
-              </div>
+              <TableFilter
+                search={search}
+                handleChange={(e: any) => setSearch(e.target.value)}
+              />
             ),
             admin: (
-              <div className="fadeIn">
-                <DataTable
-                  totalCount={totalCountAdmin}
-                  columns={columns}
-                  sorting={sorting}
-                  sortingChanged={(updater: any) => {
-                    setSorting(updater);
-                  }}
-                  data={flatDataAdmin}
-                  isSearch={!!searchAdmin}
-                  fetchNextPage={fetchAdminNextPage}
-                  isLoading={isAdminLoading}
-                  isFetching={isAdminFetching}
-                />
-              </div>
+              <TableFilter
+                search={searchAdmin}
+                handleChange={(e: any) => setSearchAdmin(e.target.value)}
+              />
             ),
           }[activeTab]
         }
-      </Card>
-    </section>
+      </div>
+      {
+        {
+          app: (
+            <div className="fadeIn">
+              <DataTable
+                totalCount={totalCount}
+                columns={columns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => {
+                  setSorting(updater);
+                }}
+                data={flatData}
+                isSearch={!!search}
+                fetchNextPage={fetchNextPage}
+                isLoading={isLoading}
+                isFetching={isFetching}
+              />
+            </div>
+          ),
+          admin: (
+            <div className="fadeIn">
+              <DataTable
+                totalCount={totalCountAdmin}
+                columns={columns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => {
+                  setSorting(updater);
+                }}
+                data={flatDataAdmin}
+                isSearch={!!searchAdmin}
+                fetchNextPage={fetchAdminNextPage}
+                isLoading={isAdminLoading}
+                isFetching={isAdminFetching}
+              />
+            </div>
+          ),
+        }[activeTab]
+      }
+    </Card>
   );
 };
 

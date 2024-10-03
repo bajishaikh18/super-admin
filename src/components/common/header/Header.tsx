@@ -1,12 +1,13 @@
 'use client'
 import React, { useState ,useEffect} from "react";
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Navbar, Nav, NavDropdown, Modal } from 'react-bootstrap';
 import styles from './Header.module.scss'
 import Image from 'next/image';
 import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
 import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
 import CreateJob from "@/components/create-job/CreateJob";
+import Link from "next/link";
 
 
 interface HeaderProps {
@@ -16,6 +17,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setCurrentPage }) => {
+  const pathname = usePathname()
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
   const {authUser,setAuthUser}= useAuthUserStore();
@@ -70,17 +72,17 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className={styles.navContainer}>
-        <Nav.Link className={`${styles.navListItem} ${styles.active}`} onClick={handleDashboardNavigation}>Dashboard</Nav.Link>          <Nav.Link className={styles.navListItem} href="#posted-jobs">Posted Jobs</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#agencies">Agencies</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#candidates">Candidates</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#employers">Employers</Nav.Link>
+        <Link className={`${styles.navListItem} ${pathname=="/dashboard" ? styles.active: ''} `} href="/dashboard">Dashboard</Link>         
+         <Link  className={`${styles.navListItem} ${pathname=="/posted-jobs" ? styles.active: ''}`} href="/posted-jobs">Posted Jobs</Link>
+          <Link className={styles.navListItem} href="#agencies">Agencies</Link>
+          <Link className={styles.navListItem} href="#candidates">Candidates</Link>
+          <Link className={styles.navListItem} href="#employers">Employers</Link>
           <NavDropdown title="Reports" className={`${styles.navListItem} nav-list-item`}>
               <NavDropdown.Item href="#action/3.1" className={styles.navListItem}>Report Item</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2" className={styles.navListItem}>
               Report Item
               </NavDropdown.Item>
           </NavDropdown>
-         
         </Nav>
 
         <Nav className={styles.rightNavItems}>
@@ -98,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
           className="nav-list-item"
             title={
               <span className="d-inline-flex align-items-center" style={{ cursor: 'pointer' }}>
-                <span className={styles.superAdmin}>Super Admin</span>
+                <span className={styles.superAdmin}>{authUser?.email}</span>
               </span>
             }
             id="super-admin-dropdown"

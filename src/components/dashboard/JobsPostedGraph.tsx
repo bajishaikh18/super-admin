@@ -43,6 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getJobCount } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";
 import { GraphFormValues } from "./Insights";
+import { DateTime } from "luxon";
 
 const durations = [
   {
@@ -71,9 +72,8 @@ const JobsPostedGraph = ({
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["jobposted", "dashboard", duration],
     queryFn: () => {
-      let timeFrame = new Date(
-        new Date().setMonth(-1 * Number(duration))
-      ).toISOString();
+      const month = DateTime.now().month;
+      const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
       return getJobCount(timeFrame);
     },
     retry: 3,
@@ -174,7 +174,7 @@ const JobsPostedGraph = ({
             textSize="md"
           />
         )}
-        {data && <Doughnut data={jobsData} options={doughnutOptions} />}
+        {data && (!isLoading||isFetching)  &&<Doughnut data={jobsData} options={doughnutOptions} />}
       </div>
       {data && (
         <>

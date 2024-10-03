@@ -21,12 +21,25 @@
         font-weight: 700;
         font-size: 12px;
         cursor: pointer;
+        display: flex;
+        flex: 1;
         text-transform: uppercase;
-        padding: 24px;
+        padding: 24px 5px;
+        &:first-child{
+            padding: 24px 16px;
+        }
     }
     td{
         font-size: 13px;
-        padding: 18px 24px;
+        padding: 18px 5px;
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        word-wrap:break-word;
+        text-overflow: ellipsis;
+        &:first-child{
+            padding: 18px 16px;
+        }
         a{
             font-weight: 500;
             font-size: 14px;
@@ -38,6 +51,7 @@
             font-size: 13px;
         }
     }
+    
 }
 
 
