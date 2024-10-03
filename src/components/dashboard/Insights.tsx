@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../app/dashboard/Dashboard.module.scss";
+import styles from "./Dashboard.module.scss";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -38,7 +38,6 @@ ChartJS.register(
   BarController,
   ChartDataLabels
 );
-import useDashboardStore from "../../stores/useDashboardStore";
 import { useForm } from "react-hook-form";
 import { Col, Row } from "react-bootstrap";
 import AppDownloads from "./AppDownloads";
@@ -46,11 +45,18 @@ import JobsPostedGraph from "./JobsPostedGraph";
 import PerformanceGraph from "./PerformanceGraph";
 
 
-const Insights: React.FC = () => {
-  const { insightsData } = useDashboardStore((state) => ({
-    insightsData: state.insightsData,
-  }));
+export type GraphFormValues = {
+  appDownloadsDuration: string;
+  jobsDuration: string;
+  performanceDuration: string;
+};
 
+
+const Insights: React.FC = () => {
+  const {
+    watch,
+    control,
+  } = useForm<GraphFormValues>();
 
   return (
     <div className={styles.insights}>
@@ -59,10 +65,10 @@ const Insights: React.FC = () => {
             <AppDownloads/>
         </Col>
         <Col lg={3}>
-          <JobsPostedGraph/>
+          <JobsPostedGraph control={control} watch={watch}/>
         </Col>
         <Col lg={3}>
-        <PerformanceGraph/>
+        <PerformanceGraph control={control} watch={watch}/>
         </Col>
       </Row>
     </div>

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import styles from "../../app/dashboard/Dashboard.module.scss";
+import styles from "./Dashboard.module.scss";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import { User, useUserStore } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Card, Form, FormControl, InputGroup } from "react-bootstrap";
-import { getUsers } from "@/apis/dashboard";
+import { getSummary, getUsers } from "@/apis/dashboard";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import { downloadMedia } from "@/helpers/mediaDownload";
 import { BsSearch } from "react-icons/bs";
@@ -15,6 +15,7 @@ import { debounce } from "lodash";
 import { useDebounce } from "@uidotdev/usehooks";
 import Select, { GroupBase, StylesConfig } from "react-select";
 import { TableFilter } from "../common/table/Filter";
+import { DateTime } from "luxon";
 
 type TabType = "admin" | "app";
 
@@ -70,38 +71,43 @@ const RegisteredUsers: React.FC = () => {
         cell: (info) => (info.renderValue() === true ? "Yes" : "No"),
       }),
       columnHelper.accessor("resume", {
-        cell: (info) =>
-          info.getValue() ? (
+        cell: (info) =>{
+          const [,extn] = info.getValue()?.keyName?.split('') || [];
+          return info.getValue()?.keyName ? (
             <Link
               href={`javascript:;`}
-              onClick={() => downloadMedia(info.getValue(), "resume.pdf")}
+              onClick={() => downloadMedia(info.getValue()?.keyName, `${info.row.getValue('firstName')}_${info.row.getValue('lastName')}.${extn}`)}
               className={dataTableStyles.normalLink}
             >
               View Resume
             </Link>
           ) : (
             "N/A"
-          ),
+          )
+        },
         header: "CV Availability",
       }),
       columnHelper.accessor("workVideo", {
-        cell: (info) =>
-          info.getValue() ? (
+        cell: (info) =>{
+          return info.getValue()?.keyName ? (
             <Link
-              onClick={() => downloadMedia(info.getValue(), "resume.mp4")}
-              href={"javascript:;"}
+              href={`javascript:;`}
+              onClick={() => downloadMedia(info.getValue()?.keyName, `${info.row.getValue('firstName')}_${info.row.getValue('lastName')}.mp4`)}
               className={dataTableStyles.normalLink}
             >
               View Video
             </Link>
           ) : (
             "N/A"
-          ),
+          )
+        },
         header: "Work Video",
       }),
       columnHelper.accessor("createdAt", {
         header: "Regd. date",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) =>
+          info.renderValue() ?  DateTime.fromISO(info.renderValue()!).toFormat('dd-MM-yyyy'):"N/A"
+            
       }),
       columnHelper.accessor("status", {
         header: "Status",
@@ -110,6 +116,13 @@ const RegisteredUsers: React.FC = () => {
     ],
     []
   );
+
+  const {
+    data: summaryData,
+    isLoading: summaryLoading,
+    error: summaryError,
+  } = useQuery({ queryKey: ["summary", "dashboard"], queryFn: getSummary,retry:3 });
+ 
 
   const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
     User[]
@@ -120,7 +133,7 @@ const RegisteredUsers: React.FC = () => {
       const fetchedData = await getUsers(activeTab,start, fetchSize, debouncedSearchTerm);
       return fetchedData;
     },
-    refetchInterval: 100000,
+    retry:3,
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
     refetchOnWindowFocus: false,
@@ -148,14 +161,14 @@ const RegisteredUsers: React.FC = () => {
       data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
     [data]
   );
-  const totalCount = (adminData?.pages as any)?.[0]?.paginatedUsers?.total ?? 0;
+  const totalCount = summaryData?.usersRegistered ?? 0;
 
   const flatDataAdmin = React.useMemo(
     () =>
       data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
     [data]
   );
-  const totalCountAdmin = (adminData?.pages as any)?.[0]?.paginatedUsers?.total ?? 0;
+  const totalCountAdmin = summaryData?.adminCount ?? 0;
   
   const handleTabClick = (tab: TabType) => {
     setActiveTab(tab);
@@ -172,7 +185,7 @@ const RegisteredUsers: React.FC = () => {
               }`}
               onClick={() => handleTabClick("app")}
             >
-              App Users ({12415})
+              App Users ({summaryData?.usersRegistered || 0})
             </button>
             <button
               className={`${styles.tabButton} ${
@@ -180,7 +193,7 @@ const RegisteredUsers: React.FC = () => {
               }`}
               onClick={() => handleTabClick("admin")}
             >
-              Admin Users ({21})
+              Admin Users ({summaryData?.adminCount || 0})
             </button>
           </div>
           <TableFilter

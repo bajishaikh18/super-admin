@@ -10,8 +10,12 @@ export interface User {
     industry: string,
     state: string,
     totalExperience: string,
-    resume: string,
-    workVideo: string,
+    resume: {
+        keyName:string
+    },
+    workVideo: {
+        keyName:string
+    },
     status: string,
     dob: string
     country: string

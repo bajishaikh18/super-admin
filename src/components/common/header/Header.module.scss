@@ -117,3 +117,12 @@
 .dropdownItem:hover {
   background-color: #f0f0f0;
 }
+
+@media (max-width:1280px) {
+  .navListItem{
+    font-size: 13px;
+  }
+  .superAdmin{
+    font-size: 15px;
+  }
+}

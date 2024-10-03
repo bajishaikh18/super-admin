@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../app/dashboard/Dashboard.module.scss";
+import styles from "./Dashboard.module.scss";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,

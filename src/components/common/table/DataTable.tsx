@@ -113,7 +113,7 @@ export function DataTable({
   });
 
   if (isLoading || (isFetching && isSearch)) {
-    return <Loader text="Fetching user data" size="lg" textSize="md"/>
+    return <Loader text="Fetching user data" size="md" textSize="md"/>
   }
   
   if(data.length === 0){

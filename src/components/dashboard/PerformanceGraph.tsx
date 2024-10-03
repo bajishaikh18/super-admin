@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../app/dashboard/Dashboard.module.scss";
+import styles from "./Dashboard.module.scss";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -38,16 +38,13 @@ ChartJS.register(
   BarController,
   ChartDataLabels
 );
-import useDashboardStore from "../../stores/useDashboardStore";
 import { MultiSelect } from "../common/form-fields/MultiSelect";
-import { useForm } from "react-hook-form";
+import { Control, UseFormWatch } from "react-hook-form";
 import { getGradient } from "@/helpers/graph";
-
-type FormValues = {
-  appDownloadsDuration: string;
-  jobsDuration: string;
-  performanceDuration: string;
-};
+import { GraphFormValues } from "./Insights";
+import { useQuery } from "@tanstack/react-query";
+import { getSitePerformance } from "@/apis/dashboard";
+import { Loader, NotFound } from "../common/Feedbacks";
 
 const durations = [
   {
@@ -64,22 +61,28 @@ const durations = [
   },
 ];
 
+const PerformanceGraph = ({
+  watch,
+  control,
+}: {
+  watch: UseFormWatch<GraphFormValues>;
+  control: Control<GraphFormValues, any>;
+}) => {
+  const duration = watch("performanceDuration");
 
-const PerformanceGraph: React.FC = () => {
-  const { insightsData } = useDashboardStore((state) => ({
-    insightsData: state.insightsData,
-  }));
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["performance", "dashboard", duration],
+    queryFn: () => {
+      let timeFrame = new Date(
+        new Date().setMonth(-1 * Number(duration))
+      ).toISOString();
+      return getSitePerformance(timeFrame);
+    },
+    retry: 3,
+  });
 
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    control,
-    setValue,
-    formState: { errors, isValid },
-  } = useForm<FormValues>();
-
-
+  const isDataPresent = data ? Object.values(data).some((x) => x) : false;
+  const max = data ? Math.max(...(Object.values(data) as number[])) : 0;
   const sitePerformanceData = {
     labels: [
       "No of visits",
@@ -89,7 +92,12 @@ const PerformanceGraph: React.FC = () => {
     ],
     datasets: [
       {
-        data: [12384, 7283, 1456, 4910],
+        data: [
+          data?.visits,
+          data?.registrations,
+          data?.workVideoCount,
+          data?.resumeCount,
+        ],
         backgroundColor: function (context: any) {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -98,7 +106,7 @@ const PerformanceGraph: React.FC = () => {
             // This case happens on initial chart load
             return;
           }
-          return getGradient(ctx, chartArea, 'horizontal');
+          return getGradient(ctx, chartArea, "horizontal");
         },
         borderColor: function (context: any) {
           const chart = context.chart;
@@ -108,7 +116,7 @@ const PerformanceGraph: React.FC = () => {
             // This case happens on initial chart load
             return;
           }
-          return getGradient(ctx, chartArea, 'horizontal');
+          return getGradient(ctx, chartArea, "horizontal");
         },
         borderWidth: 2,
         borderRadius: 5,
@@ -117,32 +125,31 @@ const PerformanceGraph: React.FC = () => {
     ],
   };
 
-
   const barChartOptionsHorizontal: ChartOptions<"bar"> = {
     indexAxis: "y",
     plugins: {
       legend: {
         display: false,
       },
-      tooltip:{
-        backgroundColor:'#fff',
-        bodyColor:"#0045E6",
-        titleColor:"#0045E6",
-        bodyFont:{
-            weight:800
+      tooltip: {
+        backgroundColor: "#fff",
+        bodyColor: "#0045E6",
+        titleColor: "#0045E6",
+        bodyFont: {
+          weight: 800,
         },
-        position:"nearest",
-        xAlign:"left",
-        cornerRadius:18,
-        padding:{
-            left:11,
-            right:11,
-            top:2,
-            bottom:2
+        position: "nearest",
+        xAlign: "left",
+        cornerRadius: 18,
+        padding: {
+          left: 11,
+          right: 11,
+          top: 2,
+          bottom: 2,
         },
-        borderColor:"rgba(0, 69, 230, 0.26)",
-        caretSize:0,
-        displayColors:false
+        borderColor: "rgba(0, 69, 230, 0.26)",
+        caretSize: 0,
+        displayColors: false,
       },
       datalabels: {
         display: true,
@@ -156,9 +163,10 @@ const PerformanceGraph: React.FC = () => {
         },
       },
     },
-    
+
     scales: {
       x: {
+        max:max+10,
         beginAtZero: true,
         grid: {
           display: false,
@@ -189,43 +197,63 @@ const PerformanceGraph: React.FC = () => {
     },
   };
   return (
-  
-          <div
-            className={`${styles.insightCard} ${styles.smallCard}  ${styles.performanceCard}`}
-          >
-            <div className={styles.cardHeader}>
-              <h2>Site Performance</h2>
-              <MultiSelect
-                name="performanceDuration"
-                control={control}
-                options={durations}
-                customStyles={{
-                  border: "none !important",
-                  boxShadow: "none !important",
-                  fontSize: "14px",
-                  padding: "0 !important",
-                  "&:focus": {
-                    border: "none",
-                  },
-                }}
-                valueContainerStyles={{
-                  padding: "0px",
-                  color: "rgba(117, 117, 117, 1) !important",
-                }}
-                menuListStyles={{
-                  fontSize: "13px",
-                  textAlign: "left",
-                }}
-                defaultValue={"0"}
-              />
-            </div>
-            <div className={styles.graphContainer}>
-              <Bar
-                data={sitePerformanceData}
-                options={barChartOptionsHorizontal}
-              />
-            </div>
-          </div>
+    <div
+      className={`${styles.insightCard} ${styles.smallCard}  ${styles.performanceCard}`}
+    >
+      <div className={styles.cardHeader}>
+        <h2>Site Performance</h2>
+        <MultiSelect
+          name="performanceDuration"
+          control={control}
+          options={durations}
+          customStyles={{
+            border: "none !important",
+            boxShadow: "none !important",
+            fontSize: "14px",
+            padding: "0 !important",
+            "&:focus": {
+              border: "none",
+            },
+          }}
+          valueContainerStyles={{
+            padding: "0px",
+            color: "rgba(117, 117, 117, 1) !important",
+          }}
+          menuListStyles={{
+            fontSize: "13px",
+            textAlign: "left",
+          }}
+          defaultValue={"0"}
+        />
+      </div>
+      <div className={styles.graphContainer}>
+        {(isLoading || isFetching) && (
+          <Loader text="Fetching job details details" size="md" textSize="md" />
+        )}
+
+        {isDataPresent ? (
+          <Bar data={sitePerformanceData} options={barChartOptionsHorizontal} />
+        ) : (
+          <>
+            {!isLoading && !isFetching && (
+              <>
+                {!error ? (
+                  <NotFound
+                    text="No data present for the selected duration"
+                    textSize="md"
+                  />
+                ) : (
+                  <NotFound
+                    text="Something went wrong while fetching data"
+                    textSize="md"
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
