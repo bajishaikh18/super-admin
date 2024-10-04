@@ -12,10 +12,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const PostJob = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const [isViewImageActive, setIsViewImageActive] = useState(false);
   const queryClient = new QueryClient()
 
   const toggleNotification = () => {
     setNotificationVisible(!notificationVisible);
+  };
+  const handleViewImageToggle = (isActive: boolean) => {
+    setIsViewImageActive(isActive);
   };
 
   return (
@@ -27,12 +31,15 @@ const PostJob = () => {
       />
 
       <main>
-        <div className={styles.jobSummaryContainer}>
-          <section className={styles.summaryText}>
-            <p>Jobs Summary</p>
-          </section>
-          <JobSummary />
-        </div>
+      {!isViewImageActive && (
+          <div className={styles.jobSummaryContainer}>
+            <section className={styles.summaryText}>
+              <p>Jobs Summary</p>
+            </section>
+            <JobSummary />
+          </div>
+        )}
+
         <>
           <section className={styles.postedJobsHeader}>
             <p>Posted Jobs</p>
@@ -71,7 +78,7 @@ const PostJob = () => {
             </div>
           </section>
           <QueryClientProvider client={queryClient}>
-          <PostedJobs />
+          <PostedJobs onViewImageToggle={handleViewImageToggle} />          
           </QueryClientProvider>
         </>
       </main>
