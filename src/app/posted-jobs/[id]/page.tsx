@@ -1,6 +1,8 @@
-'use client'
+"use client";
+import { ReactQueryProvider } from "@/app/react-quuery-provider";
+import Header from "@/components/common/header/Header";
+import PostedJobDetails from "@/components/posted-jobs/PostedJobDetails";
 import React, { useState, useEffect } from "react";
-import ViewImage from "../Summary/viewimage";  
 
 type JobData = {
   media: string;
@@ -12,7 +14,7 @@ type JobData = {
 };
 
 const Page = ({ params }: { params: { id: string } }) => {
-  const { id } = params;  
+  const { id } = params;
 
   const [jobData, setJobData] = useState<JobData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,10 +44,10 @@ const Page = ({ params }: { params: { id: string } }) => {
       }
     };
 
-    if (id) {  
+    if (id) {
       fetchData();
     }
-  }, [id]);  
+  }, [id]);
 
   if (isLoading) return <p>Loading job details...</p>;
   if (error) return <p>{error}</p>;
@@ -55,9 +57,14 @@ const Page = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <div>
+    <ReactQueryProvider>
+      <Header
+        onNotificationToggle={() => {}}
+        currentPage={"sd"}
+        setCurrentPage={() => {}}
+      />
       {jobData ? (
-        <ViewImage
+        <PostedJobDetails
           media={jobData.media}
           postedDate={jobData.postedDate}
           expiry={jobData.expiry}
@@ -69,7 +76,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       ) : (
         <p>Job not found.</p>
       )}
-    </div>
+    </ReactQueryProvider>
   );
 };
 

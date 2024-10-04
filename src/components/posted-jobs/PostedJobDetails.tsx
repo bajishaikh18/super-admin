@@ -1,10 +1,10 @@
 'use client'
 import React, { useState ,useEffect} from "react";
 import { useRouter } from 'next/navigation';
-import styles from "../../app/dashboard/Dashboard.module.scss";
+import styles from "../../components/dashboard/Dashboard.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
-type ViewImageProps = {
+type PostedJobDetailsProps = {
   media: string;
   postedDate: string;
   expiry: string;
@@ -13,7 +13,7 @@ type ViewImageProps = {
   noOfPositions: number;
   onClose: () => void;
 };
-const ViewImage: React.FC<ViewImageProps> = ({
+const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   media,
   postedDate,
   expiry,
@@ -38,6 +38,8 @@ const ViewImage: React.FC<ViewImageProps> = ({
   };
 
   return (
+    <main className="main-section">
+
     <div
       className={`${styles.detailedViewContainer} ${
         isFullScreen ? styles.fullScreen : ""
@@ -136,7 +138,8 @@ const ViewImage: React.FC<ViewImageProps> = ({
         </div>
       </div>
     </div>
+    </main>
 
   );
 };
-export default ViewImage;
+export default PostedJobDetails;

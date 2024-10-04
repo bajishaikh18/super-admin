@@ -12,7 +12,7 @@ const SummarySection = ({ summaryData }: { summaryData: {label:string,value:stri
           return (
             <Card className={`internal-card ${styles.summaryItem}`}>
             <div className={styles.iconContainer}>
-              <Image src={summary.image} width={summary.label==="Employers"?20:24} height={24} alt="job" />
+              <Image src={summary.image} width={summary.image==="/employers.png"?20:24} height={24} alt="job" />
             </div>
             <div className={styles.textContainer}>
               <div className={styles.value}>{summary.value}</div>

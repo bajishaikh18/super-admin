@@ -4,9 +4,9 @@ import Header from "../../components/common/header/Header";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
-import { getSummary } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";
 import PostedJobsTable from "./PostedjobsTable";
+import { getJobSummary } from "@/apis/job";
 
 const PostedJobs = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
@@ -21,30 +21,32 @@ const PostedJobs = () => {
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "dashboard"],
-    queryFn: getSummary,
-    retry: 3,
+    queryKey: ["summary", "job"],
+    queryFn: getJobSummary,
+    retry: 3
   });
+
+  console.log(summaryData);
 
   const dashboardSummary = [
     {
       label: "Posted",
-      value: summaryData?.jobsPosted || "N/A",
+      value: summaryData?.postedCount || "N/A",
       image: "/jobs.png",
     },
     {
       label: "Applied",
-      value: summaryData?.agenciesRegistered || "N/A",
+      value: summaryData?.appliedCount || "N/A",
       image: "/agencies.png",
     },
     {
       label: "Expired",
-      value: summaryData?.usersRegistered || "N/A",
+      value: summaryData?.expiredCount || "N/A",
       image: "/users.png",
     },
     {
       label: "Agencies",
-      value: summaryData?.employers || "N/A",
+      value: summaryData?.agenciesCount || "N/A",
       image: "/employers.png",
     },
   ];

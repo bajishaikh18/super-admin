@@ -29,7 +29,6 @@ const RegisteredUsers: React.FC = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
   const [searchAdmin, setSearchAdmin] = React.useState<string>("");
-
   const debouncedSearchTerm = useDebounce(search, 300);
   const debouncedSearchTermAdmin = useDebounce(searchAdmin, 300);
 
@@ -136,7 +135,7 @@ const RegisteredUsers: React.FC = () => {
         header: "Regd. date",
         cell: (info) =>
           info.renderValue()
-            ? DateTime.fromISO(info.renderValue()!).toFormat("dd-MM-yyyy")
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
       }),
       columnHelper.accessor("status", {
