@@ -10,7 +10,6 @@ import { Card } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 
 type TabType = "Active" | "Pending" | "Expired";
-
 type Person = {
   jobId: string;
   agencyName: string;
@@ -21,6 +20,9 @@ type Person = {
   postedDate: string;
   expiry: string;
 };
+interface PostedJobsProps {
+  onViewImageToggle: (isActive: boolean) => void; 
+}
 
 const columnHelper = createColumnHelper<Person>();
 
@@ -79,14 +81,10 @@ const PostedJobsTable: React.FC = () => {
 
   const { data, fetchNextPage, isFetching, isLoading } =
     useInfiniteQuery<PersonApiResponse>({
-      queryKey: [
-        "people",
-        sorting, //refetch when sorting changes
-        activeTab,
-      ],
+      queryKey: ["people", sorting, activeTab],
       queryFn: async ({ pageParam = 0 }) => {
         const start = (pageParam as number) * fetchSize;
-        const fetchedData = await fetchData(start, fetchSize, sorting); //pretend api call
+        const fetchedData = await fetchData(start, fetchSize, sorting);
         return fetchedData;
       },
       initialPageParam: 0,
@@ -94,27 +92,6 @@ const PostedJobsTable: React.FC = () => {
       refetchOnWindowFocus: false,
       placeholderData: keepPreviousData,
     });
-
-  const {
-    data: expiredData,
-    fetchNextPage: fetchNextPageExpired,
-    isFetching: isFetchingExpired,
-    isLoading: isLoadingExpired,
-  } = useInfiniteQuery<PersonApiResponse>({
-    queryKey: [
-      "people",
-      sorting, //refetch when sorting changes
-    ],
-    queryFn: async ({ pageParam = 0 }) => {
-      const start = (pageParam as number) * fetchSize;
-      const fetchedData = await fetchData(start, fetchSize, sorting); //pretend api call
-      return fetchedData;
-    },
-    initialPageParam: 0,
-    getNextPageParam: (_lastGroup, groups) => groups.length,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  });
 
   const handleTabClick = (tab: TabType) => {
     setActiveTab(tab);
@@ -125,6 +102,54 @@ const PostedJobsTable: React.FC = () => {
     [data]
   );
   const totalCount = flatData.length ?? 0;
+
+ 
+
+
+  const columnHelper = createColumnHelper<Person>();
+  const columns = [
+    columnHelper.accessor("jobId", {
+      header: () => "Post Id",
+      cell: (info) => (
+        <Link href={`/jobs/${info.getValue()}`}>{info.getValue()}</Link>
+      ),
+    }),
+    columnHelper.accessor("agencyName", {
+      id: "lastName",
+      cell: (info) => info.getValue(),
+      header: () => "Agency",
+    }),
+    columnHelper.accessor("location", {
+      header: () => "Location",
+      cell: (info) => info.renderValue(),
+    }),
+    columnHelper.accessor("amenities", {
+      header: () => "Benefits",
+    }),
+    columnHelper.accessor("noOfPositions", {
+      header: "No. of positions",
+    }),
+    columnHelper.accessor("media", {
+      cell: (info) => (
+        <span
+          className={dataTableStyles.normalLink}
+          onClick={() => {}}
+          style={{ cursor: "pointer" }}
+        >
+          View Image
+        </span>
+      ),
+      header: "Media",
+    }),
+    columnHelper.accessor("postedDate", {
+      header: "Posted Date",
+    }),
+    columnHelper.accessor('expiry', {
+      header: 'Expiry',
+    }),
+  ];
+
+  const fetchSize = 50;
 
   return (
       <Card>
@@ -197,8 +222,8 @@ const PostedJobsTable: React.FC = () => {
                 <div className="fadeIn">
 
               </div>
-            ),
-          }[activeTab]
+              )
+            }[activeTab]
         }
       </Card>
   );
