@@ -11,7 +11,7 @@ export const AuthHeader = ()=>{
           router.push('/login');
         }
         if(isAuthenticated) {
-            router.push('/dashboard');
+            router.push('/');
         }
       }, [router]);
     return(

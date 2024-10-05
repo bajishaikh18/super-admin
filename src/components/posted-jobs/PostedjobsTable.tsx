@@ -4,14 +4,20 @@ import { useUserStore } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
-import { keepPreviousData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import { fetchData, PersonApiResponse } from "../../helpers/makeData";
-import { Card } from "react-bootstrap";
+import { Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getJobs, getJobSummary } from "@/apis/job";
 import { DateTime } from "luxon";
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
+import { SelectOption } from "@/helpers/types";
+import Image from "next/image";
 
 type TabType = "Active" | "Pending" | "Expired";
 type Person = {
@@ -20,58 +26,12 @@ type Person = {
   location: string;
   amenities: string[];
   noOfPositions: number;
-  media: string;
+  imageUrl: string;
   postedDate: string;
   expiry: string;
 };
-interface PostedJobsProps {
-  onViewImageToggle: (isActive: boolean) => void; 
-}
 
-const columnHelper = createColumnHelper<Person>();
-
-const columns = [
-  columnHelper.accessor("jobId", {
-    header: () => "Post Id",
-    cell: (info) => (
-      <Link href={`/jobs/${info.getValue()}`}>{info.getValue()}</Link>
-    ),
-  }),
-  columnHelper.accessor("agencyName", {
-    id: "lastName",
-    cell: (info) => info.getValue(),
-    header: () => "Agency",
-  }),
-  columnHelper.accessor("location", {
-    header: () => "Location",
-    cell: (info) => info.renderValue(),
-  }),
-  columnHelper.accessor("amenities", {
-    header: () => "Benefits",
-  }),
-  columnHelper.accessor("noOfPositions", {
-    header: "No. of positions",
-  }),
-  columnHelper.accessor("media", {
-    cell: (info) => (
-      <Link
-        href={`/jobs/${info.getValue()}`}
-        className={'normal-link'}
-      >
-        View Image
-      </Link>
-    ),
-    header: "Media",
-  }),
-  columnHelper.accessor("postedDate", {
-    header: "Posted Date",
-  }),
-  columnHelper.accessor("expiry", {
-    header: "Expiry",
-  }),
-];
-
-const fetchSize = 50;
+const fetchSize = 100;
 
 export type JobType = {
   _id: string;
@@ -82,18 +42,24 @@ export type JobType = {
   imageUrl: string;
   createdAt: string;
   expiry: string;
-}
+};
 
 export type JobApiResponse = {
-jobs: JobType[]
-}
+  jobs: JobType[];
+};
 
 const PostedJobsTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Active");
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [showImage,setShowImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
   const [searchActive, setSearchActive] = React.useState<string>("");
   const [searchPending, setSearchPending] = React.useState<string>("");
   const [searchExpired, setSearchExpired] = React.useState<string>("");
+  const [fieldActive, setFieldActive] = React.useState<SelectOption>({value:"_id",label:"Post Id"} as SelectOption);
+  const [fieldPending, setFieldPending] = React.useState<SelectOption>({value:"_id",label:"Post Id"} as SelectOption);
+  const [fieldExpired, setFieldExpired] = React.useState<SelectOption>({value:"_id",label:"Post Id"} as SelectOption);
+
   const debouncedSearchActive = useDebounce(searchActive, 300);
   const debouncedSearchExpired = useDebounce(searchExpired, 300);
   const debouncedSearchPending = useDebounce(searchPending, 300);
@@ -105,78 +71,103 @@ const PostedJobsTable: React.FC = () => {
   } = useQuery({
     queryKey: ["summary", "job"],
     queryFn: getJobSummary,
-    retry: 3
+    retry: 3,
   });
 
-  const { data:activeJobsData , fetchNextPage: fetchActiveJobsNextPage, isFetching: isActiveJobsFetching, isLoading: isActiveJobsLoading } =
-    useInfiniteQuery<JobApiResponse>({
-      queryKey: ["jobs", sorting, 'active', debouncedSearchActive],
-      queryFn: async ({ pageParam = 0 }) => {
-        const start = (pageParam as number) * fetchSize;
-        const fetchedData = await getJobs('status','active',start, fetchSize,debouncedSearchActive);
-        return fetchedData;
-      },
-      initialPageParam: 0,
-      getNextPageParam: (_lastGroup, groups) => groups.length,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-    });
+  const {
+    data: activeJobsData,
+    fetchNextPage: fetchActiveJobsNextPage,
+    isFetching: isActiveJobsFetching,
+    isLoading: isActiveJobsLoading,
+  } = useInfiniteQuery<JobApiResponse>({
+    queryKey: ["jobs", sorting, "active", debouncedSearchActive],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = (pageParam as number);
+      const fetchedData = await getJobs(
+        "status",
+        "active",
+        start,
+        fetchSize,
+        debouncedSearchActive
+      );
+      return fetchedData;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
-  const { data:expiredJobsData , fetchNextPage: fetchExpiredJobsNextPage, isFetching: isExpiredJobsFetching, isLoading: isExpiredJobsLoading } =
-    useInfiniteQuery<JobApiResponse>({
-      queryKey: ["people", sorting, 'expired',debouncedSearchExpired],
-      queryFn: async ({ pageParam = 0 }) => {
-        const start = (pageParam as number) * fetchSize;
-        const fetchedData = await getJobs('status','expired',start, fetchSize,debouncedSearchExpired);
-        return fetchedData;
-      },
-      initialPageParam: 0,
-      getNextPageParam: (_lastGroup, groups) => groups.length,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-    });
+  const {
+    data: expiredJobsData,
+    fetchNextPage: fetchExpiredJobsNextPage,
+    isFetching: isExpiredJobsFetching,
+    isLoading: isExpiredJobsLoading,
+  } = useInfiniteQuery<JobApiResponse>({
+    queryKey: ["jobs", sorting, "expired", debouncedSearchExpired],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = (pageParam as number);
+      const fetchedData = await getJobs(
+        "status",
+        "expired",
+        start,
+        fetchSize,
+        debouncedSearchExpired
+      );
+      return fetchedData;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
-  const { data:pendingJobsData , fetchNextPage: fetchPendingJobsNextPage, isFetching: isPendingJobsFetching, isLoading: isPendingJobsLoading } =
-    useInfiniteQuery<JobApiResponse>({
-      queryKey: ["people", sorting, 'pending',debouncedSearchPending],
-      queryFn: async ({ pageParam = 0 }) => {
-        const start = (pageParam as number) * fetchSize;
-        const fetchedData = await getJobs('status','pending',start, fetchSize,debouncedSearchPending);
-        return fetchedData;
-      },
-      initialPageParam: 0,
-      getNextPageParam: (_lastGroup, groups) => groups.length,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-    });
+  const {
+    data: pendingJobsData,
+    fetchNextPage: fetchPendingJobsNextPage,
+    isFetching: isPendingJobsFetching,
+    isLoading: isPendingJobsLoading,
+  } = useInfiniteQuery<JobApiResponse>({
+    queryKey: ["jobs", sorting, "pending", debouncedSearchPending],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = (pageParam as number) ;
+      const fetchedData = await getJobs(
+        "status",
+        "pending",
+        start,
+        fetchSize,
+        debouncedSearchPending
+      );
+      return fetchedData;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
   const handleTabClick = (tab: TabType) => {
     setActiveTab(tab);
   };
 
   const flattendActiveJobData = React.useMemo(
-    () =>
-      activeJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
+    () => activeJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
     [activeJobsData]
   );
 
   const flattendExpiredJobData = React.useMemo(
-    () =>
-      expiredJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
+    () => expiredJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
     [expiredJobsData]
   );
-  
+
   const flattendPendingJobData = React.useMemo(
-    () =>
-      pendingJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
+    () => pendingJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
     [pendingJobsData]
   );
 
   const totalActiveCount = summaryData?.activeCount ?? 0;
   const totalPendingCount = summaryData?.pendingCount ?? 0;
   const totalExpiredCount = summaryData?.expiredCount ?? 0;
-
-
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
@@ -192,26 +183,37 @@ const PostedJobsTable: React.FC = () => {
     }),
     columnHelper.accessor("location", {
       header: () => "Location",
-      cell: (info) => COUNTRIES[info.renderValue() as "sa"] || info.renderValue() || "N/A",
-      meta:{classes:"capitalize"}
+      cell: (info) =>
+        COUNTRIES[info.renderValue() as "sa"]?.label ||
+        info.renderValue() ||
+        "N/A",
+      meta: { classes: "capitalize" },
     }),
     columnHelper.accessor("amenities", {
       header: () => "Benefits",
-      cell: (info) => info.renderValue()?.join(', ') || "N/A",
+      cell: (info) => (
+        <span title={info.renderValue()?.join(", ") || "N/A"}>
+          {info.renderValue()?.join(", ") || "N/A"}
+        </span>
+      ),
     }),
     columnHelper.accessor("positions", {
       header: "No. of positions",
-      cell: (info)=> info.getValue()?.length || "N/A"
+      cell: (info) => info.getValue()?.length || "N/A",
     }),
     columnHelper.accessor("imageUrl", {
       cell: (info) => (
-        <span
-          className={dataTableStyles.normalLink}
-          onClick={() => {}}
-          style={{ cursor: "pointer" }}
-        >
-          View Image
-        </span>
+        <Link
+        href={`javascript:;`}
+        onClick={() =>{
+          setShowImage(true)
+          setImageUrl(info.getValue())
+        }
+        }
+        className={dataTableStyles.normalLink}
+      >
+        View Image
+      </Link>
       ),
       header: "Media",
     }),
@@ -222,8 +224,8 @@ const PostedJobsTable: React.FC = () => {
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
     }),
-    columnHelper.accessor('expiry', {
-      header: 'Expiry',
+    columnHelper.accessor("expiry", {
+      header: "Expiry",
       cell: (info) =>
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
@@ -231,58 +233,67 @@ const PostedJobsTable: React.FC = () => {
     }),
   ];
 
-  const fetchSize = 50;
 
   return (
-      <Card>
-        <div className={"header-row"}>
-          <div className={"tab-container"}>
-            <button
-              className={`tab-button ${
-                activeTab === "Active" ? 'active' : ""
-              }`}
-              onClick={() => handleTabClick("Active")}
-            >
-              Active ({totalActiveCount})
-            </button>
-            <button
-              className={`tab-button ${
-                activeTab === "Pending" ? 'active' : ""
-              }`}
-              onClick={() => handleTabClick("Pending")}
-            >
-              Pending ({totalPendingCount})
-            </button>
-            <button
-             className={`tab-button ${
-              activeTab === "Expired" ? 'active' : ""
-            }`}
-              onClick={() => handleTabClick("Expired")}
-            >
-              Expired ({totalExpiredCount})
-            </button>
-          </div>
-          {{
-           "Active":  <TableFilter
-                  search={searchActive}
-                  handleChange={(e: any) => setSearchActive(e.target.value)}
-                />,
-                "Expired":  <TableFilter
-                search={searchExpired}
-                handleChange={(e: any) => setSearchExpired(e.target.value)}
-              />,
-              Pending:  <TableFilter
-              search={searchPending}
-              handleChange={(e: any) => setSearchPending(e.target.value)}
-            />
-          }[activeTab]
-          }
-        
+    <>
+    <Card>
+      <div className={"header-row"}>
+        <div className={"tab-container"}>
+          <button
+            className={`tab-button ${activeTab === "Active" ? "active" : ""}`}
+            onClick={() => handleTabClick("Active")}
+          >
+            Active ({totalActiveCount})
+          </button>
+          <button
+            className={`tab-button ${activeTab === "Pending" ? "active" : ""}`}
+            onClick={() => handleTabClick("Pending")}
+          >
+            Pending ({totalPendingCount})
+          </button>
+          <button
+            className={`tab-button ${activeTab === "Expired" ? "active" : ""}`}
+            onClick={() => handleTabClick("Expired")}
+          >
+            Expired ({totalExpiredCount})
+          </button>
         </div>
         {
           {
             Active: (
-                <div className="fadeIn">
+              <TableFilter
+                handleFilterChange={(e)=> setFieldActive(e)}
+                field={fieldActive}
+                search={searchActive}
+                columnsHeaders={columns}
+                handleChange={(e: any) => setSearchActive(e.target.value)}
+              />
+            ),
+            Expired: (
+              <TableFilter
+                handleFilterChange={(e)=> setFieldExpired(e)}
+                field={fieldExpired}
+                search={searchExpired}
+                columnsHeaders={columns}
+                handleChange={(e: any) => setSearchExpired(e.target.value)}
+              />
+            ),
+            Pending: (
+              <TableFilter
+                handleFilterChange={(e)=> setFieldPending(e)}
+                field={fieldPending}
+                search={searchPending}
+                columnsHeaders={columns}
+                handleChange={(e: any) => setSearchPending(e.target.value)}
+              />
+            ),
+          }[activeTab]
+        }
+      </div>
+      {
+        {
+          Active: (
+            <div className="fadeIn">
               <DataTable
                 columns={columns}
                 sorting={sorting}
@@ -294,42 +305,46 @@ const PostedJobsTable: React.FC = () => {
                 isLoading={isActiveJobsLoading}
                 isFetching={isActiveJobsFetching}
               />
-              </div>
-            ),
-            Expired: (
-                <div className="fadeIn">
-
-                <DataTable
-                  columns={columns}
-                  sorting={sorting}
-                  totalCount={totalExpiredCount}
-                  isSearch={!!searchExpired}
-                  sortingChanged={(updater: any) => setSorting(updater)}
-                  data={flattendExpiredJobData}
-                  fetchNextPage={fetchExpiredJobsNextPage}
-                  isLoading={isExpiredJobsLoading}
-                  isFetching={isExpiredJobsFetching}
-                />
-              </div>
-            ),
-            Pending: (
-                <div className="fadeIn">
-                    <DataTable
-                        columns={columns}
-                        sorting={sorting}
-                        totalCount={totalPendingCount}
-                        isSearch={!!searchPending}
-                        sortingChanged={(updater: any) => setSorting(updater)}
-                        data={flattendPendingJobData}
-                        fetchNextPage={fetchPendingJobsNextPage}
-                        isLoading={isPendingJobsLoading}
-                        isFetching={isPendingJobsFetching}
-                      />
-              </div>
-              )
-            }[activeTab]
-        }
-      </Card>
+            </div>
+          ),
+          Expired: (
+            <div className="fadeIn">
+              <DataTable
+                columns={columns}
+                sorting={sorting}
+                totalCount={totalExpiredCount}
+                isSearch={!!searchExpired}
+                sortingChanged={(updater: any) => setSorting(updater)}
+                data={flattendExpiredJobData}
+                fetchNextPage={fetchExpiredJobsNextPage}
+                isLoading={isExpiredJobsLoading}
+                isFetching={isExpiredJobsFetching}
+              />
+            </div>
+          ),
+          Pending: (
+            <div className="fadeIn">
+              <DataTable
+                columns={columns}
+                sorting={sorting}
+                totalCount={totalPendingCount}
+                isSearch={!!searchPending}
+                sortingChanged={(updater: any) => setSorting(updater)}
+                data={flattendPendingJobData}
+                fetchNextPage={fetchPendingJobsNextPage}
+                isLoading={isPendingJobsLoading}
+                isFetching={isPendingJobsFetching}
+              />
+            </div>
+          ),
+        }[activeTab]
+      }
+    </Card>
+    <Modal show={showImage} onHide={()=>{setImageUrl(""),setShowImage(false)}} centered>
+        <Image src={`${IMAGE_BASE_URL}/${imageUrl}`} alt="" width={800} height={800}   style={{ height: "100%", width: "auto" }}
+        />
+    </Modal>
+    </>
   );
 };
 

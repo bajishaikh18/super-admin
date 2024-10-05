@@ -8,7 +8,7 @@ import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
 import { COUNTRIES } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
-import { createJob } from "@/apis/job";
+import { createJob, updateJob } from "@/apis/job";
 import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
@@ -65,7 +65,7 @@ const JobPostingImage = ({
             style={{ border: `2px solid ${color}` }}
           >
             <h3 className={styles.h3} style={{ backgroundColor: color }}>
-              Jobs in {COUNTRIES[formData?.location as "bh"]}
+              Jobs in {COUNTRIES[formData?.location as "bh"]?.label}
             </h3>
             <div>
               {formData?.jobPositions && formData.jobPositions?.length > 0 ? (
@@ -176,6 +176,9 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      if(!newlyCreatedJob?._id){
+        throw "Not found";
+      }
       const element = document.querySelector(
         `.${styles.jobDetailsModal}`
       ) as HTMLElement;
@@ -189,6 +192,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       const resp = await getSignedUrl("jobImage", blob?.type!, newlyCreatedJob?._id);
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
+        await updateJob(newlyCreatedJob?._id, {imageUrl: resp.keyName})
         toast.success('Job posted successfully')
         handleClose();
       }

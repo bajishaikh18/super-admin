@@ -231,7 +231,7 @@ const PerformanceGraph = ({
           <Loader text="Fetching job details details" size="md" textSize="md" />
         )}
 
-        {isDataPresent ? (
+        {isDataPresent && (!isLoading && !isFetching) ? (
           <Bar data={sitePerformanceData} options={barChartOptionsHorizontal} />
         ) : (
           <>

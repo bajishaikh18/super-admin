@@ -10,6 +10,15 @@ export const createJob = async (data: object) => {
   }
 };
 
+export const updateJob = async (id:string,data: object) => {
+  try {
+    const response = await apiClient.put(`${basePath}/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getJobSummary = async () => {
   try {
     const response = await apiClient.get(`${basePath}/summary`);
@@ -31,7 +40,7 @@ export const getJobs = async (
       params: {
         type: type,
         data: status,
-        page: page,
+        page: page+1,
         limit: limit,
         field: "email",
         filterTerm: filter,

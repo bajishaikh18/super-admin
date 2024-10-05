@@ -174,9 +174,9 @@ const JobsPostedGraph = ({
             textSize="md"
           />
         )}
-        {data && (!isLoading||isFetching)  &&<Doughnut data={jobsData} options={doughnutOptions} />}
+        {data && (!isLoading && !isFetching)  &&<Doughnut data={jobsData} options={doughnutOptions} />}
       </div>
-      {data && (
+      {data  && (!isLoading && !isFetching)  && (
         <>
           <div className={styles.chartLabels}>
             <span>

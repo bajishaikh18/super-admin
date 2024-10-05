@@ -21,7 +21,8 @@ export interface User {
     country: string
     currentJobTitle: string
     gulfExperience: boolean,
-    createdAt: string
+    createdAt: string;
+    lastLoginDate:string;
   }
   
 

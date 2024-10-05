@@ -11,6 +11,8 @@ import { IoClose } from "react-icons/io5";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { createJob } from "@/apis/job";
+import { COUNTRIES } from "@/helpers/constants";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface JobPosition {
   title: string;
@@ -21,6 +23,8 @@ interface JobPosition {
 
 interface FormValues {
   contactNumber: string;
+  altContactNumber: string;
+  altCountryCode : string;
   email: string;
   countryCode: string;
   jobPositions: JobPosition[];
@@ -37,9 +41,16 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleCreateJobClick,
   handleClose
 }) => {
+  const queryClient = useQueryClient()
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: "", experience: "0", salary: "" },
   ]);
+  const createJobMutation = useMutation({
+    mutationFn: createJob,
+    onSuccess:()=>{
+      queryClient.invalidateQueries({ queryKey: ['jobs'] })
+    }
+  })
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob } = usePostJobStore();
@@ -117,11 +128,16 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     try {
       setLoading(true);
       setFormData(data);
+      let resp;
       if(selectedFile){
-        const resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
+        resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
         if (resp) {
           await uploadFile(resp.uploadurl, selectedFile!);
         }
+      }
+      const contacts = [`${data.countryCode}${data.contactNumber}`];
+      if(data.altContactNumber && data.altCountryCode){
+        contacts.push(`${data.countryCode}${data.contactNumber}`);
       }
       const jobData = {
         agencyId: formData?.agency,
@@ -132,13 +148,15 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           experience: Number(position.experience),
           salary: position.salary,
         })),
-        amenties: selectedFacilities,
-        contactNumbers: [`${data.countryCode} ${data.contactNumber}`],
+        imageUrl: resp?.keyName,
+        amenities: selectedFacilities,
+        contactNumbers: contacts,
+        country: formData?.targetCountry || 'in',
         email:data.email,
         description:data.description,
       }
-
-      const res = await createJob(jobData);
+      const res = await createJobMutation.mutateAsync(jobData);
+      console.log(res);
       setNewlyCreatedJob(res.job)
       toast.success('Job created successfully')
       handleCreateJobClick();
@@ -270,13 +288,15 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               <Form.Select
                 className={styles.input}
                 {...register("countryCode", {
-                  required: "Agency is required",
+                  required: "Country code is required",
                 })}
                 defaultValue={formData?.countryCode}
               >
-                <option value="1">+91</option>
-                <option value="2">+94</option>
-                <option value="3">+99</option>
+                 {
+                  Object.values(COUNTRIES).map(country=>{
+                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                  })
+                }
               </Form.Select>
               <Form.Control
                 defaultValue={formData?.contactNumber}
@@ -284,6 +304,33 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 {...register("contactNumber", {
                   required: "Contact number is required",
                 })}
+              />
+            </InputGroup>
+            {errors.contactNumber && (
+              <Form.Text className="error">
+                {errors.contactNumber.message}
+              </Form.Text>
+            )}
+          </Form.Group>
+
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Alternate Contact Mobile Number</Form.Label>
+            <InputGroup className={`contact-field`}>
+              <Form.Select
+                className={styles.input}
+                {...register("altCountryCode")}
+                defaultValue={formData?.altCountryCode}
+              >
+                {
+                  Object.values(COUNTRIES).map(country=>{
+                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                  })
+                }
+              </Form.Select>
+              <Form.Control
+                defaultValue={formData?.altContactNumber}
+                aria-label="Alternate Contact number"
+                {...register("altContactNumber")}
               />
             </InputGroup>
             {errors.contactNumber && (

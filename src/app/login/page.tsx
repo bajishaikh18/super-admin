@@ -33,7 +33,7 @@ function Page() {
         localStorage.setItem('token', response.token);
         const user = getTokenClaims(response.token)
         setAuthUser(user as AuthUser);
-        router.push('/dashboard'); 
+        router.push('/'); 
         setLoading(false);
      }
     } catch (error:any) {

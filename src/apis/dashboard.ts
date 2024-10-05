@@ -38,13 +38,13 @@ export const getSitePerformance = async (date:string) => {
 };
 
 
-export const getUsers = async (type:string,start: number,size:number,filter:string) => {
+export const getUsers = async (type:string,start: number,size:number,filter:string,field:string) => {
   try {
     const response = await apiClient.get(`/dashboard/users/${type}`,{
         params:{
             "page": start+1,
             "limit": size,
-            "field":"email",
+            "field":field || '',
             "filterTerm": filter
         }
     });

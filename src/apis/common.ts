@@ -45,11 +45,12 @@ export const getSignedUrl = async (fileType: string,contentType:string,jobId?:st
   }
 };
 
-export const getDownloadUrl = async (keyName: string) => {
+export const getDownloadUrl = async (keyName: string,type?:string) => {
   try {
     const response = await apiClient.get("/file/getDownloadUrl", {
       params: {
-        keyName: keyName
+        keyName: keyName,
+        type:type
       },
     });
     return response.data;

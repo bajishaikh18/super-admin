@@ -1,8 +1,9 @@
 'use client'
-import { getTokenClaims, isTokenValid } from '@/helpers/jwt';
+import { isTokenValid } from '@/helpers/jwt';
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
+import { getUserDetails } from '@/apis/user';
 
 const ALLOWEDPATH = ['/login','/reset-password']
 export const AuthCheck = ({children}:{children:any})=>{
@@ -10,12 +11,15 @@ export const AuthCheck = ({children}:{children:any})=>{
     const pathname = usePathname()
     const {authUser,setAuthUser}=  useAuthUserStore();
     const isAuthenticated = isTokenValid();
+    
+    const getUser =async ()=>{
+      const resp = await getUserDetails();
+      setAuthUser(resp.userDetails as AuthUser)
+    }
 
     useEffect(()=>{
       if(isTokenValid() && !authUser){
-        const token = localStorage.getItem('token');
-        const user = getTokenClaims(token!);
-        setAuthUser(user as AuthUser)
+        getUser()
       }
     },[])
 
@@ -24,7 +28,7 @@ export const AuthCheck = ({children}:{children:any})=>{
           router.push('/login');
         }
         if(isAuthenticated && ALLOWEDPATH.includes(pathname)) {
-            router.push('/dashboard');
+            router.push('/');
         }
       }, [router]);
     

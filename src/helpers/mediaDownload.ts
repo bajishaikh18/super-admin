@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 export const downloadMedia = async (key:string,name:string)=>{
     const loading = toast.loading("Creating secured download link")
     try{
-        const resp = await getDownloadUrl(key)
+        const resp = await getDownloadUrl(key,'attachment')
         const link = document.createElement("a");
         link.href = resp.downloadUrl;
         link.target="_blank";

@@ -22,10 +22,6 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
   const router = useRouter();
   const {authUser,setAuthUser}= useAuthUserStore();
   const [showPostJobModal,setShowPostJobModal] = useState(false);
-  
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
 
   useEffect(()=>{
     if(isTokenValid() && !authUser){
@@ -38,24 +34,12 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
   const handleModalClose= ()=>{
     setShowPostJobModal(false);
   }
- 
-  const handleDashboardNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    setCurrentPage('dashboard');
-    if (isTokenValid()) {
-      router.push('/dashboard'); 
-    } else {
-      alert('log in to access the dashboard.');
-      router.push('/login');
-    }
-  };
 
   const logout = ()=>{
     localStorage.clear();
     setAuthUser(null);
     router.push('/login')
   }
-
 
   return (
     <>
@@ -72,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className={styles.navContainer}>
-        <Link className={`${styles.navListItem} ${pathname=="/dashboard" ? styles.active: ''} `} href="/dashboard">Dashboard</Link>         
+        <Link className={`${styles.navListItem} ${pathname=="/" ? styles.active: ''} `} href="/">Dashboard</Link>         
          <Link  className={`${styles.navListItem} ${pathname=="/posted-jobs" ? styles.active: ''}`} href="/posted-jobs">Posted Jobs</Link>
           <Link className={styles.navListItem} href="#agencies">Agencies</Link>
           <Link className={styles.navListItem} href="#candidates">Candidates</Link>
@@ -100,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
           className="nav-list-item"
             title={
               <span className="d-inline-flex align-items-center" style={{ cursor: 'pointer' }}>
-                <span className={styles.superAdmin}>{authUser?.email}</span>
+                <span className={styles.superAdmin}>{`${authUser?.firstName} ${authUser?.lastName}`}</span>
               </span>
             }
             id="super-admin-dropdown"
