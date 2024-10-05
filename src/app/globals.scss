@@ -100,6 +100,23 @@ a {
 .modal-dialog{
   width: 560px !important;
   max-width: 560px !important;
+
+}
+.image-modal{
+  background: none;
+  .modal-dialog{
+    width: auto !important;
+    max-width: 685px !important;
+  }
+  .modal-content{
+      background: none;
+  }
+  .image-modal-close{
+    position: absolute;
+    right: 0;
+    top: -30px;
+    cursor: pointer;
+  }
 }
 
 .post-form{

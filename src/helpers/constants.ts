@@ -13,3 +13,10 @@ export const COUNTRIES = {
 
 
 export const IMAGE_BASE_URL = "https://wonderlybackendpublic.s3.ap-south-1.amazonaws.com";
+
+export const FACILITIES_IMAGES = {
+  "Food":"/food.svg",
+  "Transportation": "/transport.svg",
+  "Stay": "/stay.svg",
+  "Recruitment":"/recruit.svg"
+}

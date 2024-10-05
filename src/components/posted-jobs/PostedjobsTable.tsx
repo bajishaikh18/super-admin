@@ -18,6 +18,8 @@ import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
 import Image from "next/image";
+import { IoClose } from "react-icons/io5";
+import { FullScreenImage } from "../common/FullScreenImage";
 
 type TabType = "Active" | "Pending" | "Expired";
 type Person = {
@@ -340,10 +342,7 @@ const PostedJobsTable: React.FC = () => {
         }[activeTab]
       }
     </Card>
-    <Modal show={showImage} onHide={()=>{setImageUrl(""),setShowImage(false)}} centered>
-        <Image src={`${IMAGE_BASE_URL}/${imageUrl}`} alt="" width={800} height={800}   style={{ height: "100%", width: "auto" }}
-        />
-    </Modal>
+    <FullScreenImage isOpen={showImage} handleClose={()=>{setImageUrl(""),setShowImage(false)}} imageUrl={imageUrl}/>
     </>
   );
 };
