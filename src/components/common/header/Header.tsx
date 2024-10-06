@@ -11,12 +11,10 @@ import Link from "next/link";
 
 
 interface HeaderProps {
-  onNotificationToggle: () => void;
-  currentPage: string; 
-  setCurrentPage: (page: string) => void;
+ 
 }
 
-const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setCurrentPage }) => {
+const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname()
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
@@ -70,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle, currentPage, setC
         </Nav>
 
         <Nav className={styles.rightNavItems}>
-          <Nav.Link onClick={onNotificationToggle} className={styles.faBell}>
+          <Nav.Link onClick={()=>{}} className={styles.faBell}>
             <Image src='/bell.png' alt='bell' width={16} height={19}/>
           </Nav.Link>
           <Nav.Link href="#" onClick={()=>setShowPostJobModal(true)} className={`${styles.postJob} d-flex align-items-center gap-2`}>

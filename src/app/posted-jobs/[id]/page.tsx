@@ -57,12 +57,8 @@ const Page = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <ReactQueryProvider>
-      <Header
-        onNotificationToggle={() => {}}
-        currentPage={"sd"}
-        setCurrentPage={() => {}}
-      />
+    // <ReactQueryProvider>
+  <>
       {jobData ? (
         <PostedJobDetails
           media={jobData.media}
@@ -76,7 +72,8 @@ const Page = ({ params }: { params: { id: string } }) => {
       ) : (
         <p>Job not found.</p>
       )}
-    </ReactQueryProvider>
+      </>
+    // {/* </ReactQueryProvider> */}
   );
 };
 

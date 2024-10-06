@@ -54,12 +54,6 @@ const PostedJobs = () => {
 
   return (
     <div className={""}>
-      <Header
-        onNotificationToggle={toggleNotification}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-
       <main className="main-section">
         <div className="page-block">
           <h3 className="section-heading">Jobs Summary</h3>

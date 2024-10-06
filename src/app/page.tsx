@@ -4,9 +4,9 @@ import { ReactQueryProvider } from './react-quuery-provider';
 
 const DashboardPage = () => {
   return (
-    <ReactQueryProvider>
+    // <ReactQueryProvider>
      <Dashboard/>
-    </ReactQueryProvider>
+    // </ReactQueryProvider>
   )
 };
 export default DashboardPage;

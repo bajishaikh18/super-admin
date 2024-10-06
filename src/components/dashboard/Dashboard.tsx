@@ -48,11 +48,7 @@ const Dashboard = () => {
   ];
   return (
     <div className=''>
-      <Header
-        onNotificationToggle={toggleNotification}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+   
       {notificationVisible && (
         <div className={styles.notificationPanel}>
           <div className={styles.notificationHeader}>

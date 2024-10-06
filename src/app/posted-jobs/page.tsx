@@ -4,9 +4,9 @@ import PostedJobs from '@/components/posted-jobs/PostedJobs';
 
 const DashboardPage = () => {
   return (
-    <ReactQueryProvider>
+    // <ReactQueryProvider>
      <PostedJobs/>
-    </ReactQueryProvider>
+    // </ReactQueryProvider>
   )
 };
 export default DashboardPage;

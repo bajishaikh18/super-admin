@@ -4,6 +4,7 @@ import "./globals.scss";
 import { AuthCheck } from "@/components/common/AuthCheck";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/common/header/Header";
+import { ReactQueryProvider } from "./react-quuery-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,8 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster position="top-right" />
-        <AuthCheck>{children}</AuthCheck>
+        <ReactQueryProvider>
+          <Header/>
+          <Toaster position="top-right" />
+          <AuthCheck>{children}</AuthCheck>
+        </ReactQueryProvider>
       </body>
     </html>
   );
