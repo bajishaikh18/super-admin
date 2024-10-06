@@ -13,6 +13,7 @@ import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FourthJobScreenProps {
   handleBack: () => void;
@@ -34,20 +35,7 @@ const JobPostingImage = ({
 }) => {
   return (
     <div className={styles.imageContainer}>
-      {isFullScreen ? (
-        <button className={styles.closeFullscreen}>
-          <AiFillCloseCircle
-            size={30}
-            onClick={() => handleFullScreen(false)}
-          />
-        </button>
-      ) : (
-        <>
-          <button className={styles.expandButton}>
-            <AiOutlineExpand size={14} onClick={() => handleFullScreen(true)} />
-          </button>
-        </>
-      )}
+    
       <div
         className={`${styles.jobDetailsModal} ${
           isFullScreen ? styles.fullScreen : ""
@@ -76,7 +64,7 @@ const JobPostingImage = ({
                 fontWeight: "700",
               }}
             >
-              Required for {COUNTRIES[formData?.location as "bh"]?.label}
+              Required for {formData?.location === "ae" ? "UAE" : COUNTRIES[formData?.location as "bh"]?.label}
             </h3>
             <div>
               {formData?.jobPositions && formData.jobPositions?.length > 0 ? (
@@ -91,7 +79,7 @@ const JobPostingImage = ({
                     <tr></tr>
                   </thead>
                   <tbody>
-                    {formData.jobPositions.map((position, index) => (
+                    {formData.jobPositions.filter(x=>x.title && x.title.value).map((position, index) => (
                       <tr key={index}>
                         <td
                           style={{
@@ -115,7 +103,7 @@ const JobPostingImage = ({
                             }}
                           ></div>
 
-                          <span>{position.title}</span>
+                          <span>{position.title.label}</span>
                         </td>
                         <td
                           style={{
@@ -422,6 +410,20 @@ const JobPostingImage = ({
         </div>
         {/* Action Buttons */}
       </div>
+      {isFullScreen ? (
+        <button className={styles.closeFullscreen}>
+          <AiFillCloseCircle
+            size={30}
+            onClick={() => handleFullScreen(false)}
+          />
+        </button>
+      ) : (
+        <>
+          <button className={styles.expandButton}>
+            <AiOutlineExpand size={14} onClick={() => handleFullScreen(true)} />
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -429,6 +431,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleBack,
   handleClose,
 }) => {
+  const queryClient = useQueryClient()
   const { formData, selectedFacilities, newlyCreatedJob } = usePostJobStore();
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -484,6 +487,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
         await updateJob(newlyCreatedJob?._id, { imageUrl: resp.keyName });
+        queryClient.invalidateQueries({ queryKey: ['jobs'] })
         toast.success("Job posted successfully");
         handleClose();
       }
@@ -507,7 +511,6 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           <div className={styles.headerContainer}>
             <h4 className={styles.h4}>Your job is successfully created</h4>
           </div>
-
           <JobPostingImage
             formData={formData}
             selectedFacilities={selectedFacilities}

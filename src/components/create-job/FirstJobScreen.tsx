@@ -38,6 +38,7 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
     { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
     { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
   ];
+  
   const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
     return {
       label: val.label,

@@ -567,8 +567,8 @@
   position: relative;
   transition: transform 0.3s ease-in-out;
   font-size: 14px;
-  transform: scale(0.6);
-  margin: -80px auto;
+  transform: scale(0.7);
+  margin: -120px auto;
 }
 .fullScreen{
   transform: scale(1);
@@ -621,10 +621,9 @@
 }
 
 .expandButton {
-  position: absolute;
-  bottom: 135px;
-  /* Adjusted to keep enough distance from the Post Job button */
-  right: 100px;
+  position: relative;
+  right: -150px;
+  top: -60px;
   background: rgba(0, 0, 0, 0.9);
   border: none;
   padding:5px 10px;
@@ -691,7 +690,7 @@
 .colorLabel{
   text-align: left ;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 0px;
 }
 .colorInput{
   display: flex;
@@ -703,6 +702,9 @@
 .colorPicker{
   display: flex;
   margin-top: 10px;
+  position: absolute;
+  bottom: 0;
+  right: -180px;
   justify-content: right;
 }
 .download{

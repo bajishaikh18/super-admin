@@ -21,9 +21,10 @@ const PostedJobs = () => {
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "job"],
+    queryKey: ["summary", "jobs"],
     queryFn: getJobSummary,
-    retry: 3
+    retry: 3,
+    refetchOnMount: true,
   });
 
   console.log(summaryData);

@@ -203,6 +203,7 @@ const RegisteredUsers: React.FC = () => {
       }),
       columnHelper.accessor("status", {
         header: "Status",
+        meta:{classes:"capitalize"},
         cell: (info) => {
           return <div className="status-cont">
             {info.renderValue() || "N/A"}

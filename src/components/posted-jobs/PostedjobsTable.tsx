@@ -96,7 +96,7 @@ const PostedJobsTable: React.FC = () => {
     },
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
-    refetchOnWindowFocus: false,
+    refetchOnMount: true,
     placeholderData: keepPreviousData,
   });
 
@@ -118,9 +118,9 @@ const PostedJobsTable: React.FC = () => {
       );
       return fetchedData;
     },
+    refetchOnMount: true,
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
-    refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
   });
 
@@ -144,7 +144,7 @@ const PostedJobsTable: React.FC = () => {
     },
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
-    refetchOnWindowFocus: false,
+    refetchOnMount: true,
     placeholderData: keepPreviousData,
   });
 

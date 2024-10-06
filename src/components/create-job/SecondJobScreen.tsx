@@ -5,17 +5,21 @@ import { AiOutlineDelete } from "react-icons/ai";
 
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
 import { FieldError, useForm } from "react-hook-form";
-import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 import { IoClose } from "react-icons/io5";
-import { getSignedUrl, uploadFile } from "@/apis/common";
+import { getJobTitles, getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { createJob } from "@/apis/job";
 import { COUNTRIES } from "@/helpers/constants";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getFormattedJobTitles } from "@/helpers/jobTitles";
 
 interface JobPosition {
-  title: string;
+  title: {
+    value:string,
+    label:string,
+  };
   experience: string;
   salary: string;
   deleted?: string;
@@ -43,8 +47,15 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 }) => {
   const queryClient = useQueryClient()
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
-    { title: "", experience: "0", salary: "" },
+    { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
+
+  const {
+    data: jobTitles,
+    isLoading: jobTitleLoading,
+    error: jobTitleError,
+  } = useQuery({ queryKey: ["jobtitles"], queryFn: getJobTitles,retry:3 });
+
   const createJobMutation = useMutation({
     mutationFn: createJob,
     onSuccess:()=>{
@@ -60,8 +71,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       setJobPositions(formData.jobPositions);
     }
   },[formData])
+  
   const handleAddMore = () => {
     const jobPositionsFromForm = getValues("jobPositions");
+    console.log(jobPositionsFromForm)
     const lastPosition = jobPositionsFromForm[jobPositions.length - 1];
     if (
       !lastPosition.deleted &&
@@ -75,14 +88,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     setErrorMessage("");
     const newPositions = [
       ...jobPositions,
-      { title: "", experience: "0", salary: "" },
+      { title: {value:"",label:""}, experience: "0", salary: "" },
     ];
     setJobPositions(newPositions);
     // setGlobalJobPositions(newPositions);
   };
 
   const handleRemove = (index: number) => {
-    setValue(`jobPositions.${index}.title`, "");
+    setValue(`jobPositions.${index}.title`, {"value":"","label":""});
     setValue(`jobPositions.${index}.experience`, "");
     setValue(`jobPositions.${index}.salary`, "");
     setValue(`jobPositions.${index}.deleted`, "true");
@@ -143,8 +156,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         agencyId: formData?.agency,
         location: formData?.location,
         expiry: formData?.expiryDate,
-        positions: data?.jobPositions.filter(x=>x).map(position => ({
-          positionId: position.title,
+        positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
+          positionId: position.title.value,
           experience: Number(position.experience),
           salary: position.salary,
         })),
@@ -156,7 +169,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         description:data.description,
       }
       const res = await createJobMutation.mutateAsync(jobData);
-      console.log(res);
       setNewlyCreatedJob(res.job)
       toast.success('Job created successfully')
       handleCreateJobClick();
@@ -207,12 +219,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                   return (
                     <tr key={index}>
                       <td>
-                        <MultiSelect
+                        <MultiSelectAsync
                           name={`jobPositions.${index}.title`}
                           control={control}
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.title`]}
-                          options={jobTitle}
+                          loadOptions={getFormattedJobTitles}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}
                           customStyles={{

@@ -73,3 +73,15 @@ export const uploadFile = async (url: string, file:File|Blob) => {
     throw error;
   }
 };
+
+
+
+export const getJobTitles = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/jobTitle`);
+    return response.data.jobTitles;
+  } catch (error) {
+    console.error("Failed to get upload url", error);
+    throw error;
+  }
+};

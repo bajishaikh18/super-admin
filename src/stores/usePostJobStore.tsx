@@ -1,7 +1,10 @@
 import create from "zustand";
 
 type JobPosition ={
-  title:string;
+  title:{
+    value:string,
+    label:string
+  };
   salary: string;
   experience:string;
 }
