@@ -9,7 +9,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
-import { getTokenClaims } from '@/helpers/jwt';
 import { getUserDetails } from '@/apis/user';
 
 interface FormValues {

@@ -49,11 +49,12 @@ const PostedJobs = () => {
       label: "Agencies",
       value: summaryData?.agenciesCount || "N/A",
       image: "/employers.png",
+      link: '/posted-jobs'
     },
   ];
 
   return (
-    <div className={""}>
+    <>
       <main className="main-section">
         <div className="page-block">
           <h3 className="section-heading">Jobs Summary</h3>
@@ -75,7 +76,7 @@ const PostedJobs = () => {
         
           <PostedJobsTable />
       </main>
-    </div>
+    </>
   );
 };
 

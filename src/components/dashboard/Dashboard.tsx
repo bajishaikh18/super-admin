@@ -27,25 +27,29 @@ const Dashboard = () => {
       label: "Jobs Posted",
       value: summaryData?.jobsPosted || "N/A",
       image: "/jobs.png",
+      link: '/posted-jobs'
     },
     {
       label: "Agencies Registered",
       value: summaryData?.agenciesRegistered || "N/A",
       image: "/agencies.png",
+      link: '/posted-jobs'
     },
     {
       label: "Users Registered",
       value: summaryData?.usersRegistered || "N/A",
       image: "/users.png",
+      link: '/posted-jobs'
     },
     {
       label: "Employers",
       value: summaryData?.employers || "N/A",
       image: "/employers.png",
+      link: '/posted-jobs'
     },
   ];
   return (
-    <div className=''>
+    <>
    
       {notificationVisible && (
         <div className={styles.notificationPanel}>
@@ -144,7 +148,7 @@ const Dashboard = () => {
           <RegisteredUsers />
         </div>
       </main>
-    </div>
+    </>
   );
 };
 

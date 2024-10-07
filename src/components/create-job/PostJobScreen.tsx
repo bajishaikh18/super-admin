@@ -489,16 +489,15 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
         await updateJob(newlyCreatedJob?._id, { imageUrl: resp.keyName });
         await queryClient.invalidateQueries({
           predicate: (query) => {
-            console.log(query.queryKey ,query.queryKey.includes('jobs'))
             return query.queryKey.includes('jobs');
           },
           refetchType:'all'
         })
-        await queryClient.refetchQueries({
-            predicate: (query) => {
-              return query.queryKey.includes('jobs');
-            },
-          });
+        // await queryClient.refetchQueries({
+        //     predicate: (query) => {
+        //       return query.queryKey.includes('jobs');
+        //     },
+        //   });
         toast.success("Job posted successfully");
         handleClose();
       }

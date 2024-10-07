@@ -168,11 +168,11 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         },
         refetchType:'all'
       })
-      await queryClient.refetchQueries({
-          predicate: (query) => {
-            return query.queryKey.includes('jobs');
-          },
-        });
+      // await queryClient.refetchQueries({
+      //     predicate: (query) => {
+      //       return query.queryKey.includes('jobs');
+      //     },
+      //   });
       setNewlyCreatedJob(res.job)
       toast.success('Job created successfully')
       handleCreateJobClick();
