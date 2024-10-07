@@ -33,7 +33,8 @@ function Page() {
         localStorage.setItem('token', response.token);
         const resp = await getUserDetails();
         setAuthUser(resp.userDetails as AuthUser)
-        router.push('/'); 
+        router.prefetch('/'); 
+        router.push("/");
         setLoading(false);
      }
     } catch (error:any) {
