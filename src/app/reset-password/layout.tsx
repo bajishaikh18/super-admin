@@ -3,9 +3,10 @@ import { Inter } from "next/font/google";
 import "../globals.scss";
 import { AuthHeader
 
- } from "@/components/common/AuthHeader";
+ } from "@/components/common/header/AuthHeader";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
+import { AuthCheck } from "@/components/common/AuthCheck";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -20,7 +21,7 @@ export default function RootLayout({
         />
         <AuthHeader />
         <Suspense>
-        {children}
+        <AuthCheck>{children}</AuthCheck>
         </Suspense>
       </body>
     </html>

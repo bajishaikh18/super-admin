@@ -1,47 +1,43 @@
 'use client'
 import React, { useState ,useEffect} from "react";
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Navbar, Nav, NavDropdown, Modal } from 'react-bootstrap';
 import styles from './Header.module.scss'
 import Image from 'next/image';
-import { isTokenValid } from "@/helpers/jwt";
-import { useAuthUserStore } from "@/stores/useAuthUserStore";
+import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
+import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
 import CreateJob from "@/components/create-job/CreateJob";
+import Link from "next/link";
 
 
 interface HeaderProps {
-  onNotificationToggle: () => void;
+ 
 }
 
-const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
+const Header: React.FC<HeaderProps> = () => {
+  const pathname = usePathname()
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
-  const {setAuthUser}= useAuthUserStore();
+  const {authUser,setAuthUser}= useAuthUserStore();
   const [showPostJobModal,setShowPostJobModal] = useState(false);
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
+
+  useEffect(()=>{
+    if(isTokenValid() && !authUser){
+      const token = localStorage.getItem('token');
+      const user = getTokenClaims(token!);
+      setAuthUser(user as AuthUser)
+    }
+  },[])
 
   const handleModalClose= ()=>{
     setShowPostJobModal(false);
   }
- 
-  const handleDashboardNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    if (isTokenValid()) {
-      router.push('/dashboard'); 
-    } else {
-      alert('log in to access the dashboard.');
-      router.push('/login');
-    }
-  };
 
   const logout = ()=>{
     localStorage.clear();
     setAuthUser(null);
     router.push('/login')
   }
-
 
   return (
     <>
@@ -58,21 +54,21 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className={styles.navContainer}>
-        <Nav.Link className={`${styles.navListItem} ${styles.active}`} onClick={handleDashboardNavigation}>Dashboard</Nav.Link>          <Nav.Link className={styles.navListItem} href="#posted-jobs">Posted Jobs</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#agencies">Agencies</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#candidates">Candidates</Nav.Link>
-          <Nav.Link className={styles.navListItem} href="#employers">Employers</Nav.Link>
+        <Link className={`${styles.navListItem} ${pathname=="/" ? styles.active: ''} `} href="/">Dashboard</Link>         
+         <Link  className={`${styles.navListItem} ${pathname=="/posted-jobs" ? styles.active: ''}`} href="/posted-jobs">Posted Jobs</Link>
+          <Link className={styles.navListItem} href="#agencies">Agencies</Link>
+          <Link className={styles.navListItem} href="#candidates">Candidates</Link>
+          <Link className={styles.navListItem} href="#employers">Employers</Link>
           <NavDropdown title="Reports" className={`${styles.navListItem} nav-list-item`}>
               <NavDropdown.Item href="#action/3.1" className={styles.navListItem}>Report Item</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2" className={styles.navListItem}>
               Report Item
               </NavDropdown.Item>
           </NavDropdown>
-         
         </Nav>
 
         <Nav className={styles.rightNavItems}>
-          <Nav.Link onClick={onNotificationToggle} className={styles.faBell}>
+          <Nav.Link onClick={()=>{}} className={styles.faBell}>
             <Image src='/bell.png' alt='bell' width={16} height={19}/>
           </Nav.Link>
           <Nav.Link href="#" onClick={()=>setShowPostJobModal(true)} className={`${styles.postJob} d-flex align-items-center gap-2`}>
@@ -86,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ onNotificationToggle }) => {
           className="nav-list-item"
             title={
               <span className="d-inline-flex align-items-center" style={{ cursor: 'pointer' }}>
-                <span className={styles.superAdmin}>Super Admin</span>
+                <span className={styles.superAdmin}>{`${authUser?.firstName} ${authUser?.lastName}`}</span>
               </span>
             }
             id="super-admin-dropdown"

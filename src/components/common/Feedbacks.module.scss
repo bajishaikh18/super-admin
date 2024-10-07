@@ -1,0 +1,31 @@
+.loadingContainer{
+    padding: 20px;
+    text-align: center;
+    div{
+        &.sm{
+            width: 24px;
+            height: 24px;
+        }
+        &.md{
+            width: 30px;
+            height: 30px;
+        }
+        &.lg{
+            width: 36px;
+            height: 36px;
+        }
+    }
+  
+    h3{
+        font-size: 14px;
+        margin-top: 10px;
+        &.md{
+            font-size: 14px;
+        }&.sm{
+            font-size: 12px;
+        }&.lg{
+            font-size: 16px;
+        }
+    }
+}
+

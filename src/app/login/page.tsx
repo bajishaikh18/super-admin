@@ -33,17 +33,17 @@ function Page() {
         localStorage.setItem('token', response.token);
         const user = getTokenClaims(response.token)
         setAuthUser(user as AuthUser);
-        router.push('/dashboard'); 
+        router.push('/'); 
+        setLoading(false);
      }
     } catch (error:any) {
+      setLoading(false);
       if(error.status === 404){
         toast.error('Looks like credentials are wrong')
       }else{
         toast.error('Something went wrong! Please try again later')
       }
 
-    } finally {
-      setLoading(false);
     }
   };
 

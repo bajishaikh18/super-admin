@@ -19,6 +19,7 @@ import { CustomDatePicker } from "../common/form-fields/DatePicker";
 interface FormValues {
   agency: string;
   location: string;
+  targetCountry: string;
   expiryDate: string;
 }
 
@@ -37,9 +38,10 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
     { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
     { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
   ];
+  
   const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
     return {
-      label: val,
+      label: val.label,
       value: key,
     };
   });
@@ -101,6 +103,19 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
             rules={{ required: "Location is required" }}
             customStyles={{}}
             defaultValue={formData?.location}
+          />
+        </Form.Group>
+
+        <Form.Group className={styles.formGroup}>
+          <Form.Label>Target Country</Form.Label>
+          <MultiSelect
+            name="targetCountry"
+            control={control}
+            error={errors.targetCountry}
+            options={workLocations}
+            rules={{ required: "Target country is required" }}
+            customStyles={{}}
+            defaultValue={formData?.targetCountry}
           />
         </Form.Group>
 

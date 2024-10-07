@@ -7,6 +7,8 @@ export interface AuthUser {
     phone: string;
     _id: string;
     country: string;
+    firstName: string;
+    lastName: string;
 }
 
 

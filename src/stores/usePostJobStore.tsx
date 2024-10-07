@@ -1,7 +1,10 @@
 import create from "zustand";
 
 type JobPosition ={
-  title:string;
+  title:{
+    value:string,
+    label:string
+  };
   salary: string;
   experience:string;
 }
@@ -32,9 +35,12 @@ export interface Position {
 export type PostJobFormData =  {
   agency?: string;
   location?: string;
+  targetCountry?: string;
   expiryDate?: string;
   countryCode?:string;
   contactNumber?: string;
+  altContactNumber?:string;
+  altCountryCode?:string;
   email?: string;
   description?: string;
   jobPositions?: JobPosition[];

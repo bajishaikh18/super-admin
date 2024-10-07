@@ -1,31 +1,34 @@
 import create from 'zustand';
 
 
-export interface AppUser {
-    name: string;
-    mobile: string;
-    email: string;
-    state: string;
-    jobTitle: string;
-    industry: string;
-    experience: string;
-    gulfExp: string;
-    cv: string;
-    video: string;
-    regdDate: string;
-    status: string;
-}
-
-export interface AdminUser {
-    name: string;
-    mobile: string;
-    email: string;
-}
-
+export interface User {
+    _id: string
+    email: string
+    firstName: string
+    lastName: string
+    phone: number
+    industry: string,
+    state: string,
+    totalExperience: string,
+    resume: {
+        keyName:string
+    },
+    workVideo: {
+        keyName:string
+    },
+    status: string,
+    dob: string
+    country: string
+    currentJobTitle: string
+    gulfExperience: boolean,
+    createdAt: string;
+    lastLoginDate:string;
+  }
+  
 
 interface UserStore {
-    appUsers: AppUser[];
-    adminUsers: AdminUser[];
+    appUsers: User[];
+    adminUsers: User[];
     fetchUsers: () => Promise<void>;
 }
 
@@ -33,11 +36,10 @@ export const useUserStore = create<UserStore>((set) => ({
     appUsers: [],
     adminUsers: [],
     fetchUsers: async () => {
-        const response = await fetch('/users.json');
-        const data = await response.json();
-        set({
-            appUsers: data.appUsers,
-            adminUsers: data.adminUsers
-        });
-    }
+        try {
+         
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
+    },
 }));

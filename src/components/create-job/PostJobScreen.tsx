@@ -5,14 +5,15 @@ import styles from "./CreateJob.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, FACILITIES_IMAGES } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
-import { createJob } from "@/apis/job";
+import { createJob, updateJob } from "@/apis/job";
 import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FourthJobScreenProps {
   handleBack: () => void;
@@ -34,23 +35,7 @@ const JobPostingImage = ({
 }) => {
   return (
     <div className={styles.imageContainer}>
-      {isFullScreen ? (
-        <button className={styles.closeFullscreen}>
-          <AiFillCloseCircle
-            size={30}
-            onClick={() => handleFullScreen(false)}
-          />
-        </button>
-      ) : (
-        <>
-            <button className={styles.expandButton}>
-              <AiOutlineExpand
-                size={14}
-                onClick={() => handleFullScreen(true)}
-              />
-            </button>
-        </>
-      )}
+    
       <div
         className={`${styles.jobDetailsModal} ${
           isFullScreen ? styles.fullScreen : ""
@@ -61,29 +46,103 @@ const JobPostingImage = ({
         {/* Inner Container for the Job Details */}
         <div className={styles.innerCard}>
           <div
-            className={styles.jobDetails}
-            style={{ border: `2px solid ${color}` }}
+            style={{
+              border: `4px solid ${color}`,
+              padding: "12px",
+              borderRadius: "8px",
+              marginTop: "0px",
+            }}
           >
-            <h3 className={styles.h3} style={{ backgroundColor: color }}>
-              Jobs in {COUNTRIES[formData?.location as "bh"]}
+            <h3
+              style={{
+                backgroundColor: color,
+                color: "#fff",
+                textAlign: "center",
+                padding: "12px",
+                borderRadius: "4px",
+                fontSize: "29px",
+                fontWeight: "700",
+              }}
+            >
+              Required for {formData?.location === "ae" ? "UAE" : COUNTRIES[formData?.location as "bh"]?.label}
             </h3>
             <div>
               {formData?.jobPositions && formData.jobPositions?.length > 0 ? (
-                <table className={styles.positionsTable}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginBottom: "15px",
+                  }}
+                >
                   <thead>
                     <tr></tr>
                   </thead>
                   <tbody>
-                    {formData.jobPositions.map((position, index) => (
+                    {formData.jobPositions.filter(x=>x.title && x.title.value).map((position, index) => (
                       <tr key={index}>
-                        <td className={styles.positionText}>
-                          <b>{position.title}</b>
+                        <td
+                          style={{
+                            padding: "22px 8px",
+                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            textAlign: "left",
+                            backgroundColor: "#ffffff",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "6px",
+                              height: "6px",
+                              background: color,
+                              borderRadius: "100px",
+                              display: "inline-block",
+                              verticalAlign: "middle",
+                              marginRight: "8px",
+                            }}
+                          ></div>
+
+                          <span>{position.title.label}</span>
                         </td>
-                        <td className={styles.positionText}>
+                        <td
+                          style={{
+                            padding: "22px 8px",
+                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                            fontSize: "14px",
+                            fontWeight: 400,
+                            textAlign: "left",
+                            backgroundColor: "#ffffff",
+                          }}
+                        >
                           {position.experience} years Exp
                         </td>
-                        <td className={styles.positionText}>
-                          {position.salary}
+                        <td
+                          style={{
+                            padding: "22px 8px",
+                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                            fontSize: "14px",
+                            fontWeight: 400,
+                            textAlign: "left",
+                            backgroundColor: "#ffffff",
+                          }}
+                        >
+                          <img
+                            src={"/dollar.svg"}
+                            alt="dollar"
+                            style={{
+                              display: "inline-block",
+                              verticalAlign: "middle",
+                            }}
+                          />{" "}
+                          <span
+                            style={{
+                              display: "inline-block",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {position.salary ? `(${position.salary})` : ""}
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -93,48 +152,278 @@ const JobPostingImage = ({
                 <p>No job positions available.</p>
               )}
             </div>
-            <div className={styles.benefitsSection}>
-              <h5>Benefits</h5>
-              <ul className={styles.facilities}>
+            <div
+              style={{
+                display: "flex",
+                backgroundColor: "rgba(247, 247, 247, 1)",
+                borderRadius: "8px",
+                margin: "20px 0px",
+                alignItems: "center",
+                padding: "14px 15px",
+              }}
+            >
+              <h5
+                style={{
+                  marginBottom: "0px",
+                  fontSize: "13px",
+                  lineHeight: "15px",
+                  fontWeight: 600,
+                }}
+              >
+                Benefits
+              </h5>
+              <ul
+                style={{
+                  display: "flex",
+                  gap: "7px",
+                  flexWrap: "wrap",
+                  margin: "0px",
+                  paddingLeft: "10px",
+                  alignItems: "center",
+                }}
+              >
                 {selectedFacilities.map((facility, index) => (
-                  <li key={index}>{facility}</li>
+                  <>
+                    <Image
+                      src={FACILITIES_IMAGES[facility as "Food"]}
+                      alt={facility}
+                      width={14}
+                      height={14}
+                      style={{ marginLeft: "5px" }}
+                    />
+                    <li
+                      key={index}
+                      style={{
+                        color: "rgba(117, 117, 117, 1)",
+                        fontSize: "12px",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {facility}
+                    </li>
+                  </>
                 ))}
               </ul>
             </div>
-            <div className={styles.descriptionSection}>
-              <h5 className={styles.jobDescriptionTitle}>More Details</h5>
-              <p className={styles.jobDescriptionText}>
-                Sometext with some values{formData?.description}
+            <div
+              style={{
+                textAlign: "left",
+                fontSize: "14px",
+                marginTop: "2px",
+                marginBottom: "15px",
+              }}
+            >
+              <h5
+                style={{
+                  fontSize: "13px",
+                  lineHeight: "15px",
+                  fontWeight: 600,
+                  marginBottom: "5px",
+                }}
+              >
+                More Details
+              </h5>
+              <p
+                style={{
+                  background: "rgba(247, 247, 247, 1)",
+                  padding: "4px 7px",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  lineHeight: "20px",
+                  color: "rgba(33, 33, 33, 1)",
+                  borderRadius: "7px",
+                  marginBottom: "12px",
+                }}
+              >
+                {formData?.description}
               </p>
               <p
-                className={styles.highlightText}
-                style={{ backgroundColor: color }}
+                style={{
+                  backgroundColor: color,
+                  padding: "4px 7px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  marginTop: "12px",
+                  lineHeight: "15px",
+                  color: "#fff",
+                  textAlign: "center",
+                  borderRadius: "7px",
+                  marginBottom: "12px",
+                }}
               >
-                Sometext with some values{formData?.description}
+                interested candidates can send their updated CV, Passport Copy,
+                Photo & Experience Certificates by email with the position
+                applied in the subject line.
               </p>
             </div>
-            <div className={styles.jobDetailsFooter}>
-              <div className={styles.contactInfo}>
-                <Image
-                  src="" // Add the URL for the agency logo
-                  alt=""
-                  className={styles.agencyLogo}
-                />
+            <div
+              style={{
+                borderTop: "1px solid #ddd",
+                padding: "20px",
+                background: "rgba(239, 239, 239, 1)",
+                margin: "0px -12px -10px -12px",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "7px" }}
+              >
+                <img src="/ag_logo.svg" />
+                <div>
+                  <h6
+                    style={{
+                      fontSize: "18px",
+                      margin: "0px",
+                      fontWeight: 600,
+                      lineHeight: "24px",
+                    }}
+                  >
+                    Aldhia Human Resource Consultants
+                  </h6>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      margin: "0px",
+                      fontWeight: 500,
+                      lineHeight: "17px",
+                      color: "rgba(91, 91, 91, 1)",
+                      textAlign: "left",
+                    }}
+                  >
+                    REG No: B-1853/MUM/COM/1000+/5/0242/2023{" "}
+                  </p>
+                </div>
+                <img src="/verified.svg" style={{ marginTop: "-20px" }} />
               </div>
-              <div className={styles.contactDetails}>
-                <p className={styles.footerDetails}>{formData?.agency}</p>
-                <p className={styles.contactNumber}>
-                  {formData?.contactNumber}
-                </p>
-                <p className={styles.email}>{formData?.email}</p>
-                <p className={styles.website}></p>
-                <p className={styles.location}>{formData?.location}</p>
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap:"20px",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <img src="/call.svg" />
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        lineHeight: "22px",
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {formData?.countryCode}
+                      {formData?.contactNumber}{" "}
+                      <span
+                        style={{
+                          fontWeight: 400,
+                          color: "rgba(189, 189, 189, 1)",
+                        }}
+                      >
+                        |
+                      </span>{" "}
+                      {formData?.altCountryCode}
+                      {formData?.altContactNumber}
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <img src="/globe.svg" />
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        lineHeight: "22px",
+                        marginLeft: "8px",
+                      }}
+                    >
+                      alarabarafa.com
+                    </p>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <img src="/mail.svg" />
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        lineHeight: "22px",
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {formData?.email}
+                      
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <img src="/location.svg" />
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        lineHeight: "22px",
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {COUNTRIES[formData?.location as "bh"].label}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
         {/* Action Buttons */}
       </div>
+      {isFullScreen ? (
+        <button className={styles.closeFullscreen}>
+          <AiFillCloseCircle
+            size={30}
+            onClick={() => handleFullScreen(false)}
+          />
+        </button>
+      ) : (
+        <>
+          <button className={styles.expandButton}>
+            <AiOutlineExpand size={14} onClick={() => handleFullScreen(true)} />
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -142,10 +431,11 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleBack,
   handleClose,
 }) => {
-  const { formData, selectedFacilities,newlyCreatedJob } = usePostJobStore();
+  const queryClient = useQueryClient()
+  const { formData, selectedFacilities, newlyCreatedJob } = usePostJobStore();
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const handleDownloadImage = async () => {
@@ -176,6 +466,9 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      if (!newlyCreatedJob?._id) {
+        throw "Not found";
+      }
       const element = document.querySelector(
         `.${styles.jobDetailsModal}`
       ) as HTMLElement;
@@ -186,15 +479,21 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           resolve(blob);
         })
       );
-      const resp = await getSignedUrl("jobImage", blob?.type!, newlyCreatedJob?._id);
+      const resp = await getSignedUrl(
+        "jobImage",
+        blob?.type!,
+        newlyCreatedJob?._id
+      );
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
-        toast.success('Job posted successfully')
+        await updateJob(newlyCreatedJob?._id, { imageUrl: resp.keyName });
+        queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        toast.success("Job posted successfully");
         handleClose();
       }
       setLoading(false);
     } catch (error: unknown) {
-      toast.success('Error while posting job. Please try again')
+      toast.success("Error while posting job. Please try again");
       setLoading(false);
     }
   };
@@ -212,7 +511,6 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           <div className={styles.headerContainer}>
             <h4 className={styles.h4}>Your job is successfully created</h4>
           </div>
-
           <JobPostingImage
             formData={formData}
             selectedFacilities={selectedFacilities}
@@ -270,18 +568,18 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
               type="button"
               onClick={handleBack}
               className={`outlined ${styles.actionButtons}`}
-              
             >
               Edit
             </Button>
             <Button
               type="submit"
               onClick={handleSubmit}
-              className={`btn ${loading ? 'btn-loading' : ''} ${styles.actionButtons}`}
+              className={`btn ${loading ? "btn-loading" : ""} ${
+                styles.actionButtons
+              }`}
               disabled={loading}
             >
-             
-              {loading ? <div className='spinner'></div> : 'Post Job'}
+              {loading ? <div className="spinner"></div> : "Post Job"}
             </Button>
           </div>
         </div>

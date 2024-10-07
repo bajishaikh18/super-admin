@@ -172,12 +172,6 @@
   color: white;
 }
 
-.descriptionSection {
-  text-align: left;
-  font-size: 14px;
-  margin-top: 20px;
-  margin-bottom: 15px;
-}
 
 .jobDescriptionTitle {
   font-size: 14px;
@@ -209,19 +203,6 @@
   text-align: center;
 }
 
-.jobDetailsFooter {
-  display: flex;
-  align-items: center;
-  margin-top: 15px;
-  border-top: 1px solid #ddd;
-  padding-top: 8px;
-}
-
-.contactInfo {
-  flex: 1;
-  margin-right: 15px;
-}
-
 .agencyLogo {
   width: 40px;
   height: 40px;
@@ -234,11 +215,6 @@
   text-align: left;
 }
 
-.contactDetails {
-  flex: 2;
-  text-align: left;
-  font-size: 12px;
-}
 
 .downloadButton,
 .editButton,
@@ -432,33 +408,6 @@
 
 }
 
-.benefitsSection {
-  display: flex;
-  background-color: #eee;
-  border-radius: 3px;
-  padding: 8px 5px;
-  font-size: 14px;
-  align-items: center;
-  margin-bottom: 20px;
-  h5{
-    font-size: 14px;
-    margin: 0px;
-  }
-  ul{
-    margin: 0px;
-  }
-  li{
-    display: inline-block;
-  }
-}
-
-
-.facilities {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  margin-top: 6px;
-}
 
 .contactContainer {
   display: flex;
@@ -613,14 +562,13 @@
   background: #fff;
   padding: 5px;
   border-radius: 8px;
-  width: 600px;
-  max-width: 500px;
+  max-width: 560px;
   border: 2px solid rgba(236, 236, 236, 1);
   position: relative;
   transition: transform 0.3s ease-in-out;
   font-size: 14px;
-  transform: scale(0.6);
-  margin: -80px auto;
+  transform: scale(0.7);
+  margin: -120px auto;
 }
 .fullScreen{
   transform: scale(1);
@@ -631,9 +579,7 @@
   position: relative;
 
 }
-.positionText{
-  font-size: 14px !important;
-}
+
 
 .headerContainer {
   text-align: center;
@@ -645,28 +591,8 @@
   background-color: white;
 }
 
-.jobDetails {
-  padding: 5px;
-  border-radius: 8px;
-  margin-top: 0px;
-}
 
-.positionsTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
 
-.positionsTable td,
-.positionsTable th {
-  padding: 6px 8px;
-  /* Increased padding for better readability */
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-  /* Align text to left */
-  background-color: #ffffff;
-  font-size: 13px;
-}
 
 .jobPositionTitle {
   font-weight: bold;
@@ -695,10 +621,9 @@
 }
 
 .expandButton {
-  position: absolute;
-  bottom: 65px;
-  /* Adjusted to keep enough distance from the Post Job button */
-  right: 95px;
+  position: relative;
+  right: -150px;
+  top: -60px;
   background: rgba(0, 0, 0, 0.9);
   border: none;
   padding:5px 10px;
@@ -765,7 +690,7 @@
 .colorLabel{
   text-align: left ;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 0px;
 }
 .colorInput{
   display: flex;
@@ -777,6 +702,9 @@
 .colorPicker{
   display: flex;
   margin-top: 10px;
+  position: absolute;
+  bottom: 0;
+  right: -180px;
   justify-content: right;
 }
 .download{

@@ -1,144 +1,378 @@
-import React, { useState, useEffect } from 'react';
-import styles from '../../app/dashboard/Dashboard.module.scss';
-import { AppUser, AdminUser } from  '../../stores/useUserStore';
-import { useUserStore } from '../../stores/useUserStore';
+import React, { useState, useMemo } from "react";
+import dataTableStyles from "../../components/common/table/DataTable.module.scss";
+import { User } from "../../stores/useUserStore";
+import { createColumnHelper, SortingState } from "@tanstack/react-table";
+import { DataTable } from "@/components/common/table/DataTable";
+import Link from "next/link";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
+import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { getSummary, getUsers } from "@/apis/dashboard";
+import { INDIAN_STATES } from "@/helpers/stateList";
+import { downloadMedia } from "@/helpers/mediaDownload";
 
+import { useDebounce } from "@uidotdev/usehooks";
+import { TableFilter } from "../common/table/Filter";
+import { DateTime } from "luxon";
+import { SelectOption } from "@/helpers/types";
 
+type TabType = "admin" | "app";
 
-type TabType = 'App Users' | 'Admin Users';
+const columnHelper = createColumnHelper<User>();
+
+const fetchSize = 100;
 
 const RegisteredUsers: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<TabType>('App Users');
-    const [searchTerm, setSearchTerm] = useState('');
-    const { appUsers, adminUsers, fetchUsers } = useUserStore();
+  const [activeTab, setActiveTab] = useState<TabType>("app");
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [search, setSearch] = React.useState<string>("");
+  const [searchAdmin, setSearchAdmin] = React.useState<string>("");
+  const [field, setField] = React.useState<SelectOption>({value:"email",label:"Email"} as SelectOption);
+  const [fieldAdmin, setFieldAdmin] = React.useState<SelectOption>({value:"email",label:"Email"} as SelectOption);
+  const debouncedSearchTerm = useDebounce(search, 300);
+  const debouncedSearchTermAdmin = useDebounce(searchAdmin, 300);
 
-    useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("firstName", {
+        header:" Name",
+        cell: (info) =>  info.renderValue() || "N/A",
+        enableColumnFilter: true,
+      }),
+      columnHelper.accessor("phone", {
+        header: "Mobile No",
+        cell: (info) => (
+          <Link href={`/user/${info.renderValue()}`}>{info.renderValue()}</Link>
+        ),
+      }),
+      columnHelper.accessor("email", {
+        header: "Email Id",
+        cell: (info) => (
+          <OverlayTrigger
+            overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
+          >
+            <>{info.renderValue() || "N/A"}</>
+          </OverlayTrigger>
+        ),
+        meta: {
+          classes: "px-10",
+        },
+      }),
+      columnHelper.accessor("state", {
+        header: "State",
+        cell: (info) =>
+          INDIAN_STATES.find((state) => state.state_code === info.renderValue())
+            ?.name || info.renderValue(),
+      }),
+      columnHelper.accessor("currentJobTitle", {
+        header: "Job title",
+        cell: (info) => info.renderValue() || "N/A",
+      }),
+      columnHelper.accessor("industry", {
+        header: "Industry",
+        cell: (info) => info.renderValue() || "N/A",
+        meta:{classes:"capitalize"}
+      }),
+      columnHelper.accessor("totalExperience", {
+        header: "Experience",
+        cell: (info) =>
+          info.renderValue() ? `${info.renderValue()} Years` : "N/A",
+      }),
+      columnHelper.accessor("gulfExperience", {
+        header: "Gulf Exp.",
+        cell: (info) => (info.renderValue() === true ? "Yes" : "No"),
+      }),
+      columnHelper.accessor("resume", {
+        cell: (info) => {
+          const [, extn] = info.getValue()?.keyName?.split("") || [];
+          return info.getValue()?.keyName ? (
+            <Link
+              href={`javascript:;`}
+              onClick={() =>
+                downloadMedia(
+                  info.getValue()?.keyName,
+                  `${info.row.getValue("firstName")}_${info.row.getValue(
+                    "lastName"
+                  )}.${extn}`
+                )
+              }
+              className={dataTableStyles.normalLink}
+            >
+              Download CV
+            </Link>
+          ) : (
+            "N/A"
+          );
+        },
 
-    const handleTabClick = (tab: TabType) => {
-        setActiveTab(tab);
-    };
+        header: "CV Availability",
+      }),
+      columnHelper.accessor("workVideo", {
+        cell: (info) => {
+          return info.getValue()?.keyName ? (
+            <Link
+              href={`javascript:;`}
+              onClick={() =>
+                downloadMedia(
+                  info.getValue()?.keyName,
+                  `${info.row.getValue("firstName")}_${info.row.getValue(
+                    "lastName"
+                  )}.mp4`
+                )
+              }
+              className={dataTableStyles.normalLink}
+            >
+              View Video
+            </Link>
+          ) : (
+            "N/A"
+          );
+        },
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-    };
+        header: "Work Video",
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "Regd. date",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => {
+          return <div className="status-cont">
+            {info.renderValue() || "N/A"}
 
-    const filteredUsers = (users: Array<AppUser | AdminUser>) =>
-        users.filter(user =>
-            Object.values(user).some((value: any) =>
-                value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-            )
-        );
+          </div>
+        }
+        
+      }),
+    ],
+    []
+  );
 
-    const isAppUser = (user: AppUser | AdminUser): user is AppUser => {
-        return (user as AppUser).cv !== undefined;
-    };
+  const adminColumns = useMemo(
+    () => [
+      columnHelper.accessor("_id", {
+        header:"User Id",
+        cell: (info) =>  info.renderValue() || "N/A",
+        enableColumnFilter: true,
+      }),
+      columnHelper.accessor("firstName", {
+        header: "Name",
+        cell: (info) => (info.renderValue()||"N/A")
+      }),
+      columnHelper.accessor("email", {
+        header: "Email Id",
+        cell: (info) => (
+          <Link href={`/user/${info.row.getValue("_id")}`}>{info.renderValue() || "N/A"}</Link>
+        ),
+        meta: {
+          classes: "px-10",
+        },
+      }),
+      columnHelper.accessor("phone", {
+        header: "Mobile No",
+        cell: (info) => (info.renderValue()||"N/A")
 
-    return (
-        <section className={styles.registeredUsers}>
-            <div className={styles.card}>
-                <div className={styles.headerRow}>
-                    <div className={styles.tabContainer}>
-                        <button
-                            className={`${styles.tabButton} ${activeTab === 'App Users' ? styles.active : ''}`}
-                            onClick={() => handleTabClick('App Users')}
-                        >
-                            App Users (27362)
-                        </button>
-                        <button
-                            className={`${styles.tabButton} ${activeTab === 'Admin Users' ? styles.active : ''}`}
-                            onClick={() => handleTabClick('Admin Users')}
-                        >
-                            Admin Users (7)
-                        </button>
-                    </div>
-                    <div className={styles.searchContainer}>
-                        <img src="/path/to/search-icon.png" alt="Search Icon" className={styles.searchIcon} />
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className={styles.searchInput}
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                    </div>
-                    <img src="/path/to/another-icon.png" alt="Another Icon" className={styles.anotherIcon} />
-                </div>
+      }),
+     
+      columnHelper.accessor("state", {
+        header: "State",
+        cell: (info) =>
+          INDIAN_STATES.find((state) => state.state_code === info.renderValue())
+            ?.name || info.renderValue() || "N/A",
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "Added date",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+      }),
+      columnHelper.accessor("lastLoginDate", {
+        header: "Last access",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        meta:{classes:"capitalize"},
+        cell: (info) => {
+          return <div className="status-cont">
+            {info.renderValue() || "N/A"}
 
-                <table className={styles.userTable}>
-                    <thead>
-                        <tr>
-                            <th>User Name</th>
-                            <th>Mobile No.</th>
-                            <th>Email ID</th>
-                            {activeTab === 'App Users' && (
-                                <>
-                                    <th>State</th>
-                                    <th>Job Title</th>
-                                    <th>Industry</th>
-                                    <th>Experience</th>
-                                    <th>Gulf Exp.</th>
-                                    <th>CV Availability</th>
-                                    <th>Work Video</th>
-                                    <th>Regd. Date</th>
-                                    <th>Status</th>
-                                </>
-                            )}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {activeTab === 'App Users' && filteredUsers(appUsers).map((user, index) => (
-                            <tr key={index}>
-                                <td className={styles.blueName}>{user.name}</td>
-                                <td>{user.mobile}</td>
-                                <td>{user.email}</td>
-                                {isAppUser(user) && (
-                                    <>
-                                        <td>{user.state}</td>
-                                        <td>{user.jobTitle}</td>
-                                        <td>{user.industry}</td>
-                                        <td>{user.experience}</td>
-                                        <td>{user.gulfExp}</td>
-                                        <td className={user.cv === 'NA' ? styles.blackNA : styles.blueLink}>{user.cv}</td>
-                                        <td className={user.video === 'NA' ? styles.blackNA : styles.blueLink}>{user.video}</td>
-                                        <td>{user.regdDate}</td>
-                                        <td>
-                                            <span className={user.status === 'Inactive' ? styles.inactiveStatus : styles.blueStatus}>
-                                                {user.status}
-                                            </span>
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))}
-                        {activeTab === 'Admin Users' && filteredUsers(adminUsers).map((user, index) => (
-                            <tr key={index}>
-                                <td className={styles.blueName}>{user.name}</td>
-                                <td>{user.mobile}</td>
-                                <td>{user.email}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+          </div>
+        }
+        
+      }),
+    ],
+    []
+  );
+
+  const {
+    data: summaryData,
+    isLoading: summaryLoading,
+    error: summaryError,
+  } = useQuery({
+    queryKey: ["summary", "dashboard"],
+    queryFn: getSummary,
+    retry: 3,
+  });
+
+  const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
+    User[]
+  >({
+    queryKey: ["people", 'app', activeTab, debouncedSearchTerm, sorting],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = pageParam as number;
+      const fetchedData = await getUsers(
+        activeTab,
+        start,
+        fetchSize,
+        debouncedSearchTerm,
+        field.value
+      );
+      return fetchedData;
+    },
+    retry: 3,
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
+
+  const {
+    data: adminData,
+    fetchNextPage: fetchAdminNextPage,
+    isFetching: isAdminFetching,
+    isLoading: isAdminLoading,
+  } = useInfiniteQuery<User[]>({
+    queryKey: ["people", 'admin' ,activeTab, debouncedSearchTermAdmin, sorting],
+    queryFn: async ({ pageParam = 0 }) => {
+      const start = pageParam as number;
+      const fetchedData = await getUsers(
+        activeTab,
+        start,
+        fetchSize,
+        debouncedSearchTermAdmin,
+        field.value
+      );
+      return fetchedData;
+    },
+    refetchInterval: 100000,
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
+
+  const flatData = React.useMemo(
+    () =>
+      data?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ?? [],
+    [data]
+  );
+  const totalCount = summaryData?.usersRegistered ?? 0;
+
+  const flatDataAdmin = React.useMemo(
+    () =>
+      adminData?.pages?.flatMap((page: any) => page?.paginatedUsers?.users) ??
+      [],
+    [adminData]
+  );
+  const totalCountAdmin = summaryData?.adminCount ?? 0;
+
+  const handleTabClick = (tab: TabType) => {
+    setActiveTab(tab);
+  };
+
+ 
+  return (
+    <Card>
+      <div className={"header-row"}>
+        <div className={"tab-container"}>
+          <button
+            className={`tab-button ${activeTab === "app" ? "active" : ""}`}
+            onClick={() => handleTabClick("app")}
+          >
+            App Users ({summaryData?.usersRegistered || 0})
+          </button>
+          <button
+            className={`tab-button ${activeTab === "admin" ? "active" : ""}`}
+            onClick={() => handleTabClick("admin")}
+          >
+            Admin Users ({summaryData?.adminCount || 0})
+          </button>
+        </div>
+        {
+          {
+            app: (
+              <TableFilter
+                handleFilterChange={(e)=> setField(e)}
+                field={field}
+                search={search}
+                columnsHeaders={columns}
+                handleChange={(e: any) => setSearch(e.target.value)}
+              />
+            ),
+            admin: (
+              <TableFilter
+                handleFilterChange={(e)=> setFieldAdmin(e)}
+                field={fieldAdmin}
+                columnsHeaders={adminColumns}
+                search={searchAdmin}
+                handleChange={(e: any) => setSearchAdmin(e.target.value)}
+              />
+            ),
+          }[activeTab]
+        }
+      </div>
+      {
+        {
+          app: (
+            <div className="fadeIn">
+              <DataTable
+                totalCount={totalCount}
+                columns={columns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => {
+                  setSorting(updater);
+                }}
+                data={flatData}
+                isSearch={!!search}
+                fetchNextPage={fetchNextPage}
+                isLoading={isLoading}
+                isFetching={isFetching}
+              />
             </div>
-        </section>
-    );
+          ),
+          admin: (
+            <div className="fadeIn">
+              <DataTable
+                totalCount={totalCountAdmin}
+                columns={adminColumns}
+                sorting={sorting}
+                sortingChanged={(updater: any) => {
+                  setSorting(updater);
+                }}
+                data={flatDataAdmin}
+                isSearch={!!searchAdmin}
+                fetchNextPage={fetchAdminNextPage}
+                isLoading={isAdminLoading}
+                isFetching={isAdminFetching}
+              />
+            </div>
+          ),
+        }[activeTab]
+      }
+    </Card>
+  );
 };
 
 export default RegisteredUsers;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
