@@ -97,6 +97,7 @@ const PostedJobsTable: React.FC = () => {
     initialPageParam: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
     refetchOnMount: true,
+    staleTime: 0,
     placeholderData: keepPreviousData,
   });
 
@@ -120,6 +121,7 @@ const PostedJobsTable: React.FC = () => {
     },
     refetchOnMount: true,
     initialPageParam: 0,
+    staleTime: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
     placeholderData: keepPreviousData,
   });
@@ -143,6 +145,7 @@ const PostedJobsTable: React.FC = () => {
       return fetchedData;
     },
     initialPageParam: 0,
+    staleTime: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
     refetchOnMount: true,
     placeholderData: keepPreviousData,
