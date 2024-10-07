@@ -18,6 +18,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
+import { INDUSTRIES } from "@/helpers/constants";
 
 type TabType = "admin" | "app";
 
@@ -28,6 +29,7 @@ const fetchSize = 100;
 const RegisteredUsers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("app");
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
   const [searchAdmin, setSearchAdmin] = React.useState<string>("");
   const [field, setField] = React.useState<SelectOption>({
@@ -90,10 +92,7 @@ const RegisteredUsers: React.FC = () => {
         header: "Industry",
         cell: (info) => info.renderValue() || "N/A",
         meta: { classes: "capitalize", filterType: "select",
-          selectOptions: [
-            { value: "yes", label: "Yes" },
-            { value: "no", label: "No" },
-          ],},
+          selectOptions: Object.entries(INDUSTRIES).map(([value,label])=>({value:value,label: label}))},
       }),
       columnHelper.accessor("totalExperience", {
         header: "Experience",
@@ -412,9 +411,9 @@ const RegisteredUsers: React.FC = () => {
               <DataTable
                 totalCount={totalCountAdmin}
                 columns={adminColumns}
-                sorting={sorting}
+                sorting={sortingAdmin}
                 sortingChanged={(updater: any) => {
-                  setSorting(updater);
+                  setSortingAdmin(updater);
                 }}
                 data={flatDataAdmin}
                 isSearch={!!searchAdmin}

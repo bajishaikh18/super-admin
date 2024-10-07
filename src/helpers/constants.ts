@@ -20,3 +20,12 @@ export const FACILITIES_IMAGES = {
   "Stay": "/stay.svg",
   "Recruitment":"/recruit.svg"
 }
+
+
+export const INDUSTRIES = {
+  "software":"Software",
+  "automotive":"Automotive",
+  "finance":"Finance",
+  "manufacturing":"Manufacturing",
+  "healthcare":"Healthcare"
+}

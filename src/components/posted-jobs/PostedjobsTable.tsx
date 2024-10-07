@@ -53,7 +53,10 @@ export type JobApiResponse = {
 
 const PostedJobsTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Active");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sortingActive, setSortingActive] = React.useState<SortingState>([]);
+  const [sortingExpired, setSortingExpired] = React.useState<SortingState>([]);
+  const [sortingPending, setSortingPending] = React.useState<SortingState>([]);
+
   const [showImage, setShowImage] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [searchActive, setSearchActive] = React.useState<string>("");
@@ -92,7 +95,7 @@ const PostedJobsTable: React.FC = () => {
     isFetching: isActiveJobsFetching,
     isLoading: isActiveJobsLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", sorting, "active", debouncedSearchActive],
+    queryKey: ["jobs", "active", debouncedSearchActive],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
@@ -118,7 +121,7 @@ const PostedJobsTable: React.FC = () => {
     isFetching: isExpiredJobsFetching,
     isLoading: isExpiredJobsLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", sorting, "expired", debouncedSearchExpired],
+    queryKey: ["jobs", "expired", debouncedSearchExpired],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
@@ -145,7 +148,7 @@ const PostedJobsTable: React.FC = () => {
     isFetching: isPendingJobsFetching,
     isLoading: isPendingJobsLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", sorting, "pending", debouncedSearchPending],
+    queryKey: ["jobs", "pending", debouncedSearchPending],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
@@ -373,10 +376,10 @@ const PostedJobsTable: React.FC = () => {
               <div className="fadeIn">
                 <DataTable
                   columns={columns}
-                  sorting={sorting}
+                  sorting={sortingActive}
                   totalCount={totalActiveCount}
                   isSearch={!!searchActive}
-                  sortingChanged={(updater: any) => setSorting(updater)}
+                  sortingChanged={(updater: any) => setSortingActive(updater)}
                   data={flattendActiveJobData}
                   fetchNextPage={fetchActiveJobsNextPage}
                   isLoading={isActiveJobsLoading}
@@ -388,10 +391,10 @@ const PostedJobsTable: React.FC = () => {
               <div className="fadeIn">
                 <DataTable
                   columns={columns}
-                  sorting={sorting}
+                  sorting={sortingExpired}
                   totalCount={totalExpiredCount}
                   isSearch={!!searchExpired}
-                  sortingChanged={(updater: any) => setSorting(updater)}
+                  sortingChanged={(updater: any) => setSortingExpired(updater)}
                   data={flattendExpiredJobData}
                   fetchNextPage={fetchExpiredJobsNextPage}
                   isLoading={isExpiredJobsLoading}
@@ -403,10 +406,10 @@ const PostedJobsTable: React.FC = () => {
               <div className="fadeIn">
                 <DataTable
                   columns={columns}
-                  sorting={sorting}
+                  sorting={sortingPending}
                   totalCount={totalPendingCount}
                   isSearch={!!searchPending}
-                  sortingChanged={(updater: any) => setSorting(updater)}
+                  sortingChanged={(updater: any) => setSortingPending(updater)}
                   data={flattendPendingJobData}
                   fetchNextPage={fetchPendingJobsNextPage}
                   isLoading={isPendingJobsLoading}

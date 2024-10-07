@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = () => {
               Agencies
             </Link>
             <Link className={styles.navListItem} href="#candidates">
-              Candidates
+              Users
             </Link>
             <Link className={styles.navListItem} href="#employers">
               Employers
