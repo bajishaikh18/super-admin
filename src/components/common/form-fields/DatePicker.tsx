@@ -55,7 +55,7 @@ export const CustomDatePicker = ({
               }
               popperPlacement="bottom"
             />
-            <Image src="/calendar.png" className="calendar-icon" alt="Calendar" width={18} height={20} />
+            <Image src="/calendar.svg" className="calendar-icon" alt="Calendar" width={18} height={20.8} />
           </>
         )}
         rules={rules}
