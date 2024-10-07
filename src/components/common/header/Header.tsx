@@ -1,103 +1,139 @@
-'use client'
-import React, { useState ,useEffect} from "react";
-import { usePathname, useRouter } from 'next/navigation';
-import { Navbar, Nav, NavDropdown, Modal } from 'react-bootstrap';
-import styles from './Header.module.scss'
-import Image from 'next/image';
+"use client";
+import React, { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Navbar, Nav, NavDropdown, Modal } from "react-bootstrap";
+import styles from "./Header.module.scss";
+import Image from "next/image";
 import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
 import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
 import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
+import { AuthHeader } from "./AuthHeader";
 
-
-interface HeaderProps {
- 
-}
+interface HeaderProps {}
+const HIDEPATHS = ["/login", "/reset-password"];
 
 const Header: React.FC<HeaderProps> = () => {
-  const pathname = usePathname()
+  const pathname = usePathname();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
-  const {authUser,setAuthUser}= useAuthUserStore();
-  const [showPostJobModal,setShowPostJobModal] = useState(false);
+  const { authUser, setAuthUser } = useAuthUserStore();
+  const [showPostJobModal, setShowPostJobModal] = useState(false);
 
-  useEffect(()=>{
-    if(isTokenValid() && !authUser){
-      const token = localStorage.getItem('token');
-      const user = getTokenClaims(token!);
-      setAuthUser(user as AuthUser)
-    }
-  },[])
-
-  const handleModalClose= ()=>{
+  const handleModalClose = () => {
     setShowPostJobModal(false);
-  }
+  };
 
-  const logout = ()=>{
+  const logout = () => {
     localStorage.clear();
     setAuthUser(null);
-    router.push('/login')
-  }
+    router.push("/login");
+  };
 
+  if (HIDEPATHS.includes(pathname)) {
+    return <AuthHeader/>;
+  }
   return (
     <>
-    <Navbar className={styles.header} expand="lg">
-       <div className={styles.logoContainer}>
-       <Image 
-          src="/logo.png" 
-          className={styles.logo} 
-          alt="Logo" 
-          width={136} 
-          height={27} 
-        />
-      </div>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className={styles.navContainer}>
-        <Link className={`${styles.navListItem} ${pathname=="/" ? styles.active: ''} `} href="/">Dashboard</Link>         
-         <Link  className={`${styles.navListItem} ${pathname=="/posted-jobs" ? styles.active: ''}`} href="/posted-jobs">Posted Jobs</Link>
-          <Link className={styles.navListItem} href="#agencies">Agencies</Link>
-          <Link className={styles.navListItem} href="#candidates">Candidates</Link>
-          <Link className={styles.navListItem} href="#employers">Employers</Link>
-          <NavDropdown title="Reports" className={`${styles.navListItem} nav-list-item`}>
-              <NavDropdown.Item href="#action/3.1" className={styles.navListItem}>Report Item</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2" className={styles.navListItem}>
-              Report Item
+      <Navbar className={styles.header} expand="lg">
+        <div className={styles.logoContainer}>
+          <Image
+            src="/logo.png"
+            className={styles.logo}
+            alt="Logo"
+            width={136}
+            height={27}
+          />
+        </div>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className={styles.navContainer}>
+            <Link
+              className={`${styles.navListItem} ${
+                pathname == "/" ? styles.active : ""
+              } `}
+              href="/"
+            >
+              Dashboard
+            </Link>
+            <Link
+              className={`${styles.navListItem} ${
+                pathname == "/posted-jobs" ? styles.active : ""
+              }`}
+              href="/posted-jobs"
+            >
+              Posted Jobs
+            </Link>
+            <Link className={styles.navListItem} href="#agencies">
+              Agencies
+            </Link>
+            <Link className={styles.navListItem} href="#candidates">
+              Candidates
+            </Link>
+            <Link className={styles.navListItem} href="#employers">
+              Employers
+            </Link>
+            <NavDropdown
+              title="Reports"
+              className={`${styles.navListItem} nav-list-item`}
+            >
+              <NavDropdown.Item
+                href="#action/3.1"
+                className={styles.navListItem}
+              >
+                Report Item
               </NavDropdown.Item>
-          </NavDropdown>
-        </Nav>
+              <NavDropdown.Item
+                href="#action/3.2"
+                className={styles.navListItem}
+              >
+                Report Item
+              </NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
 
-        <Nav className={styles.rightNavItems}>
-          <Nav.Link onClick={()=>{}} className={styles.faBell}>
-            <Image src='/bell.png' alt='bell' width={16} height={19}/>
-          </Nav.Link>
-          <Nav.Link href="#" onClick={()=>setShowPostJobModal(true)} className={`${styles.postJob} d-flex align-items-center gap-2`}>
-          <Image src='/upload.png' alt='bell' width={16} height={16}/>
+          <Nav className={styles.rightNavItems}>
+            <Nav.Link onClick={() => {}} className={styles.faBell}>
+              <Image src="/bell.png" alt="bell" width={16} height={19} />
+            </Nav.Link>
+            <Nav.Link
+              href="#"
+              onClick={() => setShowPostJobModal(true)}
+              className={`${styles.postJob} d-flex align-items-center gap-2`}
+            >
+              <Image src="/upload.png" alt="bell" width={16} height={16} />
+              Post Job
+            </Nav.Link>
 
-          Post Job
-          </Nav.Link>
-          
-
-          <NavDropdown 
-          className="nav-list-item"
-            title={
-              <span className="d-inline-flex align-items-center" style={{ cursor: 'pointer' }}>
-                <span className={styles.superAdmin}>{`${authUser?.firstName} ${authUser?.lastName}`}</span>
-              </span>
-            }
-            id="super-admin-dropdown"
-            align="end"
-          >
-            <NavDropdown.Item href="#my-account">My Account</NavDropdown.Item>
-            <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
-          </NavDropdown>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
-    <Modal show={showPostJobModal} onHide={handleModalClose} centered>
-        {showPostJobModal && <CreateJob handleModalClose={handleModalClose} /> } 
-    </Modal>
-  </>
+            {authUser && authUser.firstName && authUser.lastName && (
+              <NavDropdown
+                className="nav-list-item"
+                title={
+                  <span
+                    className="d-inline-flex align-items-center"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <span
+                      className={styles.superAdmin}
+                    >{`${authUser?.firstName} ${authUser?.lastName}`}</span>
+                  </span>
+                }
+                id="super-admin-dropdown"
+                align="end"
+              >
+                <NavDropdown.Item href="#my-account">
+                  My Account
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
+              </NavDropdown>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <Modal show={showPostJobModal} onHide={handleModalClose} centered>
+        {showPostJobModal && <CreateJob handleModalClose={handleModalClose} />}
+      </Modal>
+    </>
   );
 };
 

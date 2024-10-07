@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getTokenClaims } from '@/helpers/jwt';
+import { getUserDetails } from '@/apis/user';
 
 interface FormValues {
   email: string;
@@ -31,8 +32,8 @@ function Page() {
       console.log("Respone",response);
       if (response.token) { 
         localStorage.setItem('token', response.token);
-        const user = getTokenClaims(response.token)
-        setAuthUser(user as AuthUser);
+        const resp = await getUserDetails();
+        setAuthUser(resp.userDetails as AuthUser)
         router.push('/'); 
         setLoading(false);
      }
