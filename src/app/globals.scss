@@ -34,6 +34,14 @@ a {
   margin-top: 27px;
   margin-bottom: 14px;
   border-radius: 8px;
+  &.btn-img{
+    width: auto;
+    margin: 0px;
+    padding: 7px 24px;
+    svg{
+      margin-right: 8px;
+    }
+  }
   &.outlined{
     border: 1px solid $color-brand-1;
     background-color: transparent;
@@ -258,6 +266,7 @@ a {
     margin-bottom: 12px;
     line-height: 19px;
   }
+  
 
   .main-section{
     padding: 117px 24px 30px 24px;
@@ -267,6 +276,15 @@ a {
 
   .page-block{
     margin-bottom: 40px;
+    .page-title{
+      margin-bottom: 12px;
+      display: flex;
+      align-items:center;
+      justify-content: space-between;
+      .section-heading{
+        margin-bottom: 0px;
+      }
+    }
   }
 
   .status-cont{
@@ -278,11 +296,20 @@ a {
     display: inline-block;
     border-radius: 50px;
   }
-
+.filter-container{
+  display: flex;
+}
   .filter-section{
     display: flex;
+    align-items: center;
     position: relative;
-    padding:0px 24px 0px 0px;
+    padding:0px 12px 0px 0px;
+    .field-label{
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 0px;
+      margin-right: 10px;
+    }
     .filter-icon{
       padding: 3px 10px 10px 10px;
       background-color: $color-brand-2;
@@ -307,6 +334,8 @@ a {
       }
     }
     .input-group{
+      display: flex;
+      flex-wrap: nowrap;
       span{
         height: 32px;
       }
@@ -319,10 +348,14 @@ a {
           }
         }
       }
+      .custom-date-picker{
+        z-index: 2;
+      }
       .form-control{
         color: $color-grey-1 !important;
         border-left: none !important;
         padding-left: 0px;
+        border-radius: 0px 8px 8px 0px;
       }
     }
   }

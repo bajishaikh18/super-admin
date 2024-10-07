@@ -9,19 +9,19 @@ import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
 import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
 import { AuthHeader } from "./AuthHeader";
+import usePostJobStore from "@/stores/usePostJobStore";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
 
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
+  const {setShowPostJob, showPostJob} = usePostJobStore();
   const { authUser, setAuthUser } = useAuthUserStore();
-  const [showPostJobModal, setShowPostJobModal] = useState(false);
 
   const handleModalClose = () => {
-    setShowPostJobModal(false);
+    setShowPostJob(false);
   };
 
   const logout = () => {
@@ -97,8 +97,7 @@ const Header: React.FC<HeaderProps> = () => {
               <Image src="/bell.png" alt="bell" width={16} height={19} />
             </Nav.Link>
             <Nav.Link
-              href="#"
-              onClick={() => setShowPostJobModal(true)}
+              onClick={() => setShowPostJob(true)}
               className={`${styles.postJob} d-flex align-items-center gap-2`}
             >
               <Image src="/upload.png" alt="bell" width={16} height={16} />
@@ -130,8 +129,8 @@ const Header: React.FC<HeaderProps> = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <Modal show={showPostJobModal} onHide={handleModalClose} centered>
-        {showPostJobModal && <CreateJob handleModalClose={handleModalClose} />}
+      <Modal show={showPostJob} onHide={handleModalClose} centered>
+        {showPostJob && <CreateJob handleModalClose={handleModalClose} />}
       </Modal>
     </>
   );

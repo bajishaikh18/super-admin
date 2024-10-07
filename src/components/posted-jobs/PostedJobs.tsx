@@ -72,10 +72,8 @@ const PostedJobs = () => {
           )}
           {summaryData && <SummarySection summaryData={dashboardSummary} />}
         </div>
-        <div className="page-block">
-          <h3 className="section-heading">Posted Jobs</h3>
+        
           <PostedJobsTable />
-        </div>
       </main>
     </div>
   );

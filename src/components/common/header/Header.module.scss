@@ -69,7 +69,7 @@
 
 .postJob {
   font-weight: 500;
-  color: $color-brand-1;
+  color: $color-brand-1 !important;
   border: 1px dashed $color-brand-1;
   background-color: $color-brand-2;
   border-radius: 8px;

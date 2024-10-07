@@ -1,12 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./Dashboard.module.scss";
-import Header from "../../components/common/header/Header";
 import Insights from "../../components/dashboard/Insights";
 import RegisteredUsers from "../../components/dashboard/RegisterdUsers";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import SummarySection from "@/components/common/Summary";
-import useDashboardStore from "@/stores/useDashboardStore";
 import { useQuery } from "@tanstack/react-query";
 import { getJobCount, getSummary } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";

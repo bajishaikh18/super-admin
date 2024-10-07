@@ -33,7 +33,8 @@ export const getJobs = async (
   status: string,
   page: number,
   limit: number,
-  filter: string
+  filter: string,
+  field: string
 ) => {
   try {
     const response = await apiClient.get(`${basePath}/jobs`, {
@@ -42,7 +43,7 @@ export const getJobs = async (
         data: status,
         page: page+1,
         limit: limit,
-        field: "email",
+        field:field || '',
         filterTerm: filter,
       },
     });
