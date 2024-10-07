@@ -74,9 +74,11 @@ const PerformanceGraph = ({
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["performance", "dashboard", duration],
     queryFn: () => {
-      const month = DateTime.now().month;
-      const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
-      return getSitePerformance(timeFrame);
+      if(duration){
+        const month = DateTime.now().month;
+        const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
+        return getSitePerformance(timeFrame);
+      }
     },
     retry: 3,
   });

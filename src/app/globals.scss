@@ -47,6 +47,10 @@ a {
     background-color: transparent;
     color: $color-brand-1;
     width: auto;
+    &:hover{
+      background-color: $color-brand-1 !important;
+      color: #fff;
+    }
   }
   &.bg-white{
     background-color: #fff;

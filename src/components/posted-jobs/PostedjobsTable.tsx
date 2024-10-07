@@ -251,16 +251,22 @@ const PostedJobsTable: React.FC = () => {
     }),
     columnHelper.accessor("imageUrl", {
       cell: (info) => (
-        <Link
-          href={`javascript:;`}
-          onClick={() => {
-            setShowImage(true);
-            setImageUrl(info.getValue());
-          }}
-          className={dataTableStyles.normalLink}
-        >
-          View Image
-        </Link>
+        <>
+          {
+            info.getValue() ? <Link
+            href={`javascript:;`}
+            onClick={() => {
+              setShowImage(true);
+              setImageUrl(info.getValue());
+            }}
+            className={dataTableStyles.normalLink}
+          >
+            
+            View Image
+          </Link> : "N/A"
+          }
+        </>
+        
       ),
       header: "Media",
       meta: { filter: false },

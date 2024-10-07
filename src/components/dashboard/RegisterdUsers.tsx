@@ -73,7 +73,7 @@ const RegisteredUsers: React.FC = () => {
         header: "State",
         cell: (info) =>
           INDIAN_STATES.find((state) => state.state_code === info.renderValue())
-            ?.name || info.renderValue(),
+            ?.name || info.renderValue() || "N/A",
         meta: {
           filterType: "select",
           selectOptions: INDIAN_STATES.map((val) => ({
