@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Header from "../../components/common/header/Header";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
@@ -9,13 +7,6 @@ import PostedJobsTable from "./PostedjobsTable";
 import { getJobSummary } from "@/apis/job";
 
 const PostedJobs = () => {
-  const [notificationVisible, setNotificationVisible] = useState(false);
-  const [currentPage, setCurrentPage] = useState("dashboard");
-
-  const toggleNotification = () => {
-    setNotificationVisible(!notificationVisible);
-  };
-
   const {
     data: summaryData,
     isLoading: summaryLoading,
@@ -26,8 +17,6 @@ const PostedJobs = () => {
     retry: 3,
     refetchOnMount: true,
   });
-
-  console.log(summaryData);
 
   const dashboardSummary = [
     {

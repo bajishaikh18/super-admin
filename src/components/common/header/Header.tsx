@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = () => {
   }
   return (
     <>
-      <Navbar className={styles.header} expand="lg">
+      <Navbar className={styles.header} expand="lg" fixed={"top"}>
         <div className={styles.logoContainer}>
           <Image
             src="/logo.png"

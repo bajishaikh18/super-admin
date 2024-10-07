@@ -3,16 +3,13 @@ import React, { useState } from "react";
 import styles from "./Dashboard.module.scss";
 import Insights from "../../components/dashboard/Insights";
 import RegisteredUsers from "../../components/dashboard/RegisterdUsers";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
-import { getJobCount, getSummary } from "@/apis/dashboard";
+import { getSummary } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";
-import { useForm } from "react-hook-form";
 
 const Dashboard = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
-  const [currentPage, setCurrentPage] = useState("dashboard");
   const {
     data: summaryData,
     isLoading: summaryLoading,
