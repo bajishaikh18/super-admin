@@ -10,7 +10,7 @@ const SummarySection = ({ summaryData }: { summaryData: {label:string,value:stri
       {
         summaryData.map(summary=>{
           return (
-            <Card className={`internal-card ${styles.summaryItem}`}>
+            <Card className={`internal-card ${styles.summaryItem}`} key={summary.label}>
             <div className={styles.iconContainer}>
               <Image src={summary.image} width={summary.image==="/employers.png"?20:24} height={24} alt="job" />
             </div>

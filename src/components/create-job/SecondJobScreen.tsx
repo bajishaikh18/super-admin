@@ -311,7 +311,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               >
                  {
                   Object.values(COUNTRIES).map(country=>{
-                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                    return  <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
                   })
                 }
               </Form.Select>
@@ -346,7 +346,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               >
                 {
                   Object.values(COUNTRIES).map(country=>{
-                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                    return  <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
                   })
                 }
               </Form.Select>
