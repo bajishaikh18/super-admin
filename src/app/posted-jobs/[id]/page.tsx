@@ -60,13 +60,8 @@ const Page = ({ params }: { params: { id: string } }) => {
     // <ReactQueryProvider>
   <>
       {jobData ? (
-        <PostedJobDetails
-          media={jobData.media}
-          postedDate={jobData.postedDate}
-          expiry={jobData.expiry}
-          agencyName={jobData.agencyName}
-          location={jobData.location}
-          noOfPositions={jobData.noOfPositions}
+      <PostedJobDetails
+          jobId={id}
           onClose={handleClose}
         />
       ) : (

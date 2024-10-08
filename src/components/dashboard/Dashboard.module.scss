@@ -407,43 +407,11 @@
   justify-content: space-between; /* Ensures both containers are spaced apart */
   gap: 20px; /* Space between left and right containers */
 }
-.leftContainer
-{ background-color: white; /* Optional: To separate visually */
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  width: 451px;
-  height: 708px;
-  top: 168px;
-  left: 24px;
-  gap: 0px;
-  border-radius: 8px 0px 0px 0px;
-  opacity: 0px;
- /* Optional: Subtle shadow */
-}
-.rightContainer {
-  background-color: white; /* Optional: To separate visually */
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); 
-  width: 921px;
-  height: 708px;
-  top: 168px;
-  left: 495px;
-  gap: 0px;
-  border-radius: 8px 0px 0px 0px;
-  opacity: 0px;
-  box-shadow: 0px 4px 16px 0px #00000029;
-  flex-direction: column; 
-}
 .leftContainer {
   flex: 0 0 40%; 
 }
 .rightContainer {
   flex: 1;
-}
-.backlink {
-  cursor: pointer;
-  font-weight: 300px;
-  margin-bottom: 20px;
 }
 
 .detailedImage {
@@ -452,14 +420,7 @@
   border-radius: 10px;
   margin-bottom: 20px;
 }
-.jobInfoList {
-  width: Hug (187px)px;
-  height: Hug (17px)px;
-  top: 620px;
-  left: 48px;
-  gap: 8px;
-  opacity: 0px;
-}
+
 .positions ul {
   list-style: none;
   padding-left: 0;
@@ -505,14 +466,7 @@
   gap: 0px;
   opacity: 0px;
 }
-.agencyName{
-  width: 428px;
-  height: 66px;
-  top: 200px;
-  left: 527px;
-  gap: 0px;
-  opacity: 0px;
-}
+
 .Description{
   width: 462px;
   height: 180px;
@@ -521,34 +475,8 @@
   gap: 0px;
   opacity: 0px;
 }
-.line {
-  height: 2px;
-  background-color: #ddd;
-  margin: 15px 0;
-}
-.imageContainer {
-  position: relative;
-  width: 403px;
-  height: 404px;
-}
-.expandButton {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  background: black ;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-.actionsContainer {
-  
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 10px;
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-}
+
+
 .actionsContainer:hover .dropdownContent {
   display: block; /* Show dropdown on hover */
 }
