@@ -1,143 +1,295 @@
-'use client';
+"use client";
 import React, { useState } from "react";
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { getJobDetails } from "@/apis/job";
-import styles from "../../components/dashboard/Dashboard.module.scss";
+import styles from "./PostedJobDetail.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+import { FaChevronLeft } from "react-icons/fa6";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  Dropdown,
+  Modal,
+  NavDropdown,
+  Row,
+} from "react-bootstrap";
+import { DateTime } from "luxon";
+import Link from "next/link";
+import { BsThreeDots } from "react-icons/bs";
+import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
+import { FullScreenImage } from "../common/FullScreenImage";
+import { Loader, NotFound } from "../common/Feedbacks";
+import CreateJob from "../create-job/CreateJob";
 
 type PostedJobDetailsProps = {
   jobId: string;
   onClose: () => void;
 };
 
-const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({ jobId, onClose }) => {
+const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
+  jobId,
+  onClose,
+}) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
-
+  const [openEdit,setOpenEdit ]= useState(false);
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['jobDetails', jobId],
+    queryKey: ["jobDetails", jobId],
     queryFn: () => {
       if (jobId) {
         return getJobDetails(jobId);
       }
       throw new Error("jobId is null or undefined");
     },
-    enabled: !!jobId });
-
-  console.log("Job", data);
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
+    enabled: !!jobId,
+  });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <main className="main-section"><Loader text="Loading job details"/></main>;
   }
 
-  if (isError || !data) {
-    return <div>Error loading job details</div>;
+  if (!data) {
+    return <main className="main-section"><NotFound text="Oops!, looks like job details are not present"/></main>;
   }
-  
+  if (isError) {
+    return <main className="main-section"><NotFound text="Something went wrong while accessing job details. Please try again"/></main>;
+  }
+
   const {
     createdAt,
     expiry,
     agencyName,
+    imageUrl,
     location,
     positions,
-    contactNumbers, 
+    contactNumbers,
     email,
     description,
-    amenities, 
+    amenities,
   } = data.job;
 
-  const postedDate = new Date(createdAt).toLocaleDateString();
-  
   const goBack = () => {
     router.back();
   };
 
   return (
     <main className="main-section">
-      <div className={`${styles.detailedViewContainer} ${isFullScreen ? styles.fullScreen : ""}`}>
-        <span onClick={goBack} className={styles.backlink}>
-          〱 Job Posting Details
-        </span>
-        <div className={styles.contentWrapper}>
-          <div className={styles.leftContainer}>
-            <div className={styles.imageContainer}>
-              <Image
-                src="/Rectangle.png"
-                alt="Rectangle"
-                width={403}
-                height={404}
-                className={styles.buttonIcon}
-              />
-              {isFullScreen ? (
-                <button className={styles.closeFullscreen}>
-                  <AiFillCloseCircle size={30} onClick={toggleFullScreen} />
-                </button>
-              ) : (
-                <button className={styles.expandButton}>
-                  <AiOutlineExpand size={20} onClick={toggleFullScreen} />
-                </button>
-              )}
-            </div>
-            <ul className={styles.jobInfoList}>
-              <li>Posted on {postedDate}</li>
-              <li>Valid till {new Date(expiry).toLocaleDateString()}</li>
-              <li>Viewed by X Candidates</li>
-              <li>Applied by Y Candidates</li>
-            </ul>
-          </div>
-          <div className={styles.rightContainer}>
-            <h2 className={styles.agencyName}>{agencyName}</h2>
-            <div className={styles.actionsContainer}>
-              <button className={styles.editPostButton}>Edit Post</button>
-              <div className={styles.dropdownButton}>
-                <button className={styles.moreActionsButton} onClick={toggleDropdown}>
-                  ...
-                </button>
-                {dropdownVisible && (
-                  <div className={styles.dropdownContent}>
-                    <button>De-activate Post</button>
-                    <button>Delete Post</button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <p><strong>Working Location:</strong> {location}</p>
-            <p><strong>Contact Mobile:</strong> {contactNumbers.join(", ")}</p>
-            <p><strong>Contact Email:</strong> {email}</p>
-            <div className={styles.line}></div>
-            <div className={styles.positions}>
-              <h3>Positions</h3>
-              <ul>
-                {positions.map((position: { positionId: number; title: string; experience: string; salary: string }, index: number) => (
-                  <li key={position.positionId}>
-                    <strong>{position.title}</strong> - {position.experience}, Salary: {position.salary}
+      <Container fluid>
+        <h3 onClick={goBack} className={styles.backlink}>
+          <FaChevronLeft fontSize={16} color="#000" />
+          Job Posting Details
+        </h3>
+
+        <Row>
+          <Col lg={4}>
+            <Card className={styles.summaryCard}>
+              <CardBody className={styles.summaryCardBody}>
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}`: 'Rectangle.png'}`}
+                    alt="Rectangle"
+                    height={0}
+                    width={800}
+                    style={{ height: "auto", width: "100%" }}
+                    className={styles.buttonIcon}
+                  />
+                  <button className="expand-button">
+                    <AiOutlineExpand
+                      size={14}
+                      onClick={() => setIsFullScreen(true)}
+                    />
+                  </button>
+                </div>
+                <ul className={styles.jobInfoList}>
+                  <li>
+                    <Image
+                      src={"/clock.svg"}
+                      width={18}
+                      height={18}
+                      alt="clock"
+                    />
+                    Posted on{" "}
+                    {DateTime.fromISO(createdAt).toFormat("dd-MMM-yyyy")}
                   </li>
-                ))}
-              </ul>
-            </div>
-            <div className={styles.line}></div>
-            <div className={styles.jobDescription}>
-              <h3>Job Description</h3>
-              <p>{description}</p>
-              <div className={styles.benefits}>
-                {amenities.map((amenity: string, index: number) => (
-                  <span key={index}>{amenity}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                  <li>
+                    <Image
+                      src={"/expiry-icon.svg"}
+                      width={18}
+                      height={18}
+                      alt="expiry"
+                    />
+                    Valid till{" "}
+                    {DateTime.fromISO(expiry).toFormat("dd-MMM-yyyy")}
+                  </li>
+                  <li>
+                    <Image
+                      src={"/view.svg"}
+                      width={18}
+                      height={18}
+                      alt="view"
+                    />
+                    Viewed by 1,186 Candidates
+                  </li>
+                  <li>
+                    <Image
+                      src={"/applied.svg"}
+                      width={18}
+                      height={18}
+                      alt="applie"
+                    />
+                    Applied by <Link href={""}>200 Candidates</Link>
+                  </li>
+                </ul>
+                <ul className={styles.footerInfo}>
+                  <li>
+                    <Image
+                      src={"/clock.svg"}
+                      width={18}
+                      height={18}
+                      alt="clock"
+                    />
+                    {DateTime.fromISO(createdAt).toFormat("dd-MMM-yyyy")}
+                  </li>
+                  <li>
+                    <Image
+                      src={"/expiry-icon.svg"}
+                      width={18}
+                      height={18}
+                      alt="expiry"
+                    />
+                    Valid till{" "}
+                    {DateTime.fromISO(expiry).toFormat("dd-MMM-yyyy")}
+                  </li>
+                </ul>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col lg={8}>
+            <Card className={styles.detailsCard}>
+              <CardHeader className={styles.detailsCardHeader}>
+                <div className={styles.agencyDetails}>
+                  <Image
+                    src="/ag_logo.svg"
+                    width={66}
+                    height={66}
+                    alt="agency-logo"
+                  />
+                  <div>
+                    <div className={styles.agencyNameContainer}>
+                      <h2 className={styles.agencyName}>Muthu International</h2>
+                      <Image
+                        src="/verified.svg"
+                        width={13}
+                        height={13}
+                        alt="agency-logo"
+                      />
+                    </div>
+                    <p>
+                      Approved by Ministry of external affairs Govt of India
+                    </p>
+                  </div>
+                </div>
+                <div className={styles.actionContainer}>
+                  <Button className={`action-buttons ${styles.editButton}`} onClick={()=>setOpenEdit(true)}>
+                    Edit Post
+                  </Button>
+                    <Dropdown>
+                      <Dropdown.Toggle className={styles.dropdownButton} variant="success" id="dropdown-basic">
+                        <BsThreeDots fontSize={24} />
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        <Dropdown.Item href="#/action-1">
+                          De-activate Post
+                        </Dropdown.Item>
+                        <Dropdown.Item className="danger">
+                           Delete Post
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                </div>
+              </CardHeader>
+              <CardBody className={styles.detailsCardBody}>
+                <h5>
+                  <span>Working Location</span> {COUNTRIES[location as "bh"].label}
+                </h5>
+                <h5>
+                  <span>Contact Mobile</span> {contactNumbers.join(", ")}
+                </h5>
+                <h5>
+                  <span>Contact Email</span> {email}
+                </h5>
+                <div className={styles.line}></div>
+                <div className={styles.positions}>
+                  <h3>Positions</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {positions.map(
+                        (
+                          position: {
+                            positionId: number;
+                            title: string;
+                            experience: string;
+                            salary: string;
+                          },
+                          index: number
+                        ) => (
+                          <tr key={position.positionId}>
+                            <td className={styles.title}>{position.title}</td>
+                            <td>{position.experience} Years</td>
+                            <td>{position.salary}</td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <div className={styles.line}></div>
+                <div className={styles.jobDescription}>
+                  <h3>Job Description</h3>
+                  <p>{description || "N/A"}</p>
+                  <ul className={styles.benefits}>
+                    {amenities.map((amenity: string, index: number) => (
+                      <li key={index}>
+                        <Image
+                          src={FACILITIES_IMAGES[amenity as "Food"]}
+                          alt={amenity}
+                          width={14}
+                          height={14}
+                        />{" "}
+                        {amenity}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+      <FullScreenImage
+        isOpen={isFullScreen}
+        handleClose={() => {
+          setIsFullScreen(false);
+        }}
+        imageUrl={imageUrl}
+      />
+       <Modal show={openEdit} onHide={()=>setOpenEdit(false)} centered>
+        {openEdit && <CreateJob handleModalClose={()=>setOpenEdit(false)} jobDetails={data.job} />}
+      </Modal>
     </main>
   );
 };

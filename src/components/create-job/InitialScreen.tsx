@@ -11,12 +11,14 @@ interface InitialScreenProps {
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
   selectedFile: File | null;
+  isEdit?:boolean,
   handleCreateNowClick: () => void;
   handleClose: () => void;
 }
 
 const InitialScreen: React.FC<InitialScreenProps> = ({
   handleFileChange,
+  isEdit,
   fileInputRef,
   handleClose,
   selectedFile,
@@ -40,7 +42,7 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>Post a Job</h2>
+        <h2>{isEdit ? "Edit":"Post a"} Job</h2>
         <IoClose
           className={styles.closeButton}
           onClick={handleClose}
@@ -79,12 +81,15 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
       </Button>}
       </div>
       <div className={styles.createSection}>
-        <h3>Don’t have a media ready?</h3>
+        <h3>{isEdit ?"Edit your media" : "Don’t have a media ready?" }</h3>
         <Button
         className={`outlined ${styles.outlinedButton}`}
           onClick={handleCreateNowClick}
         >
-          Create Now
+          {
+            isEdit ? "Edit Now" : "Create Now"
+          }
+         
         </Button>
       </div>
     </div>

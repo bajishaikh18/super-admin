@@ -16,11 +16,13 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface FourthJobScreenProps {
+  isEdit?:boolean;
   handleBack: () => void;
   handleClose: () => void;
 }
 
 const JobPostingImage = ({
+  
   formData,
   selectedFacilities,
   handleFullScreen,
@@ -428,6 +430,7 @@ const JobPostingImage = ({
   );
 };
 const PostJobScreen: React.FC<FourthJobScreenProps> = ({
+  isEdit,
   handleBack,
   handleClose,
 }) => {
@@ -466,7 +469,8 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      if (!newlyCreatedJob?._id) {
+      const id = newlyCreatedJob?._id || formData?._id;
+      if (!id) {
         throw "Not found";
       }
       const element = document.querySelector(
@@ -482,11 +486,11 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       const resp = await getSignedUrl(
         "jobImage",
         blob?.type!,
-        newlyCreatedJob?._id
+        id
       );
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
-        await updateJob(newlyCreatedJob?._id, { imageUrl: resp.keyName });
+        await updateJob(id, { imageUrl: resp.keyName });
         await queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey.includes('jobs');
@@ -503,7 +507,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       }
       setLoading(false);
     } catch (error: unknown) {
-      toast.success("Error while posting job. Please try again");
+      toast.error("Error while posting job. Please try again");
       setLoading(false);
     }
   };
@@ -512,14 +516,14 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       {!isFullScreen && (
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
-            <h2>Create a Job (2/2)</h2>
+            <h2>Success</h2>
             <IoClose
               className={styles.closeButton}
               onClick={handleClose}
             ></IoClose>{" "}
           </div>
           <div className={styles.headerContainer}>
-            <h4 className={styles.h4}>Your job is successfully created</h4>
+            <h4 className={styles.h4}>Your job is successfully {isEdit?"created":"updated"}</h4>
           </div>
           <JobPostingImage
             formData={formData}
@@ -577,16 +581,14 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
             <Button
               type="button"
               onClick={handleBack}
-              className={`outlined ${styles.actionButtons}`}
+              className={`outlined action-buttons`}
             >
               Edit
             </Button>
             <Button
               type="submit"
               onClick={handleSubmit}
-              className={`btn ${loading ? "btn-loading" : ""} ${
-                styles.actionButtons
-              }`}
+              className={`btn ${loading ? "btn-loading" : ""} action-buttons`}
               disabled={loading}
             >
               {loading ? <div className="spinner"></div> : "Post Job"}
