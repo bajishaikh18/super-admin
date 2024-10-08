@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
-import { getTokenClaims } from '@/helpers/jwt';
+import { getUserDetails } from '@/apis/user';
 
 interface FormValues {
   email: string;
@@ -31,15 +31,16 @@ function Page() {
       console.log("Respone",response);
       if (response.token) { 
         localStorage.setItem('token', response.token);
-        const user = getTokenClaims(response.token)
-        setAuthUser(user as AuthUser);
-        router.push('/'); 
+        const resp = await getUserDetails();
+        setAuthUser(resp.userDetails as AuthUser)
+        router.prefetch('/'); 
+        router.push("/");
         setLoading(false);
      }
     } catch (error:any) {
       setLoading(false);
-      if(error.status === 404){
-        toast.error('Looks like credentials are wrong')
+      if(error.status === 400){
+        toast.error('Looks like your credentials are wrong')
       }else{
         toast.error('Something went wrong! Please try again later')
       }

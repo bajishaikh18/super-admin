@@ -72,9 +72,11 @@ const JobsPostedGraph = ({
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["jobposted", "dashboard", duration],
     queryFn: () => {
-      const month = DateTime.now().month;
-      const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
-      return getJobCount(timeFrame);
+      if(duration){
+        const month = DateTime.now().month;
+        const timeFrame = DateTime.now().set({month:month+Number(duration)*-1}).toISO()
+        return getJobCount(timeFrame);
+      }
     },
     retry: 3,
   });

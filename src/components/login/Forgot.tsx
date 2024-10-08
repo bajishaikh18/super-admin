@@ -34,12 +34,13 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
     try {
       localStorage.setItem("forgotPasswordEmail", data.email);
       const response = await forgotPassword(data);
-
-      console.log("Password reset email sent:", response.data);
       setEmailSent(true);
-    } catch (error) {    
-      toast.error('Something went wrong! Please try again later')
-      console.error("Error sending password reset email:", error);
+    } catch (error:any) {    
+      if(error.status === 400){
+        toast.error('Looks like your email doesnt exist')
+      }else{
+        toast.error('Something went wrong! Please try again later')
+      }
     } finally {
       setLoading(false);
     }

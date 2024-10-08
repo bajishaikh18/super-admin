@@ -1,4 +1,4 @@
-import create from "zustand";
+import {create} from "zustand";
 
 type JobPosition ={
   title:{
@@ -49,10 +49,12 @@ export type PostJobFormData =  {
 
 interface PostJobStoreState {
   selectedFile: File | null;
+  showPostJob: boolean,
   selectedFacilities: string[];
   newlyCreatedJob: Job | null;
   formData: PostJobFormData | null;
   setFormData: (formData: PostJobFormData | null) => void
+  setShowPostJob: (val:boolean)=>void
   setNewlyCreatedJob: (job:Job)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
@@ -62,6 +64,7 @@ interface PostJobStoreState {
 const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
+  showPostJob: false,
   selectedFacilities: [],
   newlyCreatedJob: null,
   formData: null,
@@ -71,6 +74,7 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
   setNewlyCreatedJob:(job)=>set(() => ({ newlyCreatedJob:job})),
+  setShowPostJob:(val)=>set(() => ({ showPostJob:val})),
   resetData:()=>{
     set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
   },

@@ -18,6 +18,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
+import { INDUSTRIES } from "@/helpers/constants";
 
 type TabType = "admin" | "app";
 
@@ -28,18 +29,25 @@ const fetchSize = 100;
 const RegisteredUsers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("app");
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
   const [searchAdmin, setSearchAdmin] = React.useState<string>("");
-  const [field, setField] = React.useState<SelectOption>({value:"email",label:"Email"} as SelectOption);
-  const [fieldAdmin, setFieldAdmin] = React.useState<SelectOption>({value:"email",label:"Email"} as SelectOption);
+  const [field, setField] = React.useState<SelectOption>({
+    value: "email",
+    label: "Email",
+  } as SelectOption);
+  const [fieldAdmin, setFieldAdmin] = React.useState<SelectOption>({
+    value: "email",
+    label: "Email",
+  } as SelectOption);
   const debouncedSearchTerm = useDebounce(search, 300);
   const debouncedSearchTermAdmin = useDebounce(searchAdmin, 300);
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
-        header:" Name",
-        cell: (info) =>  info.renderValue() || "N/A",
+        header: " Name",
+        cell: (info) => info.renderValue() || "N/A",
         enableColumnFilter: true,
       }),
       columnHelper.accessor("phone", {
@@ -52,7 +60,9 @@ const RegisteredUsers: React.FC = () => {
         header: "Email Id",
         cell: (info) => (
           <OverlayTrigger
-            overlay={<Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>}
+            overlay={
+              <Tooltip id="button-tooltip-2">Check out this avatar</Tooltip>
+            }
           >
             <>{info.renderValue() || "N/A"}</>
           </OverlayTrigger>
@@ -65,7 +75,14 @@ const RegisteredUsers: React.FC = () => {
         header: "State",
         cell: (info) =>
           INDIAN_STATES.find((state) => state.state_code === info.renderValue())
-            ?.name || info.renderValue(),
+            ?.name || info.renderValue() || "N/A",
+        meta: {
+          filterType: "select",
+          selectOptions: INDIAN_STATES.map((val) => ({
+            label: val.name,
+            value: val.state_code,
+          })),
+        },
       }),
       columnHelper.accessor("currentJobTitle", {
         header: "Job title",
@@ -74,15 +91,27 @@ const RegisteredUsers: React.FC = () => {
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => info.renderValue() || "N/A",
-        meta:{classes:"capitalize"}
+        meta: { classes: "capitalize", filterType: "select",
+          selectOptions: Object.entries(INDUSTRIES).map(([value,label])=>({value:value,label: label}))},
       }),
       columnHelper.accessor("totalExperience", {
         header: "Experience",
+        meta: {
+          filterType: "number",
+        },
         cell: (info) =>
           info.renderValue() ? `${info.renderValue()} Years` : "N/A",
       }),
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
+        meta: {
+          classes: "capitalize",
+          filterType: "select",
+          selectOptions: [
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
+          ],
+        },
         cell: (info) => (info.renderValue() === true ? "Yes" : "No"),
       }),
       columnHelper.accessor("resume", {
@@ -107,10 +136,11 @@ const RegisteredUsers: React.FC = () => {
             "N/A"
           );
         },
-
+        meta: { filter: false },
         header: "CV Availability",
       }),
       columnHelper.accessor("workVideo", {
+        meta: { filter: false },
         cell: (info) => {
           return info.getValue()?.keyName ? (
             <Link
@@ -131,7 +161,6 @@ const RegisteredUsers: React.FC = () => {
             "N/A"
           );
         },
-
         header: "Work Video",
       }),
       columnHelper.accessor("createdAt", {
@@ -140,16 +169,23 @@ const RegisteredUsers: React.FC = () => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
+        meta: { filterType: "date" },
       }),
       columnHelper.accessor("status", {
         header: "Status",
+        meta: {
+          classes: "capitalize",
+          filterType: "select",
+          selectOptions: [
+            { value: "active", label: "Active" },
+            { value: "inactive", label: "InActive" },
+          ],
+        },
         cell: (info) => {
-          return <div className="status-cont">
-            {info.renderValue() || "N/A"}
-
-          </div>
-        }
-        
+          return (
+            <div className="status-cont">{info.renderValue() || "N/A"}</div>
+          );
+        },
       }),
     ],
     []
@@ -158,18 +194,20 @@ const RegisteredUsers: React.FC = () => {
   const adminColumns = useMemo(
     () => [
       columnHelper.accessor("_id", {
-        header:"User Id",
-        cell: (info) =>  info.renderValue() || "N/A",
+        header: "User Id",
+        cell: (info) => info.renderValue() || "N/A",
         enableColumnFilter: true,
       }),
       columnHelper.accessor("firstName", {
         header: "Name",
-        cell: (info) => (info.renderValue()||"N/A")
+        cell: (info) => info.renderValue() || "N/A",
       }),
       columnHelper.accessor("email", {
         header: "Email Id",
         cell: (info) => (
-          <Link href={`/user/${info.row.getValue("_id")}`}>{info.renderValue() || "N/A"}</Link>
+          <Link href={`/user/${info.row.getValue("_id")}`}>
+            {info.renderValue() || "N/A"}
+          </Link>
         ),
         meta: {
           classes: "px-10",
@@ -177,15 +215,23 @@ const RegisteredUsers: React.FC = () => {
       }),
       columnHelper.accessor("phone", {
         header: "Mobile No",
-        cell: (info) => (info.renderValue()||"N/A")
-
+        cell: (info) => info.renderValue() || "N/A",
       }),
-     
+
       columnHelper.accessor("state", {
         header: "State",
         cell: (info) =>
           INDIAN_STATES.find((state) => state.state_code === info.renderValue())
-            ?.name || info.renderValue() || "N/A",
+            ?.name ||
+          info.renderValue() ||
+          "N/A",
+        meta: {
+          filterType: "select",
+          selectOptions: INDIAN_STATES.map((val) => ({
+            label: val.name,
+            value: val.state_code,
+          })),
+        },
       }),
       columnHelper.accessor("createdAt", {
         header: "Added date",
@@ -193,6 +239,7 @@ const RegisteredUsers: React.FC = () => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
+        meta: { filterType: "date" },
       }),
       columnHelper.accessor("lastLoginDate", {
         header: "Last access",
@@ -200,17 +247,23 @@ const RegisteredUsers: React.FC = () => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
+        meta: { filterType: "date" },
       }),
       columnHelper.accessor("status", {
         header: "Status",
-        meta:{classes:"capitalize"},
+        meta: {
+          classes: "capitalize",
+          filterType: "select",
+          selectOptions: [
+            { value: "active", label: "Active" },
+            { value: "inactive", label: "InActive" },
+          ],
+        },
         cell: (info) => {
-          return <div className="status-cont">
-            {info.renderValue() || "N/A"}
-
-          </div>
-        }
-        
+          return (
+            <div className="status-cont">{info.renderValue() || "N/A"}</div>
+          );
+        },
       }),
     ],
     []
@@ -229,7 +282,7 @@ const RegisteredUsers: React.FC = () => {
   const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
     User[]
   >({
-    queryKey: ["people", 'app', activeTab, debouncedSearchTerm, sorting],
+    queryKey: ["people", "app", activeTab, debouncedSearchTerm, sorting],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getUsers(
@@ -254,7 +307,7 @@ const RegisteredUsers: React.FC = () => {
     isFetching: isAdminFetching,
     isLoading: isAdminLoading,
   } = useInfiniteQuery<User[]>({
-    queryKey: ["people", 'admin' ,activeTab, debouncedSearchTermAdmin, sorting],
+    queryKey: ["people", "admin", activeTab, debouncedSearchTermAdmin, sorting],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getUsers(
@@ -292,7 +345,6 @@ const RegisteredUsers: React.FC = () => {
     setActiveTab(tab);
   };
 
- 
   return (
     <Card>
       <div className={"header-row"}>
@@ -314,20 +366,22 @@ const RegisteredUsers: React.FC = () => {
           {
             app: (
               <TableFilter
-                handleFilterChange={(e)=> setField(e)}
+                key={"app"}
+                handleFilterChange={(e) => setField(e)}
                 field={field}
                 search={search}
                 columnsHeaders={columns}
-                handleChange={(e: any) => setSearch(e.target.value)}
+                handleChange={(val: any) => setSearch(val)}
               />
             ),
             admin: (
               <TableFilter
-                handleFilterChange={(e)=> setFieldAdmin(e)}
+                key={"admin"}
+                handleFilterChange={(e) => setFieldAdmin(e)}
                 field={fieldAdmin}
                 columnsHeaders={adminColumns}
                 search={searchAdmin}
-                handleChange={(e: any) => setSearchAdmin(e.target.value)}
+                handleChange={(val: any) => setSearchAdmin(val)}
               />
             ),
           }[activeTab]
@@ -357,9 +411,9 @@ const RegisteredUsers: React.FC = () => {
               <DataTable
                 totalCount={totalCountAdmin}
                 columns={adminColumns}
-                sorting={sorting}
+                sorting={sortingAdmin}
                 sortingChanged={(updater: any) => {
-                  setSorting(updater);
+                  setSortingAdmin(updater);
                 }}
                 data={flatDataAdmin}
                 isSearch={!!searchAdmin}

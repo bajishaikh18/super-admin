@@ -487,7 +487,17 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
         await updateJob(newlyCreatedJob?._id, { imageUrl: resp.keyName });
-        queryClient.invalidateQueries({ queryKey: ['jobs'] })
+        await queryClient.invalidateQueries({
+          predicate: (query) => {
+            return query.queryKey.includes('jobs');
+          },
+          refetchType:'all'
+        })
+        // await queryClient.refetchQueries({
+        //     predicate: (query) => {
+        //       return query.queryKey.includes('jobs');
+        //     },
+        //   });
         toast.success("Job posted successfully");
         handleClose();
       }

@@ -8,7 +8,7 @@
   margin: 0;
   padding: 22px 48px;
   width: 100vw;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -69,7 +69,7 @@
 
 .postJob {
   font-weight: 500;
-  color: $color-brand-1;
+  color: $color-brand-1 !important;
   border: 1px dashed $color-brand-1;
   background-color: $color-brand-2;
   border-radius: 8px;

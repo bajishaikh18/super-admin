@@ -39,6 +39,7 @@ interface SecondJobScreenProps {
   handleCreateJobClick: () => void;
   handleClose: () => void;
 }
+const phoneRegex = /^[0-9]{10}$/
 
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleBackToPostJobClick,
@@ -50,17 +51,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
 
-  const {
-    data: jobTitles,
-    isLoading: jobTitleLoading,
-    error: jobTitleError,
-  } = useQuery({ queryKey: ["jobtitles"], queryFn: getJobTitles,retry:3 });
-
   const createJobMutation = useMutation({
-    mutationFn: createJob,
-    onSuccess:()=>{
-      queryClient.invalidateQueries({ queryKey: ['jobs'] })
-    }
+    mutationFn: createJob
   })
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -169,6 +161,18 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         description:data.description,
       }
       const res = await createJobMutation.mutateAsync(jobData);
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          console.log(query.queryKey ,query.queryKey.includes('jobs'))
+          return query.queryKey.includes('jobs');
+        },
+        refetchType:'all'
+      })
+      // await queryClient.refetchQueries({
+      //     predicate: (query) => {
+      //       return query.queryKey.includes('jobs');
+      //     },
+      //   });
       setNewlyCreatedJob(res.job)
       toast.success('Job created successfully')
       handleCreateJobClick();
@@ -301,12 +305,13 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 className={styles.input}
                 {...register("countryCode", {
                   required: "Country code is required",
+                
                 })}
                 defaultValue={formData?.countryCode}
               >
                  {
                   Object.values(COUNTRIES).map(country=>{
-                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                    return  <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
                   })
                 }
               </Form.Select>
@@ -315,6 +320,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 aria-label="Contact number"
                 {...register("contactNumber", {
                   required: "Contact number is required",
+                  maxLength:10,
+                  minLength:10,
+                  pattern: {
+                    value: phoneRegex,
+                    message: "Enter a valid contact number "
+                  }
                 })}
               />
             </InputGroup>
@@ -335,14 +346,20 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               >
                 {
                   Object.values(COUNTRIES).map(country=>{
-                    return  <option value={country.isdCode}>{country.isdCode}</option>
+                    return  <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
                   })
                 }
               </Form.Select>
               <Form.Control
                 defaultValue={formData?.altContactNumber}
                 aria-label="Alternate Contact number"
-                {...register("altContactNumber")}
+                {...register("altContactNumber",{
+                  maxLength:10,
+                  pattern: {
+                    value: phoneRegex,
+                    message: "Enter a valid contact number "
+                  }
+                })}
               />
             </InputGroup>
             {errors.contactNumber && (
