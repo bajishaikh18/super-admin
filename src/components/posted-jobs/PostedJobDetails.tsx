@@ -9,17 +9,10 @@ import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 
 type PostedJobDetailsProps = {
   jobId: string;
-  media: string;
-  postedDate: string;
-  expiry: string;
-  agencyName: string;
-  location: string;
-  noOfPositions: number;
   onClose: () => void;
 };
 
 const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({ jobId, onClose }) =>{
-
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
@@ -34,7 +27,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({ jobId, onClose }) =
     },
     enabled: !!jobId });
 
-    console.log("Job ID:", jobId);
+  console.log("Job", data);
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
