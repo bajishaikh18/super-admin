@@ -1,10 +1,14 @@
-'use client'
-import React, { useState ,useEffect} from "react";
+'use client';
+import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { getJobDetails } from "@/apis/job";
 import styles from "../../components/dashboard/Dashboard.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+
 type PostedJobDetailsProps = {
+  jobId: string;
   media: string;
   postedDate: string;
   expiry: string;
@@ -13,19 +17,24 @@ type PostedJobDetailsProps = {
   noOfPositions: number;
   onClose: () => void;
 };
-const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
-  media,
-  postedDate,
-  expiry,
-  agencyName,
-  location,
-  noOfPositions,
-  onClose,
-}) => {
+
+const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({ jobId, onClose }) =>{
+
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const router = useRouter();
+  
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['jobDetails', jobId],
+    queryFn: () => {
+      if (jobId) {
+        return getJobDetails(jobId);
+      }
+      throw new Error("jobId is null or undefined");
+    },
+    enabled: !!jobId });
 
+    console.log("Job ID:", jobId);
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
@@ -33,9 +42,26 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError || !data) {
+    return <div>Error loading job details</div>;
+  }
+  const {
+    postedDate,
+    expiry,
+    agencyName,
+    location,
+    noOfPositions,
+  } = data;
+  
   const goBack = () => {
     router.back();
   };
+
 
   return (
     <main className="main-section">

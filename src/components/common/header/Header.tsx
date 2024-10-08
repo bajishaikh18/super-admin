@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = () => {
       const user = getTokenClaims(token!);
       setAuthUser(user as AuthUser)
     }
-  },[])
+  },[authUser, setAuthUser])
 
   const handleModalClose= ()=>{
     setShowPostJobModal(false);

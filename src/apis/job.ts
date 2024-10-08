@@ -51,3 +51,12 @@ export const getJobs = async (
     throw error;
   }
 };
+export const getJobDetails = async (id: string) => {
+  try {
+    const response = await apiClient.get(`${basePath}/${id}`);
+    console.log("API Response:", response.data);
+    return response.data; 
+  } catch (error) {
+    throw error;
+  }
+};
