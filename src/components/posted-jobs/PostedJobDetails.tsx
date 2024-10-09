@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { getJobDetails } from "@/apis/job";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getJobDetails, updateJob } from "@/apis/job";
 import styles from "./PostedJobDetail.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
@@ -26,6 +26,7 @@ import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constant
 import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
 import CreateJob from "../create-job/CreateJob";
+import toast from "react-hot-toast";
 
 type PostedJobDetailsProps = {
   jobId: string;
@@ -36,6 +37,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   jobId,
   onClose,
 }) => {
+  const queryClient = useQueryClient()
   const [isFullScreen, setIsFullScreen] = useState(false);
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
@@ -50,6 +52,66 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     enabled: !!jobId,
   });
 
+  const {
+    createdAt,
+    expiry,
+    agencyName,
+    imageUrl,
+    location,
+    positions,
+    contactNumbers,
+    email,
+    status,
+    description,
+    amenities,
+  } = data?.job || {};
+
+  const goBack = () => {
+    router.back();
+  };
+
+  const changePostStatus = useCallback(async ()=>{
+    try{
+      let newStatus;
+      switch(status){
+        case "active" : newStatus = "pending";
+                        break;
+        case "pending" :newStatus = "active";
+                        break;
+        default :newStatus = "";
+                        break;
+      }
+      if(newStatus){
+        await updateJob(jobId,{status:newStatus});
+        await queryClient.invalidateQueries({
+          queryKey:["jobDetails",jobId],
+          refetchType:'all'
+        })
+      }
+      toast.success("Job status changed successfully");
+    }catch(e){
+      toast.error("Error while deleting job. Please try again");
+      return
+    }
+  },[status,jobId])
+
+
+  const deletePost = useCallback(async ()=>{
+    try{
+        await updateJob(jobId,{isDeleted:true});
+        await queryClient.invalidateQueries({
+          queryKey:["jobDetails",jobId],
+          refetchType:'all'
+        })
+        router.push("/posted-jobs")
+      toast.success("Job deleted changed successfully");
+    }catch(e){
+      toast.error("Error while deleting job. Please try again");
+      return
+    }
+  },[jobId])
+  
+
   if (isLoading) {
     return <main className="main-section"><Loader text="Loading job details"/></main>;
   }
@@ -61,22 +123,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     return <main className="main-section"><NotFound text="Something went wrong while accessing job details. Please try again"/></main>;
   }
 
-  const {
-    createdAt,
-    expiry,
-    agencyName,
-    imageUrl,
-    location,
-    positions,
-    contactNumbers,
-    email,
-    description,
-    amenities,
-  } = data.job;
 
-  const goBack = () => {
-    router.back();
-  };
 
   return (
     <main className="main-section">
@@ -92,7 +139,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
               <CardBody className={styles.summaryCardBody}>
                 <div className={styles.imageContainer}>
                   <Image
-                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}`: 'Rectangle.png'}`}
+                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}`: '/Rectangle.png'}`}
                     alt="Rectangle"
                     height={0}
                     width={800}
@@ -205,10 +252,13 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1">
-                          De-activate Post
+                        <Dropdown.Item onClick={changePostStatus}>
+                        {
+                          status === "active" ? " De-activate Post": "Activate Post"
+                        }
+                         
                         </Dropdown.Item>
-                        <Dropdown.Item className="danger">
+                        <Dropdown.Item className="danger" onClick={deletePost}>
                            Delete Post
                         </Dropdown.Item>
                       </Dropdown.Menu>
@@ -217,7 +267,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
               </CardHeader>
               <CardBody className={styles.detailsCardBody}>
                 <h5>
-                  <span>Working Location</span> {COUNTRIES[location as "bh"].label}
+                  <span>Working Location</span> {COUNTRIES[location as "bh"]?.label || location || "N/A" }
                 </h5>
                 <h5>
                   <span>Contact Mobile</span> {contactNumbers.join(", ")}

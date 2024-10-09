@@ -173,6 +173,7 @@ export const MultiSelectAsync = ({
               indicatorSeparator: () => ({ display: "none" }),
 
             }}
+            maxMenuHeight={400}
             defaultValue={defaultValue}
             // value={loadOptions?.then((option:any)=>{
             //   return option.find((c:any) => c.value === value)

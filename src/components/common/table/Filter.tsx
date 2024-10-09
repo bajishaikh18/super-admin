@@ -103,6 +103,7 @@ export const TableFilter = ({
                     primary: "#0045E6",
                   },
                 })}
+                maxMenuHeight={400}
                 styles={{
                   option: (baseStyles, state) => ({
                     ...baseStyles,
@@ -129,7 +130,8 @@ export const TableFilter = ({
                   }),
                   valueContainer:(baseStyles)=>({
                     ...baseStyles,
-                    padding:"0px 8px"
+                    padding:"0px 8px",
+                    
                   }),
                   dropdownIndicator:(baseStyles)=>({
                     ...baseStyles,
@@ -137,12 +139,13 @@ export const TableFilter = ({
                   }),
                   indicatorSeparator: () => ({ display: "none" }),
                   menuList: (baseStyles, state) => ({
+                    ...baseStyles,
                     fontSize: "12px",
                   }),
                   menu:(baseStyles, state) => ({
                     ...baseStyles,
-                    zIndex: 2,
-                  })
+                    zIndex: 2,     
+                               })
                 }}
                 onChange={(val: any) => {
                   handleChange(val.value);
