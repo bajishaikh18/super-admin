@@ -45,8 +45,10 @@ const Agencies: React.FC = () => {
     const handleFilterChange = (filter: string) => {
         setFilter(filter);
     }
+    
     // const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) =>
     //     setSearchKeyword(event.target.value);
+
     const handleCreateAgency = () => {
         console.log("Agency created successfully");
     }
@@ -64,10 +66,10 @@ const Agencies: React.FC = () => {
             handleFilterChange={handleFilterChange}
             columnsHeaders={columns}
           />
-          </div>
           <button className={styles.createAgency} onClick={handleCreateAgency}>
-            +Create Agency
+            +  Create Agency
           </button>
+          </div>
         </div>
     </main>
     </Card>
