@@ -1,4 +1,18 @@
 @import "../../../app/variables";
+.container {
+    margin-top: 125px; 
+    padding: 20px;
+  }
+  
+  .heading {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 500px;
+  }
+  
+  .registeredUsers {
+    margin-top: 20px; 
+  }
 .tableContainer{
     height: 50vh;
     overflow: auto;
@@ -14,7 +28,6 @@
     thead{
         position: sticky; top: 0; z-index: 1;
         background-color: #fff;
-        // box-shadow: $box-shadow-1;
     }
     th{
         color: rgba(117, 117, 117, 1);
