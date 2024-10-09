@@ -8,6 +8,7 @@ import { IoClose } from "react-icons/io5";
 
 interface FirstJobScreenProps {
   countries?: string[]; // Make the countries prop optional
+  isEdit?:boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
   handleBackToPostJobClick: () => void;
@@ -19,12 +20,13 @@ import { CustomDatePicker } from "../common/form-fields/DatePicker";
 interface FormValues {
   agency: string;
   location: string;
-  targetCountry: string;
-  expiryDate: string;
+  country: string;
+  expiry: string;
 }
 
 const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   countries = [], // Provide a default value of an empty array
+  isEdit,
   handleContinueClick,
   handleClose,
   handleBackToPostJobClick,
@@ -68,7 +70,10 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>
-          Create a Job <span>(1/2)</span>
+          {
+            isEdit ? "Edit " : "Create a "
+          }
+          Job <span>(1/2)</span>
         </h2>
         
         <IoClose
@@ -109,23 +114,23 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
         <Form.Group className={styles.formGroup}>
           <Form.Label>Target Country</Form.Label>
           <MultiSelect
-            name="targetCountry"
+            name="country"
             control={control}
-            error={errors.targetCountry}
+            error={errors.country}
             options={workLocations}
             rules={{ required: "Target country is required" }}
             customStyles={{}}
-            defaultValue={formData?.targetCountry}
+            defaultValue={formData?.country}
           />
         </Form.Group>
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Expiry date</Form.Label>
           <CustomDatePicker
-            name="expiryDate"
+            name="expiry"
             control={control}
-            error={errors.expiryDate}
-            defaultValue={formData?.expiryDate}
+            error={errors.expiry}
+            defaultValue={formData?.expiry}
             minDate={new Date()}
             rules={{ required: "Expiry date is required" }}
           />
@@ -156,14 +161,14 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
         <div className={styles.actions}>
           <Button
             type="button"
-            className={`outlined ${styles.actionButtons}`}
+            className={`outlined action-buttons`}
             onClick={handleBackToPostJobClick}
           >
             Back
           </Button>
           <Button
             type="submit"
-            className={`${styles.actionButtons} ${
+            className={`action-buttons ${
               isValid ? "" : styles.disabled
             }`}
             disabled={!isValid}

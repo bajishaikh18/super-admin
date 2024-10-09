@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @import './variables';
+@import './common';
 
 html,
 body {
@@ -51,6 +52,14 @@ a {
       background-color: $color-brand-1 !important;
       color: #fff;
     }
+  }
+  &.action-buttons{
+    border-radius: 26px;
+    padding: 13px 41px;
+    font-size: 14px;
+    line-height: 16px;
+    width: auto;
+    margin: 0px !important;
   }
   &.bg-white{
     background-color: #fff;
@@ -406,3 +415,4 @@ a {
   .capitalize{
     text-transform: capitalize;
   }
+

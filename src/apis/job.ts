@@ -52,6 +52,7 @@ export const getJobs = async (
     throw error;
   }
 };
+
 export const getJobDetails = async (id: string) => {
   try {
     const response = await apiClient.get(`${basePath}/${id}`);
