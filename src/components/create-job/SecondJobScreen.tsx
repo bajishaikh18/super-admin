@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -14,6 +14,7 @@ import { createJob, updateJob } from "@/apis/job";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/jobTitles";
+import { debounce } from "lodash";
 
 interface JobPosition {
   title: {
@@ -52,6 +53,13 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
+  
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+        getFormattedJobTitles(inputValue).then(options => callback(options))
+    }, 500),
+    []
+);
 
   const createJobMutation = useMutation({
     mutationFn: createJob
@@ -238,7 +246,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                           control={control}
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.title`]}
-                          loadOptions={getFormattedJobTitles}
+                          loadOptions={loadOptionsDebounced}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}
                           customStyles={{

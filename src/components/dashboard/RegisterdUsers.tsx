@@ -315,7 +315,7 @@ const RegisteredUsers: React.FC = () => {
         start,
         fetchSize,
         debouncedSearchTermAdmin,
-        field.value
+        fieldAdmin.value
       );
       return fetchedData;
     },
