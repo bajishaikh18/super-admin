@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { useAgencyStore } from '@/stores/useAgencyStore';
+import  {   AgencyType } from '@/stores/useAgencyStore';
 import { Row, Col, InputGroup, Form, Dropdown, Button, Card } from 'react-bootstrap';
 import { SelectOption } from '@/helpers/types';
 import { TableFilter } from '@/components/common/table/Filter';
@@ -9,17 +9,16 @@ import { createColumnHelper } from '@tanstack/react-table';
 import Link from 'next/link';
 import styles from './Agency.module.scss';
 
-type AgencyType ={
-    _id: string;
-    agencyName: string;
-    email: string;
-    phone: string;
-}
+
+
+
 const Agencies: React.FC = () => {
-    const { filter, setFilter } = useAgencyStore();
+
     const [field, setField] = useState<SelectOption>({ value: 'agencyName', label: 'Agency Name' } as SelectOption);
-    const [search, setSearch] = React.useState<string>("");;
+    const [search, setSearch] = React.useState<string>("");
+
     const columnHelper = createColumnHelper<AgencyType>();
+
     const columns = [
         columnHelper.accessor('_id', {
             header: 'Agency#',
@@ -41,35 +40,36 @@ const Agencies: React.FC = () => {
             header: 'Phone',
             cell: (info) => info.getValue(),
         })
-    ]
-    const handleFilterChange = (filter: string) => {
-        setFilter(filter);
-    }
+    ];
+
     
-    // const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) =>
-    //     setSearchKeyword(event.target.value);
+       
 
     const handleCreateAgency = () => {
         console.log("Agency created successfully");
     }
+
+    
   return (
     <>
     <Card>
         <main className="main-section">
         <div className="page-block">
             <h3 className={styles.sectionHeading}>Registered Agencies</h3>
-        <div className={styles.filterSection}>
-        <TableFilter
+        <div className={styles.filterSection}>          
+             <TableFilter
             search={search}
             field={field}
-            handleChange={(e) => setSearch(e.target.value)}
-            handleFilterChange={handleFilterChange}
+            handleChange={(value) => setSearch(value)}
+            handleFilterChange={(newField) => setField(newField)}
             columnsHeaders={columns}
-          />
-          <button className={styles.createAgency} onClick={handleCreateAgency}>
-            +  Create Agency
-          </button>
-          </div>
+            />
+
+           <button className={styles.createAgency} onClick={handleCreateAgency}>
+             + Create Agency
+            </button>
+
+        </div>
         </div>
     </main>
     </Card>
