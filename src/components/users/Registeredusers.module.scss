@@ -1,0 +1,113 @@
+.modal {
+    width: 562px;
+    height: auto;
+    margin: auto;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .modal-backdrop.show {
+    opacity: 0.5;
+  }
+  
+  .closeButton {
+    cursor: pointer;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .formGroup {
+    margin-bottom: 20px;
+  }
+  
+  .formGroup label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+  }
+  
+  /* Styling for mobile and landline number fields */
+  .row {
+    display: flex;
+    gap: 1px; /* Adds space between the country code dropdown and input field */
+    margin-bottom: 20px;
+  }
+  
+  .col-md-4 {
+    flex: 0 0 25%; /* 25% width for the country code dropdown */
+  }
+  
+  .col-md-8 {
+    flex: 1; /* Remaining space for the number input field */
+  }
+  
+  .col-md-4 select {
+    width: 100%;
+    height: 40px; /* Ensure dropdown height matches input */
+    border-radius: 5px 0 0 5px;
+    border-right: none;
+  }
+  
+  .col-md-8 input {
+    width: 100%;
+    height: 40px; /* Matches the height of the dropdown */
+    border-radius: 0 5px 5px 0;
+    border-left: none;
+    
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .cancelButton, 
+  .proceedButton {
+    background-color: white;
+    color: #0045e6;
+    border: 1px solid #0045e6;
+    padding: 8px 16px;
+    margin: 0 8px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .cancelButton {
+    background-color: white;
+    color: #0045e6;
+    border: 1px solid #0045e6;
+  }
+  
+  .proceedButton {
+    background-color: #0045e6;
+    color: white;
+    border: none;
+  }
+  
