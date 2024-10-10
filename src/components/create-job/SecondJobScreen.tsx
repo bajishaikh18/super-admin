@@ -66,7 +66,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   })
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -141,6 +141,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
         if (resp) {
           await uploadFile(resp.uploadurl, selectedFile!);
+          setRefreshImage(true)
         }
       }
       const contacts = [`${data.countryCode}-${data.contactNumber}`];

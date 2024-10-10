@@ -56,12 +56,14 @@ interface PostJobStoreState {
   selectedFacilities: string[];
   newlyCreatedJob: Job | null;
   formData: PostJobFormData | null;
+  refreshImage: boolean;
   setFormData: (formData: PostJobFormData | null) => void
   setShowPostJob: (val:boolean)=>void
   setNewlyCreatedJob: (job:Job)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
+  setRefreshImage: (val:boolean) => void;
   setFacilities:(facilities:string[])=>void;
 }
 
@@ -69,9 +71,13 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
   showPostJob: false,
+  refreshImage:false,
   selectedFacilities: [],
   newlyCreatedJob: null,
   formData: null,
+  setRefreshImage:(val:boolean)=>{
+    set(() => ({ refreshImage:val}))
+  },
   // New actions for setting state
   setFormData: (formData)=>{
     const newData = formData || {}

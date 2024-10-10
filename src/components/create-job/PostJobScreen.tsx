@@ -435,7 +435,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleClose,
 }) => {
   const queryClient = useQueryClient()
-  const { formData, selectedFacilities, newlyCreatedJob } = usePostJobStore();
+  const { formData, selectedFacilities, newlyCreatedJob,setRefreshImage } = usePostJobStore();
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -504,6 +504,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
         //   });
         toast.success("Job posted successfully");
         handleClose();
+        setRefreshImage(true)
       }
       setLoading(false);
     } catch (error: unknown) {

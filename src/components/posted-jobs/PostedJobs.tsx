@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
@@ -17,6 +17,7 @@ const PostedJobs = () => {
     retry: 3,
     refetchOnMount: true,
   });
+
 
   const dashboardSummary = [
     {

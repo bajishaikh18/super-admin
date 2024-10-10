@@ -27,6 +27,7 @@ import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
 import CreateJob from "../create-job/CreateJob";
 import toast from "react-hot-toast";
+import usePostJobStore from "@/stores/usePostJobStore";
 
 type PostedJobDetailsProps = {
   jobId: string;
@@ -39,6 +40,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
 }) => {
   const queryClient = useQueryClient()
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const {refreshImage} = usePostJobStore();
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
   const { data, isLoading, isError } = useQuery({
@@ -139,7 +141,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
               <CardBody className={styles.summaryCardBody}>
                 <div className={styles.imageContainer}>
                   <Image
-                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}`: '/Rectangle.png'}`}
+                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}?ts=${refreshImage ? new Date().getTime() : ''}`: '/Rectangle.png'}`}
                     alt="Rectangle"
                     height={0}
                     width={800}
