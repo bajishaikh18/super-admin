@@ -2,17 +2,37 @@
 .container {
     margin-top: 98px; 
     padding: 20px;
-  }
+}
   
-  .heading {
+.heading {
     margin-bottom: 10px;
     font-size: 16px;
     font-weight: 500px;
-  }
+}
   
-  .registeredUsers {
+.registeredUsers {
     margin-top: 20px; 
-  }
+}
+.buttonContainer{
+    display: flex;
+    order: 3;
+    margin-right: 15px;
+}
+.filtersection{
+    margin-left: auto;
+}
+.createuser {
+    background-color: #0045E6; 
+    color: #ffffff; 
+    border: none; 
+    border-radius: 4px;
+    padding: 4px 8px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    &:hover {
+        background-color: #007bff; 
+    }
+}
 .tableContainer{
     height: 50vh;
     overflow: auto;

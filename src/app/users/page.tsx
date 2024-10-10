@@ -8,7 +8,7 @@ const Page: React.FC = () => {
     <div className={styles.container}>
       <h2 className={styles.heading}>Registered Users</h2>
       <div className={styles.registeredUsers}>
-        <RegisteredUsers />
+      <RegisteredUsers showButton={true} />
       </div>
     </div>
   );
