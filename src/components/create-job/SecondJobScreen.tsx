@@ -225,6 +225,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
+            <div className={styles.overFlowTable}>
             <Table>
               <thead>
                 <tr>
@@ -258,6 +259,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                               border: "none",
                             },
                           }}
+                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                          menuPosition={"fixed"}
                         />
                       </td>
                       <td>
@@ -279,6 +282,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                               border: "none",
                             },
                           }}
+                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                          menuPosition={"fixed"}
                         />
                       </td>
                       <td>
@@ -303,6 +308,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 })}
               </tbody>
             </Table>
+            </div>
             {errorMessage && (
               <div>
                 <Form.Text className="error">{errorMessage}</Form.Text>

@@ -28,6 +28,7 @@ import { Loader, NotFound } from "../common/Feedbacks";
 import CreateJob from "../create-job/CreateJob";
 import toast from "react-hot-toast";
 import usePostJobStore from "@/stores/usePostJobStore";
+import { LuExpand } from "react-icons/lu";
 
 type PostedJobDetailsProps = {
   jobId: string;
@@ -149,10 +150,8 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                     className={styles.buttonIcon}
                   />
                   <button className="expand-button">
-                    <AiOutlineExpand
-                      size={14}
-                      onClick={() => setIsFullScreen(true)}
-                    />
+                  <LuExpand  size={25}
+                      onClick={() => setIsFullScreen(true)}/>
                   </button>
                 </div>
                 <ul className={styles.jobInfoList}>

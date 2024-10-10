@@ -613,11 +613,17 @@
 .fullScreenBackdrop {
   background: rgba(0, 0, 0, 0.8);
 }
+.overFlowTable{
+  max-height: 300px;
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+}
 
 .expandButton {
   position: relative;
   right: -150px;
-  top: -60px;
   background: rgba(0, 0, 0, 0.9);
   border: none;
   padding:5px 10px;

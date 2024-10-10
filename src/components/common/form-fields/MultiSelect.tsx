@@ -15,7 +15,9 @@ export const MultiSelect = ({
   customStyles,
   valueContainerStyles={},
   menuListStyles={},
-  filterFn
+  filterFn,
+  menuPortalTarget,
+  menuPosition
 }: {
   name: string;
   control: Control<any, any>;
@@ -28,6 +30,8 @@ export const MultiSelect = ({
   defaultValue?: string,
   customStyles:any
   valueContainerStyles?: any,
+  menuPortalTarget?:any,
+  menuPosition?:any,
   menuListStyles?:any
   filterFn?:any
 }) => {
@@ -38,6 +42,8 @@ export const MultiSelect = ({
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
+            menuPortalTarget={menuPortalTarget}
+            menuPosition={menuPosition}
             theme={(theme) => ({
               ...theme,
               borderRadius: 0,
@@ -104,7 +110,9 @@ export const MultiSelectAsync = ({
   defaultValue,
   customStyles,
   valueContainerStyles={},
-  menuListStyles={}
+  menuListStyles={},
+  menuPortalTarget,
+  menuPosition
 }: {
   name: string;
   control: Control<any, any>;
@@ -120,6 +128,8 @@ export const MultiSelectAsync = ({
   },
   customStyles:any
   valueContainerStyles?: any,
+  menuPortalTarget?:any,
+  menuPosition?:any,
   menuListStyles?:any
 }) => {
   console.log(defaultValue)
@@ -133,6 +143,8 @@ export const MultiSelectAsync = ({
             cacheOptions
             loadOptions={loadOptions}
             defaultOptions
+            menuPortalTarget={menuPortalTarget}
+            menuPosition={menuPosition}
             theme={(theme) => ({
               ...theme,
               borderRadius: 0,
@@ -165,9 +177,12 @@ export const MultiSelectAsync = ({
                   boxShadow:'none'
                 }
               }),
+              
               menuList:(baseStyles, state) =>({...baseStyles,
-                ...menuListStyles
-               
+                ...menuListStyles,
+              }),
+              menu:(baseStyles, state) =>({...baseStyles,
+                ...menuListStyles,
               }),
               valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
               indicatorSeparator: () => ({ display: "none" }),

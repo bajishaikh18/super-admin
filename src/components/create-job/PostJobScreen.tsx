@@ -14,6 +14,7 @@ import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { LuExpand } from "react-icons/lu";
 
 interface FourthJobScreenProps {
   isEdit?:boolean;
@@ -421,8 +422,8 @@ const JobPostingImage = ({
         </button>
       ) : (
         <>
-          <button className={styles.expandButton}>
-            <AiOutlineExpand size={14} onClick={() => handleFullScreen(true)} />
+          <button className={styles.expandButton} style={{bottom:`${(((formData?.jobPositions?.length||0)-1) * 10)}px`}}>
+          <LuExpand size={20} onClick={() => handleFullScreen(true)}/>
           </button>
         </>
       )}
