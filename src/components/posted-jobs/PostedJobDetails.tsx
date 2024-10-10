@@ -253,12 +253,15 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu>
-                        <Dropdown.Item onClick={changePostStatus}>
                         {
-                          status === "active" ? " De-activate Post": "Activate Post"
+                          status != 'expired' &&  <Dropdown.Item onClick={changePostStatus}>
+                          {
+                            status === "active" ? " De-activate Post": "Activate Post"
+                          }
+                           
+                          </Dropdown.Item>
                         }
-                         
-                        </Dropdown.Item>
+                      
                         <Dropdown.Item className="danger" onClick={deletePost}>
                            Delete Post
                         </Dropdown.Item>
