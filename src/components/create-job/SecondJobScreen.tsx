@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -10,10 +10,11 @@ import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-s
 import { IoClose } from "react-icons/io5";
 import { getJobTitles, getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
-import { createJob } from "@/apis/job";
+import { createJob, updateJob } from "@/apis/job";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/jobTitles";
+import { debounce } from "lodash";
 
 interface JobPosition {
   title: {
@@ -38,10 +39,12 @@ interface SecondJobScreenProps {
   handleBackToPostJobClick: () => void;
   handleCreateJobClick: () => void;
   handleClose: () => void;
+  isEdit?:boolean;
 }
 const phoneRegex = /^[0-9]{10}$/
 
 const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
+  isEdit,
   handleBackToPostJobClick,
   handleCreateJobClick,
   handleClose
@@ -50,13 +53,20 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
+  
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+        getFormattedJobTitles(inputValue).then(options => callback(options))
+    }, 500),
+    []
+);
 
   const createJobMutation = useMutation({
     mutationFn: createJob
   })
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -106,13 +116,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     // setGlobalJobPositions(newPositions);
   };
 
-  const jobTitle = [
-    { label: "Engineer", value: "5f2c6e02e4b0a914d4a9fcb5" },
-    { label: "Doctor", value: "5f2c6e02e4b0a914d4a9fcb1" },
-    { label: "Plumber", value: "5f2c6e02e4b0a914d4a9fcb2" },
-    { label: "Electrician", value: "5f2c6e02e4b0a914d4a9fcb3" },
-  ];
-
   const experienceLevels = [
     { value: "0", label: "0 Years" },
     { value: "1", label: "0-1 Year" },
@@ -138,16 +141,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
         if (resp) {
           await uploadFile(resp.uploadurl, selectedFile!);
+          setRefreshImage(true)
         }
       }
-      const contacts = [`${data.countryCode}${data.contactNumber}`];
+      const contacts = [`${data.countryCode}-${data.contactNumber}`];
       if(data.altContactNumber && data.altCountryCode){
-        contacts.push(`${data.countryCode}${data.contactNumber}`);
+        contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
       const jobData = {
         agencyId: formData?.agency,
         location: formData?.location,
-        expiry: formData?.expiryDate,
+        expiry: formData?.expiry,
         positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
           positionId: position.title.value,
           experience: Number(position.experience),
@@ -156,29 +160,39 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         imageUrl: resp?.keyName,
         amenities: selectedFacilities,
         contactNumbers: contacts,
-        country: formData?.targetCountry || 'in',
+        country: formData?.country || 'in',
         email:data.email,
         description:data.description,
       }
-      const res = await createJobMutation.mutateAsync(jobData);
-      await queryClient.invalidateQueries({
-        predicate: (query) => {
-          console.log(query.queryKey ,query.queryKey.includes('jobs'))
-          return query.queryKey.includes('jobs');
-        },
-        refetchType:'all'
-      })
+      let res;
+      if(isEdit && formData?._id){
+        res = await updateJob(formData?._id,jobData);
+        await queryClient.invalidateQueries({
+          queryKey:["jobDetails",formData?._id],
+          refetchType:'all'
+        })
+      }else{
+        res = await createJobMutation.mutateAsync(jobData);
+        await queryClient.invalidateQueries({
+          predicate: (query) => {
+            console.log(query.queryKey ,query.queryKey.includes('jobs'))
+            return query.queryKey.includes('jobs');
+          },
+          refetchType:'all'
+        })
+      }
+     
       // await queryClient.refetchQueries({
       //     predicate: (query) => {
       //       return query.queryKey.includes('jobs');
       //     },
       //   });
       setNewlyCreatedJob(res.job)
-      toast.success('Job created successfully')
+      toast.success(`Job ${isEdit?'created':'updated'} successfully`)
       handleCreateJobClick();
       setLoading(false);
     } catch (error) {
-      toast.error('Error while posting job. Please try again')
+      toast.error(`Error while ${isEdit?'creating':'updating'} job. Please try again`)
       setLoading(false);
     } finally {
     }
@@ -187,7 +201,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>Create a Job (2/2)</h2>
+        <h2>
+          {
+            isEdit ? "Edit " : "Create a "
+          }
+          Job <span>(1/2)</span>
+        </h2>
         <IoClose
           className={styles.closeButton}
           onClick={handleClose}
@@ -206,6 +225,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
+            <div className={styles.overFlowTable}>
             <Table>
               <thead>
                 <tr>
@@ -228,7 +248,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                           control={control}
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.title`]}
-                          loadOptions={getFormattedJobTitles}
+                          loadOptions={loadOptionsDebounced}
                           defaultValue={formData?.jobPositions?.[index]?.title}
                           rules={{ required: "Job title is required" }}
                           customStyles={{
@@ -239,6 +259,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                               border: "none",
                             },
                           }}
+                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                          menuPosition={"fixed"}
                         />
                       </td>
                       <td>
@@ -260,6 +282,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                               border: "none",
                             },
                           }}
+                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                          menuPosition={"fixed"}
                         />
                       </td>
                       <td>
@@ -284,6 +308,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 })}
               </tbody>
             </Table>
+            </div>
             {errorMessage && (
               <div>
                 <Form.Text className="error">{errorMessage}</Form.Text>
@@ -400,19 +425,22 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           <div className={styles.actions}>
             <Button
               type="button"
-              className={`outlined ${styles.actionButtons}`}
+              className={`outlined action-buttons`}
               onClick={handleBackToPostJobClick}
             >
               Back
             </Button>
             <Button
               type="submit"
-              className={`${styles.actionButtons} ${
+              className={`action-buttons ${
                 isValid ? "" : styles.disabled
               }`}
               disabled={!isValid}
             >
-              Create a Job
+               {
+            isEdit ? "Edit " : "Create a "
+          }
+              Job
             </Button>
           </div>
         </Form>

@@ -17,7 +17,8 @@ export interface Job {
   positions: Position[]
   amenities: any[]
   contactNumbers: string[]
-  email: string
+  email: string,
+  country: string,
   description: string
   viewed: any[]
   status: string
@@ -28,15 +29,17 @@ export interface Job {
 export interface Position {
   positionId: string
   experience: number
+  title:string;
   salary: string
 }
 
 
 export type PostJobFormData =  {
+  _id?:string;
   agency?: string;
   location?: string;
-  targetCountry?: string;
-  expiryDate?: string;
+  country?: string;
+  expiry?: string;
   countryCode?:string;
   contactNumber?: string;
   altContactNumber?:string;
@@ -53,21 +56,28 @@ interface PostJobStoreState {
   selectedFacilities: string[];
   newlyCreatedJob: Job | null;
   formData: PostJobFormData | null;
+  refreshImage: boolean;
   setFormData: (formData: PostJobFormData | null) => void
   setShowPostJob: (val:boolean)=>void
   setNewlyCreatedJob: (job:Job)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
+  setRefreshImage: (val:boolean) => void;
+  setFacilities:(facilities:string[])=>void;
 }
 
 const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
   showPostJob: false,
+  refreshImage:false,
   selectedFacilities: [],
   newlyCreatedJob: null,
   formData: null,
+  setRefreshImage:(val:boolean)=>{
+    set(() => ({ refreshImage:val}))
+  },
   // New actions for setting state
   setFormData: (formData)=>{
     const newData = formData || {}
@@ -75,6 +85,7 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   },
   setNewlyCreatedJob:(job)=>set(() => ({ newlyCreatedJob:job})),
   setShowPostJob:(val)=>set(() => ({ showPostJob:val})),
+  
   resetData:()=>{
     set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
   },
@@ -83,6 +94,9 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   handleFileChange: (file) => {
     set({ selectedFile: file });
   },
+  setFacilities: (facilities) => set((state) => ({
+    selectedFacilities: facilities
+  })),
   handleFacilityClick: (facility) => set((state) => ({
     selectedFacilities: state.selectedFacilities.includes(facility)
       ? state.selectedFacilities.filter((f) => f !== facility)

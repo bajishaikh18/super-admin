@@ -297,14 +297,7 @@
   color: white;
 }
 
-.actionButtons{
-  border-radius: 26px;
-  padding: 13px 41px;
-  font-size: 14px;
-  line-height: 16px;
-  width: auto;
-  margin: 0px !important;
-}
+
 .continueButton:enabled {
   background-color: $color-brand-1;
   color: white;
@@ -569,7 +562,7 @@
   transition: transform 0.3s ease-in-out;
   font-size: 14px;
   transform: scale(0.7);
-  margin: -120px auto;
+  margin: -100px auto;
 }
 .fullScreen{
   transform: scale(1);
@@ -620,11 +613,17 @@
 .fullScreenBackdrop {
   background: rgba(0, 0, 0, 0.8);
 }
+.overFlowTable{
+  max-height: 300px;
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+}
 
 .expandButton {
   position: relative;
   right: -150px;
-  top: -60px;
   background: rgba(0, 0, 0, 0.9);
   border: none;
   padding:5px 10px;
