@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Button, Form, Row, Col, InputGroup } from "react-bootstrap";
 import { IoClose } from "react-icons/io5";
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
@@ -14,50 +14,8 @@ const COUNTRIES = [
 const phoneRegex = /^[0-9]{10}$/; // Example regex for a 10-digit phone number
 
 const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    companyName: '',
-    mobileNumber: '',
-    landlineNumber: '',
-    email: '',
-    address: '',
-    state: '',
-    country: '',
-    mobileCountryCode: '', 
-    landlineCountryCode: ''
-  });
-
-  // Track if the user has interacted with the phone fields
-  const [touched, setTouched] = useState({
-    mobileNumber: false,
-    landlineNumber: false,
-  });
-
-  const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
-    setForm({
-      ...form,
-      [name]: value
-    });
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setForm({
-      ...form,
-      [name]: value
-    });
-  };
-
-  const handleTouch = (field: string) => {
-    setTouched((prev) => ({
-      ...prev,
-      [field]: true,
-    }));
-  };
-
-  const handleCancel = () => {
-    setForm({
+  const { register, handleSubmit, formState: { errors, touchedFields }, reset, setValue } = useForm({
+    defaultValues: {
       firstName: '',
       lastName: '',
       companyName: '',
@@ -67,23 +25,19 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
       address: '',
       state: '',
       country: '',
-      mobileCountryCode: '',
-      landlineCountryCode: ''
-    });
-    setTouched({ mobileNumber: false, landlineNumber: false }); // Reset touch state
+      mobileCountryCode: COUNTRIES[0].isdCode, // default ISD code
+      landlineCountryCode: COUNTRIES[0].isdCode
+    }
+  });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
+
+  const handleCancel = () => {
+    reset(); // Resets the form
     onCancel();
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.firstName || !form.lastName || !form.companyName || !form.mobileNumber || !form.email || !form.address || !form.state || !form.country) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    console.log(form);
-  };
-
-  const isValid = form.firstName && form.lastName && form.companyName && form.mobileNumber && form.email && form.address && form.state && form.country;
 
   return (
     <div className={styles.modal}>
@@ -91,19 +45,17 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
         <h3>Create User</h3>
         <IoClose className={styles.closeButton} onClick={handleCancel} />
       </div>
-      <Form className={styles.postForm} onSubmit={handleSubmit}>
+      <Form className={styles.postForm} onSubmit={handleSubmit(onSubmit)}>
         <Row>
           <Col md={6}>
             <Form.Group className={styles.formGroup}>
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                required
+                {...register('firstName', { required: 'First name is required' })}
                 className={styles.inputField}
               />
+              {errors.firstName && <Form.Text className="error">{errors.firstName.message}</Form.Text>}
             </Form.Group>
           </Col>
 
@@ -112,12 +64,10 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                required
+                {...register('lastName', { required: 'Last name is required' })}
                 className={styles.inputField}
               />
+              {errors.lastName && <Form.Text className="error">{errors.lastName.message}</Form.Text>}
             </Form.Group>
           </Col>
         </Row>
@@ -129,10 +79,7 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
               <InputGroup className={`contact-field`}>
                 <Form.Select
                   className={styles.input}
-                  name="mobileCountryCode"
-                  value={form.mobileCountryCode}
-                  onChange={handleChange}
-                  required
+                  {...register('mobileCountryCode')}
                 >
                   {COUNTRIES.map(country => (
                     <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
@@ -140,18 +87,19 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
                 </Form.Select>
                 <Form.Control
                   type="text"
-                  name="mobileNumber"
-                  value={form.mobileNumber}
-                  onChange={handleChange}
-                  onBlur={() => handleTouch('mobileNumber')} // Mark as touched on blur
-                  required
-                  aria-label="Contact number"
-                  pattern={phoneRegex.source}
+                  {...register('mobileNumber', {
+                    required: 'Mobile number is required',
+                    pattern: {
+                      value: phoneRegex,
+                      message: 'Enter a valid 10-digit mobile number'
+                    }
+                  })}
+                  aria-label="Mobile number"
                 />
               </InputGroup>
-              {touched.mobileNumber && form.mobileNumber.length !== 10 && (
+              {touchedFields.mobileNumber && errors.mobileNumber && (
                 <Form.Text className="error">
-                  Enter a valid contact number
+                  {errors.mobileNumber.message}
                 </Form.Text>
               )}
             </Form.Group>
@@ -163,9 +111,7 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
               <InputGroup className={`contact-field`}>
                 <Form.Select
                   className={styles.input}
-                  name="landlineCountryCode"
-                  value={form.landlineCountryCode}
-                  onChange={handleChange}
+                  {...register('landlineCountryCode')}
                 >
                   {COUNTRIES.map(country => (
                     <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
@@ -173,17 +119,18 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
                 </Form.Select>
                 <Form.Control
                   type="text"
-                  name="landlineNumber"
-                  value={form.landlineNumber}
-                  onChange={handleChange}
-                  onBlur={() => handleTouch('landlineNumber')} // Mark as touched on blur
+                  {...register('landlineNumber', {
+                    pattern: {
+                      value: phoneRegex,
+                      message: 'Enter a valid 10-digit landline number'
+                    }
+                  })}
                   aria-label="Landline number"
-                  pattern={phoneRegex.source}
                 />
               </InputGroup>
-              {touched.landlineNumber && form.landlineNumber.length !== 10 && (
+              {touchedFields.landlineNumber && errors.landlineNumber && (
                 <Form.Text className="error">
-                  Enter a valid landline number
+                  {errors.landlineNumber.message}
                 </Form.Text>
               )}
             </Form.Group>
@@ -194,24 +141,20 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
           <Form.Label>Email ID</Form.Label>
           <Form.Control
             type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
+            {...register('email', { required: 'Email is required' })}
             className={styles.inputField}
           />
+          {errors.email && <Form.Text className="error">{errors.email.message}</Form.Text>}
         </Form.Group>
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Address</Form.Label>
           <Form.Control
             type="text"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-            required
+            {...register('address', { required: 'Address is required' })}
             className={styles.inputField}
           />
+          {errors.address && <Form.Text className="error">{errors.address.message}</Form.Text>}
         </Form.Group>
 
         <Row>
@@ -219,8 +162,8 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
             <Form.Group className={styles.formGroup}>
               <Form.Label>Country</Form.Label>
               <CountryDropdown
-                value={form.country}
-                onChange={(val) => handleSelectChange('country', val)}
+                value={''} // Country dropdown value
+                onChange={(val) => setValue('country', val)} // Use setValue for programmatic change
                 classes={styles.inputField}
               />
             </Form.Group>
@@ -230,9 +173,9 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
             <Form.Group className={styles.formGroup}>
               <Form.Label>State</Form.Label>
               <RegionDropdown
-                country={form.country}
-                value={form.state}
-                onChange={(val) => handleSelectChange('state', val)}
+                country={''} // Country state depends on the selected country
+                value={''} // State dropdown value
+                onChange={(val) => setValue('state', val)} // Use setValue for programmatic change
                 classes={styles.inputField}
               />
             </Form.Group>
@@ -249,8 +192,7 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
           </Button>
           <Button
             type="submit"
-            className={`action-buttons ${isValid ? "" : styles.disabled}`}
-            disabled={!isValid}
+            className={`action-buttons`}
           >
             Proceed
           </Button>
