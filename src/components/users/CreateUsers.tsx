@@ -3,6 +3,7 @@ import { Button, Form, Row, Col, InputGroup } from "react-bootstrap";
 import { IoClose } from "react-icons/io5";
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import styles from './Registeredusers.module.scss';
+import { useState } from 'react'; 
 
 const COUNTRIES = [
   { isdCode: "+1", name: "USA" },
@@ -11,10 +12,10 @@ const COUNTRIES = [
   // Add more countries as needed
 ];
 
-const phoneRegex = /^[0-9]{10}$/; // Example regex for a 10-digit phone number
+const phoneRegex = /^[0-9]{10}$/; // for a 10-digit phone number
 
 const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
-  const { register, handleSubmit, formState: { errors, touchedFields }, reset, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors, touchedFields }, reset, setValue, watch } = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -25,7 +26,7 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
       address: '',
       state: '',
       country: '',
-      mobileCountryCode: COUNTRIES[0].isdCode, // default ISD code
+      mobileCountryCode: COUNTRIES[0].isdCode,
       landlineCountryCode: COUNTRIES[0].isdCode
     }
   });
@@ -38,6 +39,9 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
     reset(); // Resets the form
     onCancel();
   };
+
+  
+  const selectedCountry = watch('country');
 
   return (
     <div className={styles.modal}>
@@ -162,8 +166,10 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
             <Form.Group className={styles.formGroup}>
               <Form.Label>Country</Form.Label>
               <CountryDropdown
-                value={''} // Country dropdown value
-                onChange={(val) => setValue('country', val)} // Use setValue for programmatic change
+                value={watch('country') || ''} 
+                onChange={(val) => {
+                  setValue('country', val);  
+                }}
                 classes={styles.inputField}
               />
             </Form.Group>
@@ -173,9 +179,11 @@ const CreateUserForm = ({ onCancel }: { onCancel: () => void }) => {
             <Form.Group className={styles.formGroup}>
               <Form.Label>State</Form.Label>
               <RegionDropdown
-                country={''} // Country state depends on the selected country
-                value={''} // State dropdown value
-                onChange={(val) => setValue('state', val)} // Use setValue for programmatic change
+                country={watch('country') || ''} 
+                value={watch('state') || ''} 
+                onChange={(val) => {
+                  setValue('state', val);  
+                }}
                 classes={styles.inputField}
               />
             </Form.Group>
