@@ -38,8 +38,8 @@ export default function CreateJob({
 
   useEffect(()=>{
     if(jobDetails){
-      const [countryCode, contactNo] =  jobDetails.contactNumbers[0].split("-");
-      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers[1].split("-");
+      const [countryCode, contactNo] =  jobDetails.contactNumbers?.[0]?.split("-");
+      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers?.[1] ? jobDetails.contactNumbers[1]?.split("-"):[];
       const payload = {
         ...jobDetails,
         agency: jobDetails.agencyId,

@@ -193,7 +193,7 @@ const RegisteredUsers: React.FC = () => {
 
   const adminColumns = useMemo(
     () => [
-      columnHelper.accessor("_id", {
+      columnHelper.accessor("userId", {
         header: "User Id",
         cell: (info) => info.renderValue() || "N/A",
         enableColumnFilter: true,

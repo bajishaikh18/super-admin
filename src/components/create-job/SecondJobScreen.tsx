@@ -130,7 +130,9 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     control,
     setValue,
     formState: { errors,isValid },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    mode: 'all'
+  });
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -168,7 +170,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       if(isEdit && formData?._id){
         res = await updateJob(formData?._id,jobData);
         await queryClient.invalidateQueries({
-          queryKey:["jobDetails",formData?._id],
+          queryKey:["jobDetails",formData?.jobId?.toString()],
           refetchType:'all'
         })
       }else{
@@ -192,7 +194,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       handleCreateJobClick();
       setLoading(false);
     } catch (error) {
-      toast.error(`Error while ${isEdit?'creating':'updating'} job. Please try again`)
+      toast.error(`Error while ${isEdit?'updating':'creating'} job. Please try again`)
       setLoading(false);
     } finally {
     }
@@ -217,7 +219,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       {loading ? (
         <div className={styles.popupContent}>
           <p className={styles.loadingContent}>
-            Your job is creating please wait
+            Your job is {isEdit?"updating":"creating"} please wait
           </p>
           <div className={styles.createSpinner}></div>
         </div>
@@ -345,13 +347,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 aria-label="Contact number"
                 {...register("contactNumber", {
                   required: "Contact number is required",
-                  maxLength:10,
-                  minLength:10,
                   pattern: {
                     value: phoneRegex,
-                    message: "Enter a valid contact number "
+                    message: "Enter a valid contact number"
                   }
                 })}
+                isInvalid={!!errors.contactNumber}
               />
             </InputGroup>
             {errors.contactNumber && (
@@ -362,7 +363,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
-            <Form.Label>Alternate Contact Mobile Number</Form.Label>
+            <Form.Label>Alternate Contact Mobile Number (Optional)</Form.Label>
             <InputGroup className={`contact-field`}>
               <Form.Select
                 className={styles.input}
@@ -378,6 +379,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               <Form.Control
                 defaultValue={formData?.altContactNumber}
                 aria-label="Alternate Contact number"
+                isInvalid={!!errors.altContactNumber}
                 {...register("altContactNumber",{
                   maxLength:10,
                   pattern: {
@@ -387,9 +389,9 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 })}
               />
             </InputGroup>
-            {errors.contactNumber && (
+            {errors.altContactNumber && (
               <Form.Text className="error">
-                {errors.contactNumber.message}
+                {errors.altContactNumber.message}
               </Form.Text>
             )}
           </Form.Group>
@@ -400,6 +402,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               placeholder="Enter Email Id"
               className={styles.input}
               defaultValue={formData?.email}
+              isInvalid={!!errors.email}
               {...register("email", {
                 required: "Email is required",
                 pattern: {

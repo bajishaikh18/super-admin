@@ -36,6 +36,7 @@ export interface Position {
 
 export type PostJobFormData =  {
   _id?:string;
+  jobId?:string;
   agency?: string;
   location?: string;
   country?: string;

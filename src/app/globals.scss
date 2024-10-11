@@ -103,6 +103,12 @@ a {
     outline: none !important;
     box-shadow: none !important;
     border-color: $color-brand-1 !important;
+  
+  }
+  &.is-invalid{
+    &:focus{
+      border-color: $color-danger !important;
+    }
   }
   &.extra-small{
     min-height: 32px;

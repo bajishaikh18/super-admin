@@ -56,6 +56,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   });
 
   const {
+    _id,
     createdAt,
     expiry,
     agencyName,
@@ -85,7 +86,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                         break;
       }
       if(newStatus){
-        await updateJob(jobId,{status:newStatus});
+        await updateJob(_id,{status:newStatus});
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",jobId],
           refetchType:'all'
@@ -101,7 +102,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
 
   const deletePost = useCallback(async ()=>{
     try{
-        await updateJob(jobId,{isDeleted:true});
+        await updateJob(_id,{isDeleted:true});
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",jobId],
           refetchType:'all'
@@ -133,7 +134,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
       <Container fluid>
         <h3 onClick={goBack} className={styles.backlink}>
           <FaChevronLeft fontSize={16} color="#000" />
-          Job Posting Details
+          Job Posting Details ({jobId})
         </h3>
 
         <Row>
@@ -142,9 +143,10 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
               <CardBody className={styles.summaryCardBody}>
                 <div className={styles.imageContainer}>
                   <Image
-                    src={`${imageUrl? `${IMAGE_BASE_URL}/${imageUrl}?ts=${refreshImage ? new Date().getTime() : ''}`: '/Rectangle.png'}`}
+                    src={`${imageUrl ? `${IMAGE_BASE_URL}/${imageUrl}?ts=${refreshImage ? new Date().getTime() : ''}`: '/no_image.jpg'}`}
                     alt="Rectangle"
                     height={0}
+                    blurDataURL="/no_image.jpg"
                     width={800}
                     style={{ height: "auto", width: "100%" }}
                     className={styles.buttonIcon}
