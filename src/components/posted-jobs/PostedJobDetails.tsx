@@ -296,14 +296,14 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       {positions.map(
                         (
                           position: {
-                            positionId: number;
+                            jobTitleId: number;
                             title: string;
                             experience: string;
                             salary: string;
                           },
                           index: number
                         ) => (
-                          <tr key={position.positionId}>
+                          <tr key={position.jobTitleId}>
                             <td className={styles.title}>{position.title}</td>
                             <td>{position.experience} Years</td>
                             <td>{position.salary}</td>
@@ -343,7 +343,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
         }}
         imageUrl={imageUrl}
       />
-       <Modal show={openEdit} onHide={()=>setOpenEdit(false)} centered>
+       <Modal show={openEdit} onHide={()=>setOpenEdit(false)} centered backdrop="static">
         {openEdit && <CreateJob handleModalClose={()=>setOpenEdit(false)} jobDetails={data.job} />}
       </Modal>
     </main>

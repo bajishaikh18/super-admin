@@ -155,7 +155,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         location: formData?.location,
         expiry: formData?.expiry,
         positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
-          positionId: position.title.value,
+          jobTitleId: position.title.value,
           experience: Number(position.experience),
           salary: position.salary,
         })),

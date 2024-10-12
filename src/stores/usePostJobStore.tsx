@@ -27,7 +27,7 @@ export interface Job {
 }
 
 export interface Position {
-  positionId: string
+  jobTitleId: string
   experience: number
   title:string;
   salary: string

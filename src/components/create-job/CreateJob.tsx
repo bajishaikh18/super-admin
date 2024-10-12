@@ -51,7 +51,7 @@ export default function CreateJob({
         jobPositions: jobDetails.positions.map(position=>{
           return {
             title:{
-              value:position.positionId,
+              value:position.jobTitleId,
               label:position.title
             },
             experience: position.experience.toString(),
