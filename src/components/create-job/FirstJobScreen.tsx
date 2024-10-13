@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { Button, Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { FieldError, useForm } from "react-hook-form";
+import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
 interface FirstJobScreenProps {
@@ -13,12 +13,13 @@ interface FirstJobScreenProps {
   handleClose: () => void;
   handleBackToPostJobClick: () => void;
 }
-
-import Select from "react-select";
 import { COUNTRIES } from "@/helpers/constants";
 import { CustomDatePicker } from "../common/form-fields/DatePicker";
+import { debounce } from "lodash";
+import { getFormattedAgencies } from "@/helpers/asyncOptions";
+import { SelectOption } from "@/helpers/types";
 interface FormValues {
-  agency: string;
+  agency: SelectOption;
   location: string;
   country: string;
   expiry: string;
@@ -40,7 +41,13 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
     { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
     { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
   ];
-  
+
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+        getFormattedAgencies(inputValue).then(options => callback(options))
+    }, 500),
+    []
+  );
   const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
     return {
       label: val.label,
@@ -87,15 +94,18 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
         {/* Agency Selection */}
         <Form.Group className={styles.formGroup}>
           <Form.Label>Agency</Form.Label>
-          <MultiSelect
-            name="agency"
-            control={control}
-            error={errors.agency}
-            options={agencies}
-            rules={{ required: "Agency is required" }}
-            customStyles={{}}
-            defaultValue={formData?.agency}
-          />
+          <MultiSelectAsync
+                         name="agency"
+                         control={control}
+                         error={errors.agency as FieldError}
+                          loadOptions={loadOptionsDebounced}
+                          rules={{ required: "Agency is required" }}
+                          customStyles={{}}
+                          defaultValue={formData?.agency}
+                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                          menuPosition={"fixed"}
+                        />
+         
         </Form.Group>
 
         <Form.Group className={styles.formGroup}>

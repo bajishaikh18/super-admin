@@ -42,7 +42,10 @@ export default function CreateJob({
       const [altCountryCode, altContactNo] =  jobDetails.contactNumbers?.[1] ? jobDetails.contactNumbers[1]?.split("-"):[];
       const payload = {
         ...jobDetails,
-        agency: jobDetails.agencyId,
+        agency: {
+          value:jobDetails.agencyId._id,
+          label:jobDetails.agencyId.name
+        },
         country: jobDetails.country,
         countryCode:countryCode,
         contactNumber: contactNo,

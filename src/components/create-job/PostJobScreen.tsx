@@ -200,6 +200,7 @@ const JobPostingImage = ({
                         color: "rgba(117, 117, 117, 1)",
                         fontSize: "12px",
                         marginLeft: "5px",
+                        display:'block'
                       }}
                     >
                       {facility}

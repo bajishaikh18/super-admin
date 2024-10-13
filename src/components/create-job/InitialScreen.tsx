@@ -37,6 +37,7 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
     'image/jpg': ['.jpg', '.jpeg'],
   },
   maxFiles:1,
+  maxSize: 5 * 1024 * 1024,
   onDrop})
 
   return (
@@ -68,7 +69,7 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
         }
         </div>
         <p className={`${styles.fileInfo} ${fileRejections.length >0 ? styles.error : ''}`}>
-          .jpeg, .jpg & .png are allowed. File size should not exceed 5mb
+          .jpeg, .jpg & .png are allowed. File size should not exceed 5 MB
         </p>
        
       

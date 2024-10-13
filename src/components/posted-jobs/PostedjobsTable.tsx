@@ -85,7 +85,7 @@ const PostedJobsTable: React.FC = () => {
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "job"],
+    queryKey: ["summary", "jobs"],
     queryFn: getJobSummary,
     retry: 3,
   });

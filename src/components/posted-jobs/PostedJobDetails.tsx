@@ -103,17 +103,17 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   const deletePost = useCallback(async ()=>{
     try{
         await updateJob(_id,{isDeleted:true});
+        router.push("/posted-jobs")
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",jobId],
           refetchType:'all'
         })
-        router.push("/posted-jobs")
       toast.success("Job deleted changed successfully");
     }catch(e){
       toast.error("Error while deleting job. Please try again");
       return
     }
-  },[jobId])
+  },[jobId,_id])
   
 
   if (isLoading) {

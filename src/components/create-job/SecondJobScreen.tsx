@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import { createJob, updateJob } from "@/apis/job";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getFormattedJobTitles } from "@/helpers/jobTitles";
+import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce } from "lodash";
 
 interface JobPosition {
@@ -151,7 +151,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
       const jobData = {
-        agencyId: formData?.agency,
+        agencyId: formData?.agency?.value,
         location: formData?.location,
         expiry: formData?.expiry,
         positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
