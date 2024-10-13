@@ -39,7 +39,7 @@ const fetchSize = 100;
 export type JobType = {
   _id: string;
   jobId: string;
-  agencyId: string;
+  agency: string;
   location: string;
   amenities: string[];
   positions: object[];
@@ -200,7 +200,7 @@ const PostedJobsTable: React.FC = () => {
         <Link href={`/posted-jobs/${info.getValue()}`}>{info.getValue()}</Link>
       ),
     }),
-    columnHelper.accessor("agencyId", {
+    columnHelper.accessor("agency", {
       cell: (info) => info.renderValue() || "N/A",
       header: "Agency",
     }),
