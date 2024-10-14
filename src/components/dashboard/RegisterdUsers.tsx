@@ -1,5 +1,7 @@
   import React, { useState, useMemo } from "react";
   import dataTableStyles from "../../components/common/table/DataTable.module.scss";
+  import CreateUserForm from "../users/CreateUsers";
+  import { Button, Modal } from 'react-bootstrap';
   import { User } from "../../stores/useUserStore";
   import { createColumnHelper, SortingState } from "@tanstack/react-table";
   import { DataTable } from "@/components/common/table/DataTable";
@@ -24,6 +26,7 @@
   const fetchSize = 100;
 
   const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
+    const [showCreateUser, setShowCreateUser] = useState(false);
     const [activeTab, setActiveTab] = useState<"admin" | "app">("app");
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
@@ -341,6 +344,13 @@
     const handleTabClick = (tab: "admin" | "app") => {
       setActiveTab(tab);
     };
+    const handleCreateUserClick = () => {
+      setShowCreateUser(true);
+    };
+  
+    const handleCancelCreateUser = () => {
+      setShowCreateUser(false);
+    };
 
     
   return (
@@ -362,7 +372,12 @@
           </div>
           {showButton && (
               <div className={dataTableStyles.buttonContainer}>
-                <button className={dataTableStyles.createuser}>+ Create User</button>
+                <button onClick={handleCreateUserClick}className={dataTableStyles.createuser}>+ Create User</button>
+                <Modal show={showCreateUser} onHide={handleCancelCreateUser} backdrop={false}>
+        <Modal.Body>
+          <CreateUserForm onCancel={handleCancelCreateUser} />
+        </Modal.Body>
+      </Modal>
               </div>
         )}
           {

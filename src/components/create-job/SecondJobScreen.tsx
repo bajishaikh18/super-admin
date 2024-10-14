@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import styles from "./CreateJob.module.scss";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AiOutlineDelete } from "react-icons/ai";
-
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
 import { FieldError, useForm } from "react-hook-form";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
@@ -131,6 +130,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     setValue,
     formState: { errors,isValid },
   } = useForm<FormValues>();
+  
 
   const onSubmit = async (data: FormValues) => {
     try {
