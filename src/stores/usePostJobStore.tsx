@@ -1,3 +1,4 @@
+import { SelectOption } from "@/helpers/types";
 import {create} from "zustand";
 
 type JobPosition ={
@@ -11,7 +12,10 @@ type JobPosition ={
 
 
 export interface Job {
-  agencyId: string
+  agencyId: {
+    _id:string,
+    name:string
+  }
   location: string
   expiry: string
   positions: Position[]
@@ -27,7 +31,7 @@ export interface Job {
 }
 
 export interface Position {
-  positionId: string
+  jobTitleId: string
   experience: number
   title:string;
   salary: string
@@ -36,7 +40,8 @@ export interface Position {
 
 export type PostJobFormData =  {
   _id?:string;
-  agency?: string;
+  jobId?:string;
+  agency?: SelectOption;
   location?: string;
   country?: string;
   expiry?: string;
@@ -56,12 +61,14 @@ interface PostJobStoreState {
   selectedFacilities: string[];
   newlyCreatedJob: Job | null;
   formData: PostJobFormData | null;
+  refreshImage: boolean;
   setFormData: (formData: PostJobFormData | null) => void
   setShowPostJob: (val:boolean)=>void
   setNewlyCreatedJob: (job:Job)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
+  setRefreshImage: (val:boolean) => void;
   setFacilities:(facilities:string[])=>void;
 }
 
@@ -69,9 +76,13 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
   showPostJob: false,
+  refreshImage:false,
   selectedFacilities: [],
   newlyCreatedJob: null,
   formData: null,
+  setRefreshImage:(val:boolean)=>{
+    set(() => ({ refreshImage:val}))
+  },
   // New actions for setting state
   setFormData: (formData)=>{
     const newData = formData || {}

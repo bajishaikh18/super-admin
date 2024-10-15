@@ -134,7 +134,7 @@ const Header: React.FC<HeaderProps> = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <Modal show={showPostJob} onHide={handleModalClose} centered>
+      <Modal show={showPostJob} onHide={handleModalClose} centered backdrop="static">
         {showPostJob && <CreateJob handleModalClose={handleModalClose} />}
       </Modal>
     </>

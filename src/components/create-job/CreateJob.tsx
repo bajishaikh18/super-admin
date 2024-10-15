@@ -38,11 +38,14 @@ export default function CreateJob({
 
   useEffect(()=>{
     if(jobDetails){
-      const [countryCode, contactNo] =  jobDetails.contactNumbers[0].split("-");
-      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers[1].split("-");
+      const [countryCode, contactNo] =  jobDetails.contactNumbers?.[0]?.split("-");
+      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers?.[1] ? jobDetails.contactNumbers[1]?.split("-"):[];
       const payload = {
         ...jobDetails,
-        agency: jobDetails.agencyId,
+        agency: {
+          value:jobDetails.agencyId._id,
+          label:jobDetails.agencyId.name
+        },
         country: jobDetails.country,
         countryCode:countryCode,
         contactNumber: contactNo,
@@ -51,7 +54,7 @@ export default function CreateJob({
         jobPositions: jobDetails.positions.map(position=>{
           return {
             title:{
-              value:position.positionId,
+              value:position.jobTitleId,
               label:position.title
             },
             experience: position.experience.toString(),

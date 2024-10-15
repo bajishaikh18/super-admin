@@ -22,25 +22,25 @@ const Dashboard = () => {
   const dashboardSummary = [
     {
       label: "Jobs Posted",
-      value: summaryData?.jobsPosted || "N/A",
+      value: summaryData?.jobsPosted || "0",
       image: "/jobs.png",
       link: '/posted-jobs'
     },
     {
       label: "Agencies Registered",
-      value: summaryData?.agenciesRegistered || "N/A",
+      value: summaryData?.agenciesRegistered || "0",
       image: "/agencies.png",
       link: '/posted-jobs'
     },
     {
       label: "Users Registered",
-      value: summaryData?.usersRegistered || "N/A",
+      value: summaryData?.usersRegistered || "0",
       image: "/users.png",
       link: '/posted-jobs'
     },
     {
       label: "Employers",
-      value: summaryData?.employers || "N/A",
+      value: summaryData?.employers || "0",
       image: "/employers.png",
       link: '/posted-jobs'
     },

@@ -14,6 +14,7 @@ import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { LuExpand } from "react-icons/lu";
 
 interface FourthJobScreenProps {
   isEdit?:boolean;
@@ -199,6 +200,7 @@ const JobPostingImage = ({
                         color: "rgba(117, 117, 117, 1)",
                         fontSize: "12px",
                         marginLeft: "5px",
+                        display:'block'
                       }}
                     >
                       {facility}
@@ -421,8 +423,8 @@ const JobPostingImage = ({
         </button>
       ) : (
         <>
-          <button className={styles.expandButton}>
-            <AiOutlineExpand size={14} onClick={() => handleFullScreen(true)} />
+          <button className={styles.expandButton} style={{bottom:`${(((formData?.jobPositions?.length||0)-1) * 10)}px`}}>
+          <LuExpand size={20} onClick={() => handleFullScreen(true)}/>
           </button>
         </>
       )}
@@ -435,7 +437,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleClose,
 }) => {
   const queryClient = useQueryClient()
-  const { formData, selectedFacilities, newlyCreatedJob } = usePostJobStore();
+  const { formData, selectedFacilities, newlyCreatedJob,setRefreshImage } = usePostJobStore();
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -504,6 +506,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
         //   });
         toast.success("Job posted successfully");
         handleClose();
+        setRefreshImage(true)
       }
       setLoading(false);
     } catch (error: unknown) {
@@ -523,7 +526,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
             ></IoClose>{" "}
           </div>
           <div className={styles.headerContainer}>
-            <h4 className={styles.h4}>Your job is successfully {isEdit?"created":"updated"}</h4>
+            <h4 className={styles.h4}>Your job is successfully {isEdit?"updated":"created"}</h4>
           </div>
           <JobPostingImage
             formData={formData}
