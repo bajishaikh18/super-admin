@@ -6,19 +6,18 @@ import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { debounce } from 'lodash';
 import styles from './Registeredusers.module.scss';
 
-
-
 const COUNTRIES = [
   { isdCode: "+1", name: "USA" },
   { isdCode: "+91", name: "India" },
   { isdCode: "+44", name: "UK" },
 ];
 const phoneRegex = /^[0-9]{10}$/;
+
   interface CreateUserFormProps {
     onCancel: () => void;
   }
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
-  const { register, handleSubmit, formState: { errors, touchedFields }, reset, setValue, watch } = useForm({
+  const { register, handleSubmit, formState: { errors,}, reset, setValue, watch, trigger} = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -36,6 +35,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
 
   const onSubmit = (data: any) => {
     console.log(data);
+    console.log(errors);
   };
 
   const handleCancel = () => {
@@ -61,7 +61,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
-                {...register('firstName', { required: 'First name is required' })}
+                {...register('firstName', { 
+                  required: 'First name is required',
+                  onChange: () => trigger('firstName'), 
+                })}
                 className={styles.inputField}
               />
               {errors.firstName && <Form.Text className="error">{errors.firstName.message}</Form.Text>}
@@ -73,7 +76,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
-                {...register('lastName', { required: 'Last name is required' })}
+                {...register('lastName', { 
+                  required: 'Last name is required',
+                  onChange: () => trigger('lastName'), 
+                })}
                 className={styles.inputField}
               />
               {errors.lastName && <Form.Text className="error">{errors.lastName.message}</Form.Text>}
@@ -90,6 +96,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
                   className={styles.input}
                   {...register('mobileCountryCode', {
                     required: 'Country code is required',
+                    onChange: () => trigger('mobileCountryCode'),
                   })}
                 >
                 {
@@ -106,12 +113,14 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
                     required: 'Mobile number is required',
                     pattern: {
                       value: phoneRegex,
-                      message: 'Enter a valid 10-digit mobile number',
-                    }
+                      message: 'Enter a valid mobile number',
+                    },
+                    onChange: () => trigger('mobileNumber'),
                   })}
+                  isInvalid={!!errors.mobileNumber}
                 />
               </InputGroup>
-              {touchedFields.mobileNumber && errors.mobileNumber && (
+              {errors.mobileNumber && (
                 <Form.Text className="error">
                   {errors.mobileNumber.message}
                 </Form.Text>
@@ -127,6 +136,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
             className={styles.input}
             {...register('landlineCountryCode', {
             required: 'Country code is required',
+            onChange: () => trigger('landlineCountryCode'),
             })}
           >
           {Object.values(COUNTRIES).map((country) => (
@@ -136,16 +146,18 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           ))}
         </Form.Select>
         <Form.Control
+          aria-label="Landline number"
           {...register('landlineNumber', {
+            required: 'Landline number is required',
             pattern: {
               value: phoneRegex,
-              message: 'Enter a valid 10-digit landline number',
-            }
+              message: 'Enter a valid Landline number',
+            },
+            onChange: () => trigger('landlineNumber'),
           })}
-          aria-label="Landline number"
         />
       </InputGroup>
-      {touchedFields.landlineNumber && errors.landlineNumber && (
+      {errors.landlineNumber && (
         <Form.Text className="error">
           {errors.landlineNumber.message}
         </Form.Text>
@@ -166,6 +178,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 message: "Invalid email address",
               },
+              onChange: () => trigger('email'),
             })}
           />
             {errors.email && (
@@ -177,21 +190,23 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           <Form.Label>Address</Form.Label>
           <Form.Control
             type="text"
-            {...register('address', { required: 'Address is required' })}
+            {...register('address', { 
+              required: 'Address is required',
+              onChange: () => trigger('address'), 
+            })}
             className={styles.inputField}
           />
           {errors.address && <Form.Text className="error">{errors.address.message}</Form.Text>}
         </Form.Group>
 
         <Row>
-        <Col md={6}>
+          <Col md={6}>
             <Form.Group className={styles.formGroup}>
-              <Form.Label>State</Form.Label>
-              <RegionDropdown
-                country={watch('country') || ''} 
-                value={watch('state') || ''} 
+              <Form.Label>Country</Form.Label>
+              <CountryDropdown
+                value={watch('country') || ''}
                 onChange={(val) => {
-                  setValue('state', val);  
+                  setValue('country', val);
                 }}
                 classes={styles.inputField}
               />
@@ -199,17 +214,18 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           </Col>
           <Col md={6}>
             <Form.Group className={styles.formGroup}>
-              <Form.Label>Country</Form.Label>
-              <CountryDropdown
-                value={watch('country') || ''} 
+              <Form.Label>State</Form.Label>
+              <RegionDropdown
+                country={watch('country') || ''}
+                value={watch('state') || ''}
                 onChange={(val) => {
-                  setValue('country', val);  
+                  setValue('state', val);
                 }}
                 classes={styles.inputField}
               />
             </Form.Group>
           </Col>
-          </Row>
+        </Row>
         <div className={styles.actions}>
           <Button
             type="button"

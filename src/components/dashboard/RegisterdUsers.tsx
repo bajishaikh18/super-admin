@@ -400,11 +400,8 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
             <Modal
               show={showCreateUser}
               onHide={handleCancelCreateUser}
-              backdrop={false}
             >
-              <Modal.Body>
                 <CreateUserForm onCancel={handleCancelCreateUser} />
-              </Modal.Body>
             </Modal>
           </div>
         )}
