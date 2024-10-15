@@ -37,10 +37,8 @@ export const getJobs = async (
   field: string
 ) => {
   try {
-    const response = await apiClient.get(`${basePath}/jobs`, {
+    const response = await apiClient.get(`${basePath}/jobs/admin/${status}`, {
       params: {
-        type: type,
-        data: status,
         page: page+1,
         limit: limit,
         field:field || '',
