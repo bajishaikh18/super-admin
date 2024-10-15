@@ -3,37 +3,50 @@ import { create } from 'zustand';
 
  export type AgencyType ={
     _id: string;
-    agencyName: string;
-    email: string;
-    phone: string;
+    name: string,
+    email: string,
+    phone: string,
+    address: string,
+    approved: boolean,
+    createdAt: string,
+    status: string,
+    profilePic: string,
+    state: string,
+    city: string,
+    jobposts: string,
 }
 
 
- export interface AgencyStore {
-  "name": "test",
-  "email": "test3@gmail.com",
-  "phone": 123344566,
-  "address": "xyz",
-  "approved": true,
-  "createdAt": "2024-09-10T23:59:59.000+00:00",
-  "status": "active",
-  "profilePic": "https://img.etimg.com/thumb/width-640,height-480,imgsize-94829,resizemode-75,msid-79521648/jobs/india-inc-warms-up-to-recruitment-theme-this-winter/hiring-agencies.jpg",
-  "state": "Karnataka",
-  "city": "Bengaluru"
-    
-}
-
-
-
-  interface AgencyStoreState {
-    
-
+interface AgencyStoreState {
+    agencies: AgencyType[];  
+    addAgency: (agency: AgencyType) => void;  
+    updateAgency: (id: string, updatedData: Partial<AgencyType>) => void;  
+    removeAgency: (id: string) => void;  
+    setAgencies: (agencies: AgencyType[]) => void;  
   }
 
-export const useAgencyStore = create<AgencyStoreState>((set) => ({
-    
-}))
+  export const useAgencyStore = create<AgencyStoreState>((set) => ({
+    agencies: [],
+  
+    addAgency: (agency) => set((state) => ({
+      agencies: [...state.agencies, agency],
+    })),
+  
+    updateAgency: (id, updatedData) => set((state) => ({
+      agencies: state.agencies.map((agency) =>
+        agency._id === id ? { ...agency, ...updatedData } : agency
+      ),
+    })),
+  
+    removeAgency: (id) => set((state) => ({
+      agencies: state.agencies.filter((agency) => agency._id !== id),
+    })),
+  
+    setAgencies: (agencies) => set(() => ({ agencies })),
+  }));
+  
+
+
 
 export default useAgencyStore;
-
 

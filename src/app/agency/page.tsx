@@ -1,6 +1,6 @@
 "use client"
 
-import Agencies from "@/components/agencies/Agencies"
+import Agencies from "../../components/agencies/Agencies";
 
 const AgenciesPage =() => {
     return (
