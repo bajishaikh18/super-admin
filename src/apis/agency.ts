@@ -18,3 +18,14 @@ export const getAgencies = async (
         throw error;
     }
 };
+
+export const getAgencyById = async (
+    id: string
+) => {
+    try {
+        const response = await apiClient.get(`${basePath}/${id}`);
+        return response.data;
+   }   catch (error) {
+        throw error;
+    }
+};

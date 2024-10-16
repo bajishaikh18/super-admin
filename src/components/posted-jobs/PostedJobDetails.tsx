@@ -59,12 +59,13 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     _id,
     createdAt,
     expiry,
-    agencyName,
+    agencyId,
     imageUrl,
     location,
     positions,
     contactNumbers,
     email,
+    viewed,
     status,
     description,
     amenities,
@@ -184,7 +185,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       height={18}
                       alt="view"
                     />
-                    Viewed by 1,186 Candidates
+                    Viewed by {viewed} candidates
                   </li>
                   <li>
                     <Image
@@ -232,7 +233,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                   />
                   <div>
                     <div className={styles.agencyNameContainer}>
-                      <h2 className={styles.agencyName}>Muthu International</h2>
+                      <h2 className={styles.agencyName}>{agencyId?.name}</h2>
                       <Image
                         src="/verified.svg"
                         width={13}

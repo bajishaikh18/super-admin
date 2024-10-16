@@ -13,8 +13,11 @@ import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LuExpand } from "react-icons/lu";
+import { getAgencyById } from "@/apis/agency";
+import { Loader, NotFound } from "../common/Feedbacks";
+import { AgencyType } from "@/stores/useAgencyStore";
 
 interface FourthJobScreenProps {
   isEdit?:boolean;
@@ -23,22 +26,24 @@ interface FourthJobScreenProps {
 }
 
 const JobPostingImage = ({
-  
   formData,
+  agency,
   selectedFacilities,
   handleFullScreen,
   isFullScreen,
   color,
 }: {
   formData: PostJobFormData | null;
+  agency: AgencyType,
   selectedFacilities: string[];
   handleFullScreen: (fullScreen: boolean) => void;
   isFullScreen: boolean;
   color: string;
 }) => {
+ 
   return (
     <div className={styles.imageContainer}>
-    
+
       <div
         className={`${styles.jobDetailsModal} ${
           isFullScreen ? styles.fullScreen : ""
@@ -273,16 +278,25 @@ const JobPostingImage = ({
               >
                 <img src="/ag_logo.svg" />
                 <div>
+                  <div style={{
+                    display:"flex",
+                    alignItems:'center',
+                    gap:"10px",
+                    marginBottom:"5px"
+                  }}>
                   <h6
                     style={{
                       fontSize: "18px",
                       margin: "0px",
+                      textAlign:'left',
                       fontWeight: 600,
                       lineHeight: "24px",
                     }}
                   >
-                    Aldhia Human Resource Consultants
+                     {agency.name}
                   </h6>
+                  <img src="/verified.svg"  />
+                  </div>
                   <p
                     style={{
                       fontSize: "13px",
@@ -293,10 +307,9 @@ const JobPostingImage = ({
                       textAlign: "left",
                     }}
                   >
-                    REG No: B-1853/MUM/COM/1000+/5/0242/2023{" "}
+                   {agency.regNo}
                   </p>
                 </div>
-                <img src="/verified.svg" style={{ marginTop: "-20px" }} />
               </div>
               <div>
                 <div
@@ -345,7 +358,8 @@ const JobPostingImage = ({
                       marginTop: "12px",
                     }}
                   >
-                    <img src="/globe.svg" />
+                    {agency.website &&                     <img src="/globe.svg" />
+                    }
                     <p
                       style={{
                         margin: 0,
@@ -355,7 +369,7 @@ const JobPostingImage = ({
                         marginLeft: "8px",
                       }}
                     >
-                      alarabarafa.com
+                       {agency.website}
                     </p>
                   </div>
                 </div>
@@ -436,8 +450,18 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
   handleBack,
   handleClose,
 }) => {
+
   const queryClient = useQueryClient()
   const { formData, selectedFacilities, newlyCreatedJob,setRefreshImage } = usePostJobStore();
+  const {
+    data: agencyResp,
+    isLoading,
+    error,
+  } = useQuery({ queryKey: ["agency", formData?.agency?.value], queryFn:()=>{
+    if(formData?.agency?.value){
+      return getAgencyById(formData.agency?.value)
+    }
+  },retry:2 });
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -499,11 +523,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           },
           refetchType:'all'
         })
-        // await queryClient.refetchQueries({
-        //     predicate: (query) => {
-        //       return query.queryKey.includes('jobs');
-        //     },
-        //   });
+       
         toast.success("Job posted successfully");
         handleClose();
         setRefreshImage(true)
@@ -514,6 +534,12 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       setLoading(false);
     }
   };
+  if(isLoading){
+    return <Loader text="Fetching details to generate image"/>
+  }
+  if(error || !agencyResp.agency){
+    return <NotFound text="Something went wrong while fetching needed details"/>
+  }
   return (
     <>
       {!isFullScreen && (
@@ -530,6 +556,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           </div>
           <JobPostingImage
             formData={formData}
+            agency={agencyResp.agency}
             selectedFacilities={selectedFacilities}
             handleFullScreen={toggleFullScreen}
             isFullScreen={false}
@@ -608,6 +635,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       >
         <JobPostingImage
           formData={formData}
+          agency={agencyResp.agency}
           selectedFacilities={selectedFacilities}
           handleFullScreen={toggleFullScreen}
           isFullScreen={true}
