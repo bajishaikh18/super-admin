@@ -457,7 +457,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
     data: agencyResp,
     isLoading,
     error,
-  } = useQuery({ queryKey: ["agency", formData?.agency?.value], queryFn:()=>{
+  } = useQuery({ queryKey: ["agencyDetails", formData?.agency?.value], queryFn:()=>{
     if(formData?.agency?.value){
       return getAgencyById(formData.agency?.value)
     }

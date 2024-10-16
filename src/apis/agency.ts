@@ -29,3 +29,14 @@ export const getAgencyById = async (
         throw error;
     }
 };
+
+export const getAgencyByAdminId = async (
+    id: string
+) => {
+    try {
+        const response = await apiClient.get(`${basePath}/admin/${id}`);
+        return response.data;
+   }   catch (error) {
+        throw error;
+    }
+};

@@ -1,11 +1,11 @@
 "use client";
-import PostedJobDetails from "@/components/posted-jobs/PostedJobDetails";
+import AgencyDetails from "@/components/agencies/AgencyDetails";
 import React from "react";
 
 const Page = ({ params }: { params: { id: string } }) => {
   const { id } = params;
 
-  return <PostedJobDetails jobId={id} />;
+  return <AgencyDetails agencyId={id} />;
 };
 
 export default Page;

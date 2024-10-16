@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getJobDetails, updateJob } from "@/apis/job";
-import styles from "./PostedJobDetail.module.scss";
+import styles from "../common/styles/Details.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -32,12 +32,10 @@ import { LuExpand } from "react-icons/lu";
 
 type PostedJobDetailsProps = {
   jobId: string;
-  onClose: () => void;
 };
 
 const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   jobId,
-  onClose,
 }) => {
   const queryClient = useQueryClient()
   const [isFullScreen, setIsFullScreen] = useState(false);
