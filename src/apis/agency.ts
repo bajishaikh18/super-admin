@@ -2,15 +2,15 @@ import { apiClient } from "./common";
 
 const basePath = '/agency';
 export const getAgencies = async (
-    type: string,
-    state: string,
-    
+    status: string,
+    field:string,
+    filterTerm:string
 ) => {
     try {
-        const response = await apiClient.get(`${basePath}/agencies`, {
+        const response = await apiClient.get(`${basePath}/agencies/admin/${status}`, {
             params: {
-                type: type,
-                data: state,
+                field: field || "",
+                filterTerm: filterTerm || "",
             }
         });
         return response.data;

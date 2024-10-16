@@ -4,6 +4,7 @@ import { create } from 'zustand';
  export type AgencyType ={
     _id: string;
     name: string,
+    agencyId:string,
     email: string,
     phone: string,
     address: string,
