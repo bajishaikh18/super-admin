@@ -91,3 +91,19 @@ export const getJobTitles = async (title?:string) => {
 };
 
 
+export const getAgenciesList = async (agencyName:string) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/agency/agencies`,{
+      params:{
+        status:'active',
+        agencyName: agencyName
+      }
+    });
+    return response.data.agencies;
+  } catch (error) {
+    console.error("Failed to get upload url", error);
+    throw error;
+  }
+};
+
+

@@ -1,3 +1,4 @@
+import { SelectOption } from "@/helpers/types";
 import {create} from "zustand";
 
 type JobPosition ={
@@ -11,7 +12,10 @@ type JobPosition ={
 
 
 export interface Job {
-  agencyId: string
+  agencyId: {
+    _id:string,
+    name:string
+  }
   location: string
   expiry: string
   positions: Position[]
@@ -27,7 +31,7 @@ export interface Job {
 }
 
 export interface Position {
-  positionId: string
+  jobTitleId: string
   experience: number
   title:string;
   salary: string
@@ -36,7 +40,8 @@ export interface Position {
 
 export type PostJobFormData =  {
   _id?:string;
-  agency?: string;
+  jobId?:string;
+  agency?: SelectOption;
   location?: string;
   country?: string;
   expiry?: string;

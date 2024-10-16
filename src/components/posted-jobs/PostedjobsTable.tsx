@@ -38,7 +38,8 @@ const fetchSize = 100;
 
 export type JobType = {
   _id: string;
-  agencyId: string;
+  jobId: string;
+  agency: string;
   location: string;
   amenities: string[];
   positions: object[];
@@ -63,15 +64,15 @@ const PostedJobsTable: React.FC = () => {
   const [searchPending, setSearchPending] = React.useState<string>("");
   const [searchExpired, setSearchExpired] = React.useState<string>("");
   const [fieldActive, setFieldActive] = React.useState<SelectOption>({
-    value: "_id",
+    value: "jobId",
     label: "Post Id",
   } as SelectOption);
   const [fieldPending, setFieldPending] = React.useState<SelectOption>({
-    value: "_id",
+    value: "jobId",
     label: "Post Id",
   } as SelectOption);
   const [fieldExpired, setFieldExpired] = React.useState<SelectOption>({
-    value: "_id",
+    value: "jobId",
     label: "Post Id",
   } as SelectOption);
 
@@ -84,7 +85,7 @@ const PostedJobsTable: React.FC = () => {
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "job"],
+    queryKey: ["summary", "jobs"],
     queryFn: getJobSummary,
     retry: 3,
   });
@@ -193,13 +194,13 @@ const PostedJobsTable: React.FC = () => {
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
-    columnHelper.accessor("_id", {
+    columnHelper.accessor("jobId", {
       header: "Post Id",
       cell: (info) => (
         <Link href={`/posted-jobs/${info.getValue()}`}>{info.getValue()}</Link>
       ),
     }),
-    columnHelper.accessor("agencyId", {
+    columnHelper.accessor("agency", {
       cell: (info) => info.renderValue() || "N/A",
       header: "Agency",
     }),

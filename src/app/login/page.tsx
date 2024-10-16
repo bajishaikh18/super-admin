@@ -39,7 +39,7 @@ function Page() {
      }
     } catch (error:any) {
       setLoading(false);
-      if(error.status === 400){
+      if([400,404].includes(error.status)){
         toast.error('Looks like your credentials are wrong')
       }else{
         toast.error('Something went wrong! Please try again later')

@@ -200,6 +200,7 @@ const JobPostingImage = ({
                         color: "rgba(117, 117, 117, 1)",
                         fontSize: "12px",
                         marginLeft: "5px",
+                        display:'block'
                       }}
                     >
                       {facility}
@@ -525,7 +526,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
             ></IoClose>{" "}
           </div>
           <div className={styles.headerContainer}>
-            <h4 className={styles.h4}>Your job is successfully {isEdit?"created":"updated"}</h4>
+            <h4 className={styles.h4}>Your job is successfully {isEdit?"updated":"created"}</h4>
           </div>
           <JobPostingImage
             formData={formData}
