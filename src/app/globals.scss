@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @import './variables';
+@import './common';
 
 html,
 body {
@@ -18,6 +19,26 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .btn {
@@ -52,6 +73,14 @@ a {
       color: #fff;
     }
   }
+  &.action-buttons{
+    border-radius: 26px;
+    padding: 13px 41px;
+    font-size: 14px;
+    line-height: 16px;
+    width: auto;
+    margin: 0px !important;
+  }
   &.bg-white{
     background-color: #fff;
     &:hover{
@@ -74,6 +103,12 @@ a {
     outline: none !important;
     box-shadow: none !important;
     border-color: $color-brand-1 !important;
+  
+  }
+  &.is-invalid{
+    &:focus{
+      border-color: $color-danger !important;
+    }
   }
   &.extra-small{
     min-height: 32px;
@@ -406,3 +441,4 @@ a {
   .capitalize{
     text-transform: capitalize;
   }
+

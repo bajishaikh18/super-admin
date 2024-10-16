@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
@@ -18,25 +18,26 @@ const PostedJobs = () => {
     refetchOnMount: true,
   });
 
+
   const dashboardSummary = [
     {
       label: "Posted",
-      value: summaryData?.postedCount || "N/A",
+      value: summaryData?.postedCount || "0",
       image: "/jobs.png",
     },
     {
       label: "Applied",
-      value: summaryData?.appliedCount || "N/A",
+      value: summaryData?.appliedCount || "0",
       image: "/agencies.png",
     },
     {
       label: "Expired",
-      value: summaryData?.expiredCount || "N/A",
+      value: summaryData?.expiredCount || "0",
       image: "/users.png",
     },
     {
       label: "Agencies",
-      value: summaryData?.agenciesCount || "N/A",
+      value: summaryData?.agenciesCount || "0",
       image: "/employers.png",
       link: '/posted-jobs'
     },

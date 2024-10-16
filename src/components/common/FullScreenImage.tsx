@@ -1,4 +1,5 @@
 import { IMAGE_BASE_URL } from "@/helpers/constants";
+import usePostJobStore from "@/stores/usePostJobStore";
 import Image from "next/image";
 import { Modal } from "react-bootstrap";
 import { IoClose } from "react-icons/io5";
@@ -12,6 +13,7 @@ export const FullScreenImage = ({
   isOpen: boolean;
   handleClose: () => void;
 }) => {
+  const {refreshImage} = usePostJobStore();
   return (
     <Modal
       show={isOpen}
@@ -24,7 +26,7 @@ export const FullScreenImage = ({
       <IoClose size={21} color="#fff" onClick={handleClose}/>
       </div>
       <Image
-        src={`${IMAGE_BASE_URL}/${imageUrl}`}
+        src={`${IMAGE_BASE_URL}/${imageUrl}?ts=${refreshImage ? new Date().getTime() : ''}`}
         alt=""
         width={800}
         height={800}

@@ -75,7 +75,9 @@ const RegisteredUsers: React.FC = () => {
         header: "State",
         cell: (info) =>
           INDIAN_STATES.find((state) => state.state_code === info.renderValue())
-            ?.name || info.renderValue() || "N/A",
+            ?.name ||
+          info.renderValue() ||
+          "N/A",
         meta: {
           filterType: "select",
           selectOptions: INDIAN_STATES.map((val) => ({
@@ -91,8 +93,14 @@ const RegisteredUsers: React.FC = () => {
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => info.renderValue() || "N/A",
-        meta: { classes: "capitalize", filterType: "select",
-          selectOptions: Object.entries(INDUSTRIES).map(([value,label])=>({value:value,label: label}))},
+        meta: {
+          classes: "capitalize",
+          filterType: "select",
+          selectOptions: Object.entries(INDUSTRIES).map(([value, label]) => ({
+            value: value,
+            label: label,
+          })),
+        },
       }),
       columnHelper.accessor("totalExperience", {
         header: "Experience",
@@ -193,9 +201,13 @@ const RegisteredUsers: React.FC = () => {
 
   const adminColumns = useMemo(
     () => [
-      columnHelper.accessor("_id", {
+      columnHelper.accessor("adminUserId", {
         header: "User Id",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) => (
+          <Link href={`/user/${info.row.getValue("adminUserId")}`}>
+            {info.renderValue() || "N/A"}
+          </Link>
+        ),
         enableColumnFilter: true,
       }),
       columnHelper.accessor("firstName", {
@@ -205,7 +217,7 @@ const RegisteredUsers: React.FC = () => {
       columnHelper.accessor("email", {
         header: "Email Id",
         cell: (info) => (
-          <Link href={`/user/${info.row.getValue("_id")}`}>
+          <Link href={`/user/${info.row.getValue("adminUserId")}`}>
             {info.renderValue() || "N/A"}
           </Link>
         ),
@@ -315,7 +327,7 @@ const RegisteredUsers: React.FC = () => {
         start,
         fetchSize,
         debouncedSearchTermAdmin,
-        field.value
+        fieldAdmin.value
       );
       return fetchedData;
     },
