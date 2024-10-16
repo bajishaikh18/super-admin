@@ -1,33 +1,20 @@
 import { apiClient } from "./common";
 
 const basePath = '/agency';
-
-
-
 export const getAgencies = async (
-
     type: string,
-    status: string,
-    page: number,
-    limit: number,
-    filter: string,
-    field: string
+    state: string,
+    
 ) => {
     try {
         const response = await apiClient.get(`${basePath}/agencies`, {
             params: {
-                type: type, 
-                data: status,
-                page: page + 1,
-                limit: limit,
-                field:field || '',
-                filterTerm: filter,
+                type: type,
+                data: state,
             }
         });
         return response.data;
-    } catch (error) {
-
+   }   catch (error) {
         throw error;
-        
     }
 };

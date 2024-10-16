@@ -1,11 +1,10 @@
 "use client";
-
 import React, { useState, useMemo } from "react";
 import { AgencyType } from "@/stores/useAgencyStore";
 import { Card } from "react-bootstrap";
 import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
-import { createColumnHelper, SortingState } from "@tanstack/react-table";  
+import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import {
   useQuery,
   useInfiniteQuery,
@@ -17,12 +16,10 @@ import { DateTime } from "luxon";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import { useDebounce } from "@uidotdev/usehooks";
 import { getAgencies } from "@/apis/agency";
-
 import styles from "./Agency.module.scss";
+import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 
-// export type AgencyApiResponse ={
-//     agencies: AgencyType[];
-// }
+
 
 
 const fetchSize = 100;
@@ -30,92 +27,74 @@ const fetchSize = 100;
 
 const Agencies: React.FC = () => {
   const [field, setField] = useState<SelectOption>({
-    value: "name",
-    label: "Agency Name",
+    value: "state",
+    label: "State",
   } as SelectOption);
   const [search, setSearch] = React.useState<string>("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const debouncedSearchTerm = useDebounce(search, 300);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching, isLoading, error } = useInfiniteQuery<
+  const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
     AgencyType[]
   >({
-    queryKey: ["agencies", "active", debouncedSearchTerm],
+    queryKey: ["agencies", search, field, debouncedSearchTerm],
     queryFn: async ({ pageParam = 0 }) => {
-      const start = pageParam as number;
-      const fetchedData = await getAgencies(
-        "status",
-        "active",
-        start,
-        fetchSize,
-        debouncedSearchTerm,
-        field.value
-      );
+      const fetchedData = await getAgencies( field.value, search );
       return fetchedData;
     },
+    retry: 3,
     initialPageParam: 0,
     staleTime: 0,
-    getNextPageParam: (_lastGroup, groups) => {
-        return _lastGroup.length ? groups.length * fetchSize : undefined;
-    },
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+        // return _lastGroup.length ? group.length * fetchSize : undefined;
     refetchOnMount: true,
     placeholderData: keepPreviousData,
   });
-
-   const flatData = useMemo(() => {
-    return data?.pages?.flatMap((page) => page) ?? [];
-   }, [data]);
-
+  console.log("field----", field, search)
+  const flatData = React.useMemo(
+    () =>
+      data?.pages?.flatMap((page: any) => page?.agencies) ?? [],
+    [data]
+  );
    const totalCount = flatData.length;
-
    const columnHelper = createColumnHelper<AgencyType>();
-
    const columns = useMemo(
     () => [
-
         columnHelper.accessor("_id", {
             header: "Agency#",
             cell: (info) => {
                 <Link href={`/agency/${info.renderValue()}`}>{info.renderValue()}</Link>
             }
         }),
-
         columnHelper.accessor("name", {
             header: "Agency Name",
             cell: (info) => info.renderValue() || "N/A",
-
         }),
-
         columnHelper.accessor("email", {
             header: "Email",
             cell: (info) => {
-                <Link 
+                <Link
                  href={`/agency/${info.row.renderValue("_id")}`}>
                     {info.renderValue() || "N/A"}
                 </Link>
             }
         }),
-
         columnHelper.accessor("phone", {
             header: "Mobile",
             cell: (info) => info.renderValue() || "N/A",
         }),
-
         columnHelper.accessor("jobposts", {
             header: "Job Posts",
             cell: (info) => info.renderValue() || "N/A",
         }),
-
         columnHelper.accessor("address", {
             header: "Address",
             cell: (info) => info.renderValue() || "N/A",
         }),
-
         columnHelper.accessor("approved", {
             header: "MEA Approved",
             cell: (info) => info.renderValue(),
         }),
-
         columnHelper.accessor("createdAt", {
             header: "Created Date",
             cell: (info) =>
@@ -124,7 +103,6 @@ const Agencies: React.FC = () => {
                 : "N/A",
             meta: { filterType: "date" },
           }),
-
           columnHelper.accessor("status", {
             header: "Status",
             meta: {
@@ -141,17 +119,29 @@ const Agencies: React.FC = () => {
               );
             },
           }),
+          columnHelper.accessor("state", {
+            header: "State",
+            cell: (info) =>
+              INDIAN_STATES.find((state) => state.state_code === info.renderValue())
+                ?.name || info.renderValue() || "N/A",
+            meta: {
+              filterType: "select",
+              selectOptions: INDIAN_STATES.map((val) => ({
+                label: val.name,
+                value: val.name,
+              })),
+            },
+          }),
+          columnHelper.accessor("city", {
+            header: 'City',
+            cell: '',
+          })
    ],
    []
 )
-  
-
-
-
   const handleCreateAgency = () => {
     console.log("Agency created successfully");
   };
-
   return (
       <Card>
         <main className="main-section">
@@ -166,7 +156,6 @@ const Agencies: React.FC = () => {
                   handleFilterChange={(newField) => setField(newField)}
                   columnsHeaders={columns}
                 />
-
                 <button
                   className={styles.createAgency}
                   onClick={handleCreateAgency}
@@ -177,7 +166,6 @@ const Agencies: React.FC = () => {
             </div>
           </div>
         </main>
-
         <div className={"header-row"}>
           <div className={"tab-container"}>
             <div className="fadeIn">
@@ -198,8 +186,13 @@ const Agencies: React.FC = () => {
           </div>
         </div>
       </Card>
-
   );
 };
-
 export default Agencies;
+
+
+
+
+
+
+

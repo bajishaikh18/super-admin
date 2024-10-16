@@ -18,31 +18,22 @@ import { create } from 'zustand';
 
 
 interface AgencyStoreState {
-    agencies: AgencyType[];  
-    addAgency: (agency: AgencyType) => void;  
-    updateAgency: (id: string, updatedData: Partial<AgencyType>) => void;  
-    removeAgency: (id: string) => void;  
-    setAgencies: (agencies: AgencyType[]) => void;  
+    state: string;
+    setState: (state: string) => void;
+    city: string;
+    setCity: (city: string) => void;
+    agencies: AgencyType[];
+    setAgencies: (agencies: AgencyType[])=> void
   }
 
   export const useAgencyStore = create<AgencyStoreState>((set) => ({
+    state: '',
+    setState: (state) => set ({ state: state}),
+    city: '',
+    setCity: (city) => set ({ city: city}),
     agencies: [],
+    setAgencies: (agencies) => set({ agencies})
   
-    addAgency: (agency) => set((state) => ({
-      agencies: [...state.agencies, agency],
-    })),
-  
-    updateAgency: (id, updatedData) => set((state) => ({
-      agencies: state.agencies.map((agency) =>
-        agency._id === id ? { ...agency, ...updatedData } : agency
-      ),
-    })),
-  
-    removeAgency: (id) => set((state) => ({
-      agencies: state.agencies.filter((agency) => agency._id !== id),
-    })),
-  
-    setAgencies: (agencies) => set(() => ({ agencies })),
   }));
   
 
