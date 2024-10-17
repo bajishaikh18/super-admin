@@ -26,6 +26,7 @@ export function DataTable({
   isFetching,
   isLoading,
   isSearch,
+  tableHeight,
   totalCount
 }: {
   totalCount:number
@@ -36,6 +37,7 @@ export function DataTable({
   isFetching: boolean;
   isSearch: boolean;
   isLoading: boolean;
+  tableHeight?: string;
   sortingChanged: (updater: any) => void;
 }) {
   //we need a reference to the scrolling element for logic down below
@@ -129,7 +131,7 @@ export function DataTable({
         style={{
           overflow: "auto", //our scrollable table container
           position: "relative", //needed for sticky header
-          height: "50vh", //should be a fixed height
+          height: tableHeight || "50vh", //should be a fixed height
         }}
       >
         {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}

@@ -70,7 +70,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   } = data?.job || {};
 
   const goBack = () => {
-    router.back();
+    router.push('/posted-jobs');
   };
 
   const changePostStatus = useCallback(async ()=>{

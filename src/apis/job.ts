@@ -29,7 +29,6 @@ export const getJobSummary = async () => {
 };
 
 export const getJobs = async (
-  type: string,
   status: string,
   page: number,
   limit: number,

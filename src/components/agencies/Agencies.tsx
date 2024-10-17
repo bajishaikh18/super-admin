@@ -19,8 +19,12 @@ import { getAgencies } from "@/apis/agency";
 import styles from "./Agency.module.scss";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 
-const fetchSize = 100;
+const fetchSize = 10;
 
+type AgencyResponse = {
+  agencies: AgencyType[],
+  totalCount: number
+}
 const Agencies: React.FC = () => {
   const [field, setField] = useState<SelectOption>({
     value: "agencyId",
@@ -31,18 +35,18 @@ const Agencies: React.FC = () => {
   const debouncedSearchTerm = useDebounce(search, 300);
 
   const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
-    AgencyType[]
+  AgencyResponse
   >({
     queryKey: ["agencies", search, field, debouncedSearchTerm],
     queryFn: async ({ pageParam = 0 }) => {
-      const fetchedData = await getAgencies('active',field.value,search);
+      const start = pageParam as number;
+      const fetchedData = await getAgencies('active',start,fetchSize,field.value,search);
       return fetchedData;
     },
     retry: 3,
     initialPageParam: 0,
     staleTime: 0,
     getNextPageParam: (_lastGroup, groups) => groups.length,
-    // return _lastGroup.length ? group.length * fetchSize : undefined;
     refetchOnMount: true,
     placeholderData: keepPreviousData,
   });
@@ -50,7 +54,8 @@ const Agencies: React.FC = () => {
     () => data?.pages?.flatMap((page: any) => page?.agencies) ?? [],
     [data]
   );
-  const totalCount = flatData.length;
+  const totalCount = data?.pages?.[0]?.totalCount || 0;
+  console.log(totalCount)
   const columnHelper = createColumnHelper<AgencyType>();
   const columns = useMemo(
     () => [
@@ -76,9 +81,9 @@ const Agencies: React.FC = () => {
         header: "Mobile",
         cell: (info) => info.renderValue() || "N/A",
       }),
-      columnHelper.accessor("jobposts", {
+      columnHelper.accessor("postedJobs", {
         header: "Job Posts",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) => info.renderValue()  || 0,
       }),
       columnHelper.accessor("address", {
         header: "Address",
@@ -146,6 +151,7 @@ const Agencies: React.FC = () => {
               setSorting(updater);
             }}
             data={flatData}
+            tableHeight={"75vh"}
             isSearch={!!search}
             fetchNextPage={fetchNextPage}
             isLoading={isLoading}

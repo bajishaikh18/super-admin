@@ -26,6 +26,7 @@ import usePostJobStore from "@/stores/usePostJobStore";
 import { AgencyType } from "@/stores/useAgencyStore";
 import { getAgencyByAdminId } from "@/apis/agency";
 import Link from "next/link";
+import { AgencyJobPostings } from "./AgencyJobPostings";
 
 type PostedJobDetailsProps = {
   agencyId: string;
@@ -48,7 +49,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
     enabled: !!agencyId,
   });
 
-  const { _id, regNo, name, address,phone, email, status } =
+  const { _id, regNo, name, address,phone,postedJobs, email, status,activeJobCount,expiredJobCount } =
     (data?.agency as AgencyType) || {};
 
   const goBack = () => {
@@ -101,7 +102,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
   if (isLoading) {
     return (
       <main className="main-section">
-        <Loader text="Loading job details" />
+        <Loader text="Loading agency details" />
       </main>
     );
   }
@@ -109,14 +110,14 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
   if (!data) {
     return (
       <main className="main-section">
-        <NotFound text="Oops!, looks like job details are not present" />
+        <NotFound text="Oops!, looks like agency details are not present" />
       </main>
     );
   }
   if (isError) {
     return (
       <main className="main-section">
-        <NotFound text="Something went wrong while accessing job details. Please try again" />
+        <NotFound text="Something went wrong while accessing agency details. Please try again" />
       </main>
     );
   }
@@ -170,7 +171,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                       height={20}
                       alt="clock"
                     />
-                    <span>15 Jobs Posted</span>
+                    <span>{postedJobs} Jobs Posted</span>
                   </li>
                 </ul>
                 <div className={agencyStyles.addressSection}>
@@ -215,7 +216,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
             <Card className={styles.detailsCard}>
               <CardHeader className={styles.detailsCardHeader}>
                 <div  className={agencyStyles.detailInfoHeader}>
-                 <h3>Jobs Posted by {name} (100)</h3>
+                 <h3>Jobs Posted by {name} ({postedJobs})</h3>
                  <div>
                     <Image src={"/share.svg"} width={20} height={20} alt="applications received"/>
                     <p>Total applications received <Link href="#">1552</Link></p>
@@ -253,8 +254,8 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                   </Dropdown>
                 </div>
               </CardHeader>
-              <CardBody className={styles.summaryCardBody}>
-
+              <CardBody className={agencyStyles.detailCardBody}>
+                    <AgencyJobPostings agencyId={_id} postedJobs={postedJobs} activeJobCount={activeJobCount} expiredJobCount={expiredJobCount}/>
               </CardBody>
             </Card>
           </Col>

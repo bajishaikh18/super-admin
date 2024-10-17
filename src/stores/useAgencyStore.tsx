@@ -15,8 +15,10 @@ import { create } from 'zustand';
     profilePic: string,
     state: string,
     city: string,
-    jobposts: string,
-    website:string
+    postedJobs: number,
+    website:string,
+    activeJobCount: number;
+    expiredJobCount: number;
 }
 
 

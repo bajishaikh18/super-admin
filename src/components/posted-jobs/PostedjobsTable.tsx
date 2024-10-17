@@ -100,7 +100,6 @@ const PostedJobsTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "active",
         start,
         fetchSize,
@@ -126,7 +125,6 @@ const PostedJobsTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "expired",
         start,
         fetchSize,
@@ -153,7 +151,6 @@ const PostedJobsTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "pending",
         start,
         fetchSize,
