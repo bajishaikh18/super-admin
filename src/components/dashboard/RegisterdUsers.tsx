@@ -395,7 +395,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
               onClick={handleCreateUserClick}
               className={dataTableStyles.createuser}
             >
-              + Create User
+            + Create User
             </button>
             <Modal
               show={showCreateUser}

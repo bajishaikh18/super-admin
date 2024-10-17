@@ -1,9 +1,12 @@
-import React, { useCallback } from 'react';
+import React, {useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Form, Row, Col, InputGroup } from 'react-bootstrap';
 import { IoClose } from 'react-icons/io5';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import {country, State} from 'react-country-state-city'
 import { debounce } from 'lodash';
+import { inviteUser } from "@/apis/user";
+import { toast } from 'react-hot-toast';
 import styles from './Registeredusers.module.scss';
 
 const COUNTRIES = [
@@ -17,11 +20,14 @@ const phoneRegex = /^[0-9]{10}$/;
     onCancel: () => void;
   }
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
+  const [loading, setLoading] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const { register, handleSubmit, formState: { errors,}, reset, setValue, watch, trigger} = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',
-      companyName: '',
       mobileNumber: '',
       landlineNumber: '',
       email: '',
@@ -33,9 +39,25 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     }
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    console.log(errors);
+  const onSubmit = async (data: any) => {
+    console.log("Data:", data);
+    setLoading(true);
+    try {
+      const userDetails = {
+        ...data,
+        role: 3, 
+        pass: "123",
+      };
+      const response = await inviteUser(userDetails);
+      console.log("Submitting data:", response);
+      toast.success("User invited successfully");
+      reset();
+    } catch (error) {
+      console.error("Error creating user:", error);
+      toast.error("Error inviting user. Please try again.");
+    } finally {
+      setLoading(false); 
+    }
   };
 
   const handleCancel = () => {
@@ -47,7 +69,17 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     console.log("Fetching countries for:", inputValue);
   }, 500), []);
 
+  const handleCountrySearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCountrySearch(value);
+    setShowDropdown(value.length > 0); 
+  };
+
+  const filteredCountries = COUNTRIES.filter(country =>
+    country.name.toLowerCase().includes(countrySearch.toLowerCase())
+  );
   const selectedCountry = watch('country');
+  
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
@@ -237,9 +269,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           <Button
             type="submit"
             className={`action-buttons`}
+            disabled={loading}
           >
-            Proceed
-          </Button>
+        {loading ? <div className={styles.spinner}></div> : "Create"}          
+        </Button>
         </div>
       </Form>
     </div>
