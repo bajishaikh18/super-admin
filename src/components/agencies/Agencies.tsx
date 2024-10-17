@@ -106,17 +106,14 @@ const Agencies: React.FC = () => {
         header: "Status",
         meta: {
           classes: "capitalize",
-          filterType: "select",
-          selectOptions: [
-            { value: "active", label: "Active" },
-            { value: "inactive", label: "InActive" },
-          ],
+          filter: false,
         },
         cell: (info) => {
           return (
             <div className="status-cont">{info.renderValue() || "N/A"}</div>
           );
         },
+        
       })
     ],
     []
