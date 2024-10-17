@@ -21,8 +21,7 @@ const phoneRegex = /^[0-9]{10}$/;
   }
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
   const [loading, setLoading] = useState(false);
-  const [countrySearch, setCountrySearch] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
+  
 
   const { register, handleSubmit, formState: { errors,}, reset, setValue, watch, trigger} = useForm({
     defaultValues: {
@@ -69,15 +68,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     console.log("Fetching countries for:", inputValue);
   }, 500), []);
 
-  const handleCountrySearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCountrySearch(value);
-    setShowDropdown(value.length > 0); 
-  };
-
-  const filteredCountries = COUNTRIES.filter(country =>
-    country.name.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  
   const selectedCountry = watch('country');
   
   return (
