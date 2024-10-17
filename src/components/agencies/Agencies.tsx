@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { AgencyType } from "@/stores/useAgencyStore";
+import useAgencyStore, { AgencyType } from "@/stores/useAgencyStore";
 import { Button, Card } from "react-bootstrap";
 import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
@@ -116,9 +116,8 @@ const Agencies: React.FC = () => {
     ],
     []
   );
-  const handleCreateAgency = () => {
-    console.log("Agency created successfully");
-  };
+  const {setShowCreateAgency} = useAgencyStore();
+
   return (
     <main className="main-section">
       <div className="page-block">
@@ -132,7 +131,7 @@ const Agencies: React.FC = () => {
               handleFilterChange={(newField) => setField(newField)}
               columnsHeaders={columns}
             />
-            <Button className="btn-img" onClick={handleCreateAgency}>
+            <Button className="btn-img" onClick={()=>setShowCreateAgency(true)}>
               + Create Agency
             </Button>
           </div>

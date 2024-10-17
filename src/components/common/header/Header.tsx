@@ -10,6 +10,8 @@ import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
 import { AuthHeader } from "./AuthHeader";
 import usePostJobStore from "@/stores/usePostJobStore";
+import CreateAgency from "@/components/create-agency/CreateAgency";
+import useAgencyStore from "@/stores/useAgencyStore";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
@@ -18,10 +20,12 @@ const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
   const {setShowPostJob, showPostJob} = usePostJobStore();
+  const {setShowCreateAgency, showCreateAgency} = useAgencyStore();
   const { authUser, setAuthUser } = useAuthUserStore();
 
   const handleModalClose = () => {
     setShowPostJob(false);
+    setShowCreateAgency(false);
   };
 
   const logout = () => {
@@ -107,6 +111,7 @@ const Header: React.FC<HeaderProps> = () => {
               Post Job
             </Nav.Link>
 
+
             {authUser && authUser.firstName && authUser.lastName && (
               <NavDropdown
                 className="nav-list-item"
@@ -134,6 +139,9 @@ const Header: React.FC<HeaderProps> = () => {
       </Navbar>
       <Modal show={showPostJob} onHide={handleModalClose} centered backdrop="static">
         {showPostJob && <CreateJob handleModalClose={handleModalClose} />}
+      </Modal>
+      <Modal show={showCreateAgency} onHide={handleModalClose} centered backdrop="static">
+         {showCreateAgency && <CreateAgency handleModalClose={handleModalClose} /> }
       </Modal>
     </>
   );
