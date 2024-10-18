@@ -241,6 +241,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           <CountrySelect
           onChange={onChange}
           placeHolder="Select Country"
+          className={styles.inputField}
         />
         )}
         defaultValue={""}
@@ -262,6 +263,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
             countryid={country.id}
             onChange={onChange}
             placeHolder="Select State"
+            className={styles.inputField}
           />
           )}
           defaultValue={""}
@@ -284,8 +286,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
             className={`action-buttons`}
             disabled={loading}
           >
-        {loading ? <div className={styles.spinner}></div> : "Create"}          
-        </Button>
+    {loading ? (
+      <div className={styles.spinner}></div> 
+    ) : (
+      "Create" 
+    )}       
+    </Button>
         </div>
       </Form>
     </div>
