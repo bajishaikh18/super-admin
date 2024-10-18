@@ -512,6 +512,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
       const resp = await getSignedUrl(
         "jobImage",
         blob?.type!,
+        "jobId",
         id
       );
       if (resp) {

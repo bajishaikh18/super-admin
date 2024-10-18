@@ -27,6 +27,8 @@ import { AgencyType } from "@/stores/useAgencyStore";
 import { getAgencyByAdminId } from "@/apis/agency";
 import Link from "next/link";
 import { AgencyJobPostings } from "./AgencyJobPostings";
+import CreateAgency from "../create-agency/CreateAgency";
+import { IMAGE_BASE_URL } from "@/helpers/constants";
 
 type PostedJobDetailsProps = {
   agencyId: string;
@@ -49,13 +51,13 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
     enabled: !!agencyId,
   });
 
-  const { _id, regNo, name, address,phone,postedJobs, email, status,activeJobCount,expiredJobCount } =
+  const { _id, regNo, name, address,phone,postedJobs,profilePic, website, email, status,activeJobCount,expiredJobCount } =
     (data?.agency as AgencyType) || {};
 
   const goBack = () => {
     router.back();
   };
-
+  console.log(profilePic);
   const changePostStatus = useCallback(async () => {
     try {
       let newStatus;
@@ -122,7 +124,6 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
     );
   }
 
-  console.log(name);
 
   return (
     <main className="main-section">
@@ -138,7 +139,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
               <CardHeader className={agencyStyles.summaryCardHeader}>
                 <div className={styles.agencyDetails}>
                   <Image
-                    src="/ag_logo.svg"
+                    src={`${profilePic ? `${IMAGE_BASE_URL}/${profilePic}?ts=${refreshImage ? new Date().getTime() : ''}`: '/no_image.jpg'}`}
                     width={66}
                     height={66}
                     alt="agency-logo"
@@ -190,8 +191,8 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                   <li>
                     <Image
                       src={"/phone.svg"}
-                      width={24}
-                      height={20}
+                      width={16}
+                      height={16}
                       alt="phone"
                     />
                     <a href={`tel:${phone}`}>{phone}</a>
@@ -200,11 +201,21 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                   <li>
                     <Image
                       src={"/mail.svg"}
-                      width={24}
-                      height={20}
+                      width={16}
+                      height={16}
                       alt="mail"
                     />
                     <a href={`mailto:${email}`}>{email}</a>
+
+                  </li>
+                  <li>
+                    <Image
+                      src={"/globe.svg"}
+                      width={16}
+                      height={16}
+                      alt="mail"
+                    />
+                    <a href={`${website}`}>{website}</a>
 
                   </li>
                 </ul>
@@ -268,9 +279,9 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
         backdrop="static"
       >
         {openEdit && (
-          <CreateJob
+          <CreateAgency
             handleModalClose={() => setOpenEdit(false)}
-            jobDetails={data.job}
+            agencyDetails={data?.agency}
           />
         )}
       </Modal>

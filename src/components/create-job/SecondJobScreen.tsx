@@ -136,13 +136,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       setLoading(true);
       setFormData(data);
       let resp;
-      if(selectedFile){
-        resp = await getSignedUrl("jobImage", selectedFile?.type!, "testJob");
-        if (resp) {
-          await uploadFile(resp.uploadurl, selectedFile!);
-          setRefreshImage(true)
-        }
-      }
+   
       const contacts = [`${data.countryCode}-${data.contactNumber}`];
       if(data.altContactNumber && data.altCountryCode){
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
@@ -156,7 +150,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           experience: Number(position.experience),
           salary: position.salary,
         })),
-        imageUrl: resp?.keyName,
         amenities: selectedFacilities,
         contactNumbers: contacts,
         country: formData?.country || 'in',
@@ -180,12 +173,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           refetchType:'all'
         })
       }
-     
-      // await queryClient.refetchQueries({
-      //     predicate: (query) => {
-      //       return query.queryKey.includes('jobs');
-      //     },
-      //   });
+      if(selectedFile){
+        resp = await getSignedUrl("jobImage", selectedFile?.type!,"jobId",res.job._id || formData?._id);
+        if (resp) {
+          await uploadFile(resp.uploadurl, selectedFile!);
+          setRefreshImage(true)
+        }
+      }
+      await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
       setNewlyCreatedJob(res.job)
       toast.success(`Job ${isEdit?'created':'updated'} successfully`)
       handleCreateJobClick();

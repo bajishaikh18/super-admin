@@ -1,66 +1,76 @@
-"use client"
+"use client";
 
-import React, {useState, useRef} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
 import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
-import useStore, { Agency } from "@/stores/useAgencyStore"; // Import Zustand store
+import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
+import CreateAgencyScreen from "./CreateAgencyScreen";
 
-
-
-function CreateAgency ({
-    handleModalClose,
-    // agencyDetails
-
+function CreateAgency({
+  handleModalClose,
+  agencyDetails,
 }: {
-
-    handleModalClose: () =>void,
-    // agencyDetails?: Agency
-
+  handleModalClose: () => void;
+  agencyDetails?: Agency;
 }) {
+  const [screen, setScreen] = useState(0);
+  const [isEdit, setIsEdit] = useState(false);
+  const { selectedFile, handleFileChange, resetData,setFormData } = useAgencyStore();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const [screen, setScreen] = useState(0);
-    const [isEdit, setIsEdit] = useState(false);
-
-    const {
-        selectedFile,
-        handleFileChange,
-        resetData,
-      } = useStore();
-      const fileInputRef = useRef<HTMLInputElement | null>(null);
-      
-
-
-      const handleClose = () => {
-        reset();
-        handleModalClose();
-      };
-      const reset = () => {
-        resetData();
-      };
-
-
-    return (
-        <div className={styles.modalContainer}>
-            {
-                {
-                    0: (
-                        <InitialAgencyScreen
-                          isEdit={isEdit}
-                          handleFileChange={handleFileChange}
-                          fileInputRef={fileInputRef}
-                          selectedFile={selectedFile}
-                          handleClose={handleClose}
-                          handleCreateNowClick={() => {
-                            setScreen(1);
-                          }}
-                        />
-                      ),
-                }[screen]
-            }
-
-        </div>
-    )
-
+  useEffect(()=>{
+    console.log("AGENCY",agencyDetails);
+    if(agencyDetails){
+      const [countryCode, contactNumber] =  agencyDetails.phone?.split("-");
+      setIsEdit(true)
+      const agencyData = {
+        ...agencyDetails,
+        countryCode,
+        contactNumber
+      }
+      setFormData(agencyData);
+    }
+  },[agencyDetails])
+ 
+ 
+  const handleClose = () => {
+    reset();
+    handleModalClose();
+  };
+  const reset = () => {
+    resetData();
+  };
+  return (
+    <div className={styles.modalContainer}>
+      {
+        {
+          0: (
+            <InitialAgencyScreen
+              isEdit={isEdit}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              selectedFile={selectedFile}
+              handleClose={handleClose}
+              handleCreateNowClick={() => {
+                setScreen(1);
+              }}
+            />
+          ),
+          1: (
+            <CreateAgencyScreen
+              isEdit={isEdit}
+              handleClose={handleClose}
+              handleContinueClick={() => {
+                reset();
+                handleClose();
+              }}
+              handleBackToPostJobClick={() => setScreen(0)}
+            />
+          ),
+        }[screen]
+      }
+    </div>
+  );
 }
 
 export default CreateAgency;

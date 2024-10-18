@@ -29,13 +29,13 @@ apiClient.interceptors.response.use(
   }
 );
 
-export const getSignedUrl = async (fileType: string,contentType:string,jobId?:string) => {
+export const getSignedUrl = async (fileType: string,contentType:string,type:string,id:string) => {
   try {
     const response = await apiClient.get("/file/getUploadUrl", {
       params: {
         fileType: fileType,
         contentType: contentType,
-        jobId: jobId
+        [type]: id
       },
     });
     return response.data;
