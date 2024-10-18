@@ -241,7 +241,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           <CountrySelect
           onChange={onChange}
           placeHolder="Select Country"
-          className={styles.inputField}
         />
         )}
         defaultValue={""}
@@ -263,7 +262,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
             countryid={country.id}
             onChange={onChange}
             placeHolder="Select State"
-            className={styles.inputField}
           />
           )}
           defaultValue={""}
