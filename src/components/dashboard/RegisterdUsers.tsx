@@ -19,6 +19,12 @@ import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
 import { INDUSTRIES } from "@/helpers/constants";
+import CreateUserForm from "../users/CreateUsers";
+import { Button, Modal } from "react-bootstrap";
+
+type RegisteredUsersProps = {
+  showButton: boolean;
+};
 
 type TabType = "admin" | "app";
 
@@ -26,7 +32,8 @@ const columnHelper = createColumnHelper<User>();
 
 const fetchSize = 100;
 
-const RegisteredUsers: React.FC = () => {
+const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
+  const [showCreateUser, setShowCreateUser] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("app");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
@@ -357,6 +364,14 @@ const RegisteredUsers: React.FC = () => {
     setActiveTab(tab);
   };
 
+  const handleCreateUserClick = () => {
+    setShowCreateUser(true);
+  };
+
+  const handleCancelCreateUser = () => {
+    setShowCreateUser(false);
+  };
+
   return (
     <Card>
       <div className={"header-row"}>
@@ -374,6 +389,22 @@ const RegisteredUsers: React.FC = () => {
             Admin Users ({summaryData?.adminCount || 0})
           </button>
         </div>
+        {showButton && (
+          <div className={dataTableStyles.buttonContainer}>
+            <button
+              onClick={handleCreateUserClick}
+              className={dataTableStyles.createuser}
+            >
+            + Create User
+            </button>
+            <Modal
+              show={showCreateUser}
+              onHide={handleCancelCreateUser}
+            >
+                <CreateUserForm onCancel={handleCancelCreateUser} />
+            </Modal>
+          </div>
+        )}
         {
           {
             app: (
