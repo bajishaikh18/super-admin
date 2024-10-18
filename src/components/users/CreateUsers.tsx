@@ -1,9 +1,8 @@
-import React, {useState, useCallback } from 'react';
+import React, {useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Form, Row, Col, InputGroup } from 'react-bootstrap';
+import { Button, Form, Row, Col, InputGroup, Dropdown, DropdownButton } from 'react-bootstrap';
 import { IoClose } from 'react-icons/io5';
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import {country, State} from 'react-country-state-city'
+import { GetCountries, GetStates } from 'react-country-state-city';
 import { debounce } from 'lodash';
 import { inviteUser } from "@/apis/user";
 import { toast } from 'react-hot-toast';
@@ -16,12 +15,32 @@ const COUNTRIES = [
 ];
 const phoneRegex = /^[0-9]{10}$/;
 
+interface Country {
+  id: string;
+  name: string;
+}
+
+interface State {
+  id: string; 
+  name: string;
+}
+
   interface CreateUserFormProps {
     onCancel: () => void;
   }
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
+  const [selectedCountryName, setSelectedCountryName] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  
+  const [countryList, setCountryList] = useState<Country[]>([]);
+  const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
+  const [stateList, setStateList] = useState<State[]>([]);
+  const [selectedCountryId, setSelectedCountryId] = useState<string>('');
+  const [selectedStateId, setSelectedStateId] = useState<string>('');
+  const [countrySearch, setCountrySearch] = useState('');
+  const [stateSearch, setStateSearch] = useState('');
+  const [filteredStates, setFilteredStates] = useState<State[]>([]);
+  const [countryDropdownVisible, setCountryDropdownVisible] = useState(false);
+  const [stateDropdownVisible, setStateDropdownVisible] = useState(false);
 
   const { register, handleSubmit, formState: { errors,}, reset, setValue, watch, trigger} = useForm({
     defaultValues: {
@@ -37,6 +56,26 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
       landlineCountryCode: COUNTRIES[0].isdCode
     }
   });
+  useEffect(() => {
+    const fetchCountries = async () => {
+      const countries = await GetCountries();
+      setCountryList(countries);
+      setFilteredCountries(countries);
+    };
+    fetchCountries();
+  }, []);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      if (selectedCountryId) {
+        const states = await GetStates(selectedCountryId);
+        setStateList(states);
+        setFilteredStates(states); 
+      }
+    };
+  
+    fetchStates();
+  }, [selectedCountryId]);
 
   const onSubmit = async (data: any) => {
     console.log("Data:", data);
@@ -64,12 +103,45 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     onCancel();
   };
 
-  const loadCountriesDebounced = useCallback(debounce((inputValue: string) => {
-    console.log("Fetching countries for:", inputValue);
-  }, 500), []);
+  const loadCountriesDebounced = useCallback(
+    debounce((searchTerm: string) => {
+      const filtered = countryList.filter((country) =>
+        country.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredCountries(filtered);
+    }, 500),
+    [countryList]
+  );
 
-  
-  const selectedCountry = watch('country');
+  const handleCountrySearch = (searchTerm: string) => {
+    setCountrySearch(searchTerm);
+    loadCountriesDebounced(searchTerm);
+    setCountryDropdownVisible(true); 
+  };
+
+  const handleCountrySelect = (country: Country) => {
+    setSelectedCountryId(country.id);
+    setSelectedCountryName(country.name);
+    setCountrySearch(''); 
+    setCountryDropdownVisible(false); 
+    setSelectedStateId(''); 
+    setStateDropdownVisible(false); 
+  };
+
+  const handleStateSearch = (searchTerm: string) => {
+    setStateSearch(searchTerm);
+    const filtered = stateList.filter((state) =>
+      state.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredStates(filtered);
+    setStateDropdownVisible(filtered.length > 0); 
+  };
+
+  const handleStateSelect = (stateId: string) => {
+    setSelectedStateId(stateId);
+    setStateDropdownVisible(false);
+    setStateSearch('');
+};
   
   return (
     <div className={styles.modal}>
@@ -221,34 +293,63 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
           />
           {errors.address && <Form.Text className="error">{errors.address.message}</Form.Text>}
         </Form.Group>
-
         <Row>
-          <Col md={6}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>Country</Form.Label>
-              <CountryDropdown
-                value={watch('country') || ''}
-                onChange={(val) => {
-                  setValue('country', val);
-                }}
-                classes={styles.inputField}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>State</Form.Label>
-              <RegionDropdown
-                country={watch('country') || ''}
-                value={watch('state') || ''}
-                onChange={(val) => {
-                  setValue('state', val);
-                }}
-                classes={styles.inputField}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+  <Col md={6}>
+    <Form.Group className={styles.formGroup}>
+      <Form.Label>Country</Form.Label>
+      <div className={styles.dropdownContainer}>
+        <Form.Control
+          type="text"
+          value={selectedCountryName || countrySearch}
+          onChange={(e) => handleCountrySearch(e.target.value)}
+          onFocus={() => setCountryDropdownVisible(true)}
+          placeholder="Select a country"
+        />
+        {countryDropdownVisible && (
+          <Dropdown className={styles.dropdownMenu}>
+            {filteredCountries.map((country) => (
+              <Dropdown.Item
+                key={country.id}
+                onClick={() => handleCountrySelect(country)}
+              >
+                {country.name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+        )}
+      </div>
+    </Form.Group>
+  </Col>
+  <Col md={6}>
+      <Form.Group className={styles.formGroup}>
+        <Form.Label>State</Form.Label>
+        <div className={styles.dropdownContainer}>
+          <Form.Control
+            type="text"
+            value={stateSearch}
+            onChange={(e) => handleStateSearch(e.target.value)}
+            onFocus={() => setStateDropdownVisible(true)}
+            placeholder="Select a state"
+            readOnly={!selectedCountryId} 
+          />
+          {stateDropdownVisible && filteredStates.length > 0 && (
+            <Dropdown className={styles.dropdownMenu}>
+              {filteredStates.map((state) => (
+                <Dropdown.Item
+                  key={state.id}
+                  onClick={() => handleStateSelect(state.id)} 
+                >
+                  {state.name}
+                </Dropdown.Item>
+              ))}
+            </Dropdown>
+          )}
+        </div>
+      </Form.Group>
+    </Col>
+    </Row>
+
+
         <div className={styles.actions}>
           <Button
             type="button"
