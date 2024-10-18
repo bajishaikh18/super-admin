@@ -44,3 +44,13 @@ export const getAgencyByAdminId = async (
         throw error;
     }
 };
+
+export const createAgency = async (data: object) => {
+    try {
+        const response = await apiClient.post(basePath, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+        
+    }
+}
