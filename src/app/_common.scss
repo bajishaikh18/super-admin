@@ -1,14 +1,14 @@
-
 .expand-button {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    padding: 5px;
-    background: black ;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  .danger{
-    color: $color-danger !important;
-  }
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  padding: 5px;
+  background: black;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.danger {
+  color: $color-danger !important;
+}

@@ -1,24 +1,44 @@
+@import "../../app/variables";
+
 .modal {
-  width: 562px;
-  height: auto;
+  background: rgb(255, 255, 255);
+  padding: 32px;
+  border-radius: 8px;
   margin: auto;
-  border-radius: 10px;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  min-width: 100%;
 }
 
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 9;
+  h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+
+    span {
+      color: $color-grey-1;
+      font-weight: 400;
+    }
+  }
 }
 
+.actions {
+  display: flex;
+  margin-top: 20px;
+  justify-content: right;
+  gap: 16px;
+  margin: 16px -32px -32px -32px;
+  padding: 12px 32px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 69, 230, 0.3);
+}
 .modal-backdrop.show {
   opacity: 0.5;
 }
@@ -29,60 +49,10 @@
   color: #333;
 }
 
+
 .formGroup {
-  margin-bottom: 20px;
-}
-
-.formGroup label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 5px;
-  display: block;
-  color: #333;
-}
-
-.formGroup input,
-.formGroup select {
-  width: 100%;
-  padding: 12px;
-  height: 34px;
-  font-size: 14px;
-  border: none; 
-  background-color: white;
-}
-
-.formGroup input:focus,
-.formGroup select:focus {
-  outline: none; 
-  border: none; 
-}
-
-.row {
-  display: flex;
-  gap: 1px; 
-  margin-bottom: 20px;
-}
-
-.col-md-4 {
-  flex: 0 0 25%; 
-}
-
-.col-md-8 {
-  flex: 1; 
-}
-
-.col-md-4 select {
-  width: 100%;
-  height: 40px;
-  border-radius: 5px 0 0 5px;
-  border-right: none; 
-}
-
-.col-md-8 input {
-  width: 100%;
-  height: 40px; 
-  border-radius: 0 5px 5px 0;
-  border-left: none;
+  margin-bottom: 16px;
+  position: relative;
 }
 
 .actions {
@@ -92,54 +62,31 @@
   gap: 15px;
 }
 
-.cancelButton,
-.proceedButton {
-  background-color: white;
-  color: #0045e6;
-  border: 1px solid #0045e6;
-  padding: 8px 16px;
-  margin: 0 8px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
+.popupContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  .loadingContent{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    color: $color-grey-2;
+  }
 }
 
-.cancelButton {
-  background-color: white;
-  color: #0045e6;
-  border: 1px solid #0045e6;
-}
-
-.proceedButton {
-  background-color: #0045e6;
-  color: white;
-  border: none;
-}
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1); 
-  border-top: 4px solid #3498db; 
+.createSpinner {
+  margin-top: 20px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
   border-radius: 50%;
-  width: 24px; 
-  height: 24px; 
-  animation: spin 2s linear infinite; 
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.countrySelect {
-  width: 100%;
-  border: 1px solid #000000;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: white;
-}
-.stateSelect {
-  width: 100%;
-  border: 1px solid #000000;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: white;
-}
-

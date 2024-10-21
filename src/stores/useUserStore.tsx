@@ -9,6 +9,8 @@ export interface User {
     firstName: string
     lastName: string
     phone: number
+    mobile?:string,
+    landline?:string,
     industry: string,
     state: string,
     totalExperience: string,
