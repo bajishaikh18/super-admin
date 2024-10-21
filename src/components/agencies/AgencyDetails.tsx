@@ -27,6 +27,7 @@ import Link from "next/link";
 import { AgencyJobPostings } from "./AgencyJobPostings";
 import CreateAgency from "../create-agency/CreateAgency";
 import { IMAGE_BASE_URL } from "@/helpers/constants";
+import { INDIAN_STATES } from "@/helpers/stateList";
 
 
 type PostedJobDetailsProps = {
@@ -49,7 +50,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
     enabled: !!agencyId,
   });
 
-  const { _id, regNo, name, address,phone,postedJobs,profilePic, website, email, status,activeJobCount,expiredJobCount } =
+  const { _id, regNo, name, address,phone,postedJobs,profilePic,city,state, website, email, status,activeJobCount,expiredJobCount } =
     (data?.agency as AgencyType) || {};
 
   const goBack = () => {
@@ -177,7 +178,8 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                 </ul>
                 <div className={agencyStyles.addressSection}>
                     <h3>Address</h3>
-                    <p>{address}</p>
+                    <p>{address}, {city || ""}, {INDIAN_STATES.find(x=>x.state_code===state)?.name || state || ""}</p>
+
                     <iframe
                         height="216"
                         style={{border:0,width:"100%"}}
@@ -230,7 +232,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                  <h3>Jobs Posted by {name} ({postedJobs})</h3>
                  <div>
                     <Image src={"/share.svg"} width={20} height={20} alt="applications received"/>
-                    <p>Total applications received <Link href="#">1552</Link></p>
+                    <p>Total applications received <Link href="#">{data?.applicationCount}</Link></p>
                  </div>
                 </div>
                 <div className={styles.actionContainer}>

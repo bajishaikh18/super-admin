@@ -496,7 +496,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
               onClick={handleCreateUserClick}
             >
               <FaPlus />
-              Create User
+              Create Admin User
             </Button>
             <Modal show={showCreateUser} onHide={handleCancelCreateUser} centered backdrop="static">
               <CreateUserForm onCancel={handleCancelCreateUser} />
@@ -517,6 +517,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
                 }}
                 data={flatData}
                 isSearch={!!search}
+                tableHeight={showButton ? "75vh": undefined}
                 fetchNextPage={fetchNextPage}
                 isLoading={isLoading}
                 isFetching={isFetching}
@@ -533,6 +534,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
                   setSortingAdmin(updater);
                 }}
                 data={flatDataAdmin}
+                tableHeight={showButton ? "75vh": undefined}
                 isSearch={!!searchAdmin}
                 fetchNextPage={fetchAdminNextPage}
                 isLoading={isAdminLoading}

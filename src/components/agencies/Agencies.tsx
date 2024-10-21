@@ -6,18 +6,17 @@ import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import {
-  useQuery,
   useInfiniteQuery,
   keepPreviousData,
 } from "@tanstack/react-query";
 import Link from "next/link";
 import { DataTable } from "../common/table/DataTable";
 import { DateTime } from "luxon";
-import { INDIAN_STATES } from "@/helpers/stateList";
 import { useDebounce } from "@uidotdev/usehooks";
 import { getAgencies } from "@/apis/agency";
-import styles from "./Agency.module.scss";
-import dataTableStyles from "../../components/common/table/DataTable.module.scss";
+import Image from "next/image";
+import { IMAGE_BASE_URL } from "@/helpers/constants";
+import agencyStyles from "./Agency.module.scss";
 
 const fetchSize = 10;
 
@@ -40,7 +39,7 @@ const Agencies: React.FC = () => {
     queryKey: ["agencies", search, field, debouncedSearchTerm],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
-      const fetchedData = await getAgencies('active',start,fetchSize,field.value,search);
+      const fetchedData = await getAgencies('all',start,fetchSize,field.value,search);
       return fetchedData;
     },
     retry: 3,
@@ -69,7 +68,18 @@ const Agencies: React.FC = () => {
       }),
       columnHelper.accessor("name", {
         header: "Agency Name",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) => {
+          return <div className={agencyStyles.tableAgencyName}>
+           <Image
+              src={`${info.row.original.profilePic ? `${IMAGE_BASE_URL}/${info.row.original.profilePic}`: '/no_image.jpg'}`}
+              width={24}
+              height={24}
+              alt="agency-logo"
+            />
+              {info.renderValue() || "N/A"}
+          </div>
+        }
+       ,
       }),
       columnHelper.accessor("email", {
         header: "Email",

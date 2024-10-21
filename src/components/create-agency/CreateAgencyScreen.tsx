@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import usePostJobStore from "@/stores/usePostJobStore";
 import styles from "./CreateAgency.module.scss";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FieldError, useForm } from "react-hook-form";
 import {
   MultiSelect,
@@ -17,15 +17,15 @@ interface CreateAgencyScreenProps {
   handleBackToPostJobClick: () => void;
 }
 import { COUNTRIES } from "@/helpers/constants";
-import { CustomDatePicker } from "../common/form-fields/DatePicker";
-import { debounce } from "lodash";
-import { getFormattedAgencies } from "@/helpers/asyncOptions";
-import { SelectOption } from "@/helpers/types";
 import useAgencyStore, { CreateAgencyFormData } from "@/stores/useAgencyStore";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import { createAgency, updateAgency } from "@/apis/agency";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import {
+  GetCity,
+  GetState,
+} from "react-country-state-city";
 
 const phoneRegex = /^[0-9]{10}$/;
 
@@ -38,14 +38,53 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
 }) => {
   const { formData, setFormData, selectedFile } = useAgencyStore();
   const [loading, setLoading] = useState(false);
+  const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
   const {
+    watch,
     register,
     handleSubmit,
     formState: { errors, isValid },
+    control
   } = useForm<CreateAgencyFormData>({
     mode: "all",
   });
+
+  const state  = watch("state")
+
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const statesList = await GetState(101);
+      const formattedList =  statesList.map((state: any) => ({
+        value: state.state_code,
+        label: state.name,
+      }));
+      setStateList(formattedList)
+      return statesList;
+    },
+    retry: 3,
+  });
+  
+  console.log(states);
+  const { data: cities } = useQuery({
+    queryKey: ["cities", state],
+    queryFn: async () => {
+      if (state) {
+        const selectedState:any = states?.find(
+          (cty: any) => cty.state_code === state
+        );
+        const cityList = await GetCity(101,selectedState?.id);
+        return cityList.map((city: any) => ({
+          value: city.name,
+          label: city.name,
+        }));
+      }
+      return [];
+    },
+    retry: 3,
+  });
+ 
 
   const onSubmit = async (data: CreateAgencyFormData) => {
     try {
@@ -104,7 +143,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
       {
         loading ?  <div className={styles.popupContent}>
         <p className={styles.loadingContent}>
-          Your job is {isEdit?"updating":"creating"} please wait
+          Your agency is {isEdit?"updating":"creating"} please wait
         </p>
         <div className={styles.createSpinner}></div>
       </div> :    <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
@@ -264,6 +303,50 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
             <Form.Text className="error">{errors.address.message}</Form.Text>
           )}
         </Form.Group>
+        <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>State</Form.Label>
+                {stateList && (
+                  <MultiSelect
+                    name={`state`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`state`]}
+                    customStyles={{}}
+                    options={stateList}
+                    defaultValue={""}
+                    rules={{ required: "State is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>City</Form.Label>
+                {cities && (
+                  <MultiSelect
+                    name={`city`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`city`]}
+                    customStyles={{}}
+                    options={cities}
+                    defaultValue={""}
+                    rules={{ required: "City is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
         <div className={styles.actions}>
           <Button
             type="button"

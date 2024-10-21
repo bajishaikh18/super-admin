@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = () => {
             >
               Posted Jobs
             </Link>
-            <Link className={`${styles.navListItem} $ {
+            <Link className={`${styles.navListItem} ${
             pathname == "/agency" ? styles.active : ""
             }`}
              href="/agency">

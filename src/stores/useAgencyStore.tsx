@@ -40,6 +40,8 @@ export type CreateAgencyFormData = {
   _id?: string;
   name?: string;
   countryCode?: string;
+  state?:string;
+  city?:string;
   regNo?:string;
   website?:string;
   address?:string;
