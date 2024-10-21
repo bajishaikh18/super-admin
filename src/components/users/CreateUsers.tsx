@@ -8,7 +8,6 @@ import { inviteUser } from "@/apis/user";
 import { toast } from 'react-hot-toast';
 import "react-country-state-city/dist/react-country-state-city.css"
 import styles from './Registeredusers.module.scss';
-import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font-weight';
 
 const COUNTRIES = [
   { isdCode: "+1", name: "USA" },
