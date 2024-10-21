@@ -251,19 +251,20 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
       )}
       defaultValue={""}
     />
-    {errors.country && (
-      <Form.Text className="error">{errors.country.message}</Form.Text>
-    )}
-  </Form.Group>
-</Col>
-<Col md={6}>
-  <Form.Group className={styles.formGroup}>
-    <Form.Label>State</Form.Label>
-    <Controller
-      name={"state"}
-      control={control}
-      render={({ field: { onChange, value } }) => (
-        <StateSelect
+        
+      {errors.country && (
+        <Form.Text className="error">{errors.country.message}</Form.Text>
+      )}
+    </Form.Group>
+  </Col>
+  <Col md={6}>
+      <Form.Group className={styles.formGroup}>
+        <Form.Label>State</Form.Label>
+          <Controller
+          name={"state"}
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <StateSelect
           countryid={country.id}
           onChange={onChange}
           placeHolder="Select State"
@@ -272,8 +273,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
       )}
       defaultValue={""}
     />
-  </Form.Group>
-</Col>
+      </Form.Group>
+    </Col>
     </Row>
 
 
