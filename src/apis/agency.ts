@@ -64,3 +64,12 @@ export const updateAgency = async (id:string,data: object) => {
     }
   };
   
+  export const deleteAgencyAPI = async (id: string, _p0: { isDeleted: boolean; }) => {
+    try {
+      const response = await apiClient.delete(`${basePath}/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  

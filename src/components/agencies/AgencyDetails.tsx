@@ -2,7 +2,6 @@
 import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { updateJob } from "@/apis/job";
 import styles from "../common/styles/Details.module.scss";
 import agencyStyles from "./Agency.module.scss";
 import Image from "next/image";
@@ -20,15 +19,15 @@ import {
 } from "react-bootstrap";
 import { BsThreeDots } from "react-icons/bs";
 import { Loader, NotFound } from "../common/Feedbacks";
-import CreateJob from "../create-job/CreateJob";
 import toast from "react-hot-toast";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { AgencyType } from "@/stores/useAgencyStore";
-import { getAgencyByAdminId } from "@/apis/agency";
+import { deleteAgencyAPI, getAgencyByAdminId, updateAgency } from "@/apis/agency";
 import Link from "next/link";
 import { AgencyJobPostings } from "./AgencyJobPostings";
 import CreateAgency from "../create-agency/CreateAgency";
 import { IMAGE_BASE_URL } from "@/helpers/constants";
+
 
 type PostedJobDetailsProps = {
   agencyId: string;
@@ -36,7 +35,6 @@ type PostedJobDetailsProps = {
 
 const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
   const queryClient = useQueryClient();
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const { refreshImage } = usePostJobStore();
   const router = useRouter();
   const [openEdit, setOpenEdit] = useState(false);
@@ -73,7 +71,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
           break;
       }
       if (newStatus) {
-        await updateJob(_id, { status: newStatus });
+        await updateAgency(_id, { status: newStatus });
         await queryClient.invalidateQueries({
           queryKey: ["agencyDetails", agencyId],
           refetchType: "all",
@@ -81,25 +79,27 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
       }
       toast.success("Agency status changed successfully");
     } catch (e) {
-      toast.error("Error while deleting job. Please try again");
+      toast.error("Error while deactivating agency. Please try again");
       return;
     }
   }, [status, agencyId]);
 
+  
   const deleteAgency = useCallback(async () => {
     try {
-      await updateJob(_id, { isDeleted: true });
-      router.push("/posted-jobs");
+      await deleteAgencyAPI(_id, { isDeleted: true });
+      router.push("/agency");
       await queryClient.invalidateQueries({
         queryKey: ["agencyDetails", agencyId],
         refetchType: "all",
       });
-      toast.success("Job deleted changed successfully");
+      toast.success("Agency deleted successfully");
     } catch (e) {
       toast.error("Error while deleting agency. Please try again");
       return;
     }
   }, [agencyId, _id]);
+
 
   if (isLoading) {
     return (
@@ -258,7 +258,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                         </Dropdown.Item>
                       )}
 
-                      <Dropdown.Item className="danger" onClick={() => {}}>
+                      <Dropdown.Item className="danger" onClick={deleteAgency}>
                         Delete Agency
                       </Dropdown.Item>
                     </Dropdown.Menu>
