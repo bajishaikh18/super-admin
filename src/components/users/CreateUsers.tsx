@@ -8,6 +8,7 @@ import { inviteUser } from "@/apis/user";
 import { toast } from 'react-hot-toast';
 import "react-country-state-city/dist/react-country-state-city.css"
 import styles from './Registeredusers.module.scss';
+import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font-weight';
 
 const COUNTRIES = [
   { isdCode: "+1", name: "USA" },
@@ -51,7 +52,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
   const country:any = watch("country");
   console.log(country)
 
-
   const onSubmit = async (data: any) => {
     console.log("Data:", data);
     setLoading(true);
@@ -93,11 +93,13 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter First Name"
+                className={styles.input}
                 {...register('firstName', { 
                   required: 'First name is required',
                   onChange: () => trigger('firstName'), 
                 })}
-                className={styles.inputField}
+                
               />
               {errors.firstName && <Form.Text className="error">{errors.firstName.message}</Form.Text>}
             </Form.Group>
@@ -108,11 +110,12 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               <Form.Label>Last Name</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Enter Last Name"
+                className={styles.input}
                 {...register('lastName', { 
                   required: 'Last name is required',
                   onChange: () => trigger('lastName'), 
                 })}
-                className={styles.inputField}
               />
               {errors.lastName && <Form.Text className="error">{errors.lastName.message}</Form.Text>}
             </Form.Group>
@@ -125,6 +128,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               <Form.Label>Mobile Number</Form.Label>
               <InputGroup className={`contact-field`}>
                 <Form.Select
+                
                   className={styles.input}
                   {...register('mobileCountryCode', {
                     required: 'Country code is required',
@@ -226,50 +230,50 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
               required: 'Address is required',
               onChange: () => trigger('address'), 
             })}
+            placeholder="Enter Address"
             className={styles.inputField}
           />
           {errors.address && <Form.Text className="error">{errors.address.message}</Form.Text>}
         </Form.Group>
         <Row>
-  <Col md={6}>
-    <Form.Group className={styles.formGroup}>
-      <Form.Label>Country</Form.Label>
-      <Controller
-        name={"country"}
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <CountrySelect
+        <Col md={6}>
+  <Form.Group className={styles.formGroup}>
+    <Form.Label>Country</Form.Label>
+    <Controller
+      name={"country"}
+      control={control}
+      render={({ field: { onChange, value } }) => (
+        <CountrySelect
           onChange={onChange}
           placeHolder="Select Country"
-          className={styles.inputField}
+          className={`${styles.inputField} ${styles.countrySelect}`} 
         />
-        )}
-        defaultValue={""}
-      />
-        
-      {errors.country && (
-        <Form.Text className="error">{errors.country.message}</Form.Text>
       )}
-    </Form.Group>
-  </Col>
-  <Col md={6}>
-      <Form.Group className={styles.formGroup}>
-        <Form.Label>State</Form.Label>
-          <Controller
-          name={"state"}
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <StateSelect
-            countryid={country.id}
-            onChange={onChange}
-            placeHolder="Select State"
-            className={styles.inputField}
-          />
-          )}
-          defaultValue={""}
+      defaultValue={""}
+    />
+    {errors.country && (
+      <Form.Text className="error">{errors.country.message}</Form.Text>
+    )}
+  </Form.Group>
+</Col>
+<Col md={6}>
+  <Form.Group className={styles.formGroup}>
+    <Form.Label>State</Form.Label>
+    <Controller
+      name={"state"}
+      control={control}
+      render={({ field: { onChange, value } }) => (
+        <StateSelect
+          countryid={country.id}
+          onChange={onChange}
+          placeHolder="Select State"
+          className={`${styles.inputField} ${styles.stateSelect}`} 
         />
-      </Form.Group>
-    </Col>
+      )}
+      defaultValue={""}
+    />
+  </Form.Group>
+</Col>
     </Row>
 
 

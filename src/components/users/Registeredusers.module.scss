@@ -45,6 +45,7 @@
 .formGroup select {
   width: 100%;
   padding: 12px;
+  height: 34px;
   font-size: 14px;
   border: none; 
   background-color: white;
@@ -127,3 +128,19 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.countrySelect {
+  width: 100%;
+  border: 1px solid #000000;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.stateSelect {
+  width: 100%;
+  border: 1px solid #000000;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: white;
+}
+
