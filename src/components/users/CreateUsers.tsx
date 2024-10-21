@@ -1,56 +1,93 @@
-import React, {useState, useEffect, useCallback } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Button, Form, Row, Col, InputGroup, Dropdown, DropdownButton } from 'react-bootstrap';
-import { IoClose } from 'react-icons/io5';
-import { CountrySelect,StateSelect } from "react-country-state-city";
-import { debounce } from 'lodash';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  Button,
+  Form,
+  Row,
+  Col,
+  InputGroup,
+} from "react-bootstrap";
+import { IoClose } from "react-icons/io5";
+import {
+  GetCountries,
+  GetState,
+} from "react-country-state-city";
 import { inviteUser } from "@/apis/user";
-import { toast } from 'react-hot-toast';
-import "react-country-state-city/dist/react-country-state-city.css"
-import styles from './Registeredusers.module.scss';
+import { toast } from "react-hot-toast";
+import "react-country-state-city/dist/react-country-state-city.css";
+import styles from "./Registeredusers.module.scss";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { COUNTRIES } from "@/helpers/constants";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
 
-const COUNTRIES = [
-  { isdCode: "+1", name: "USA" },
-  { isdCode: "+91", name: "India" },
-  { isdCode: "+44", name: "UK" },
-];
 const phoneRegex = /^[0-9]{10}$/;
 
-interface Country {
-  id: string;
-  name: string;
+interface CreateUserFormProps {
+  onCancel: () => void;
 }
-
-interface State {
-  id: string; 
-  name: string;
-}
-
-  interface CreateUserFormProps {
-    onCancel: () => void;
-  }
 const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit,control, formState: { errors,}, reset, setValue, watch, trigger} = useForm({
+  const [countriesList, setCountriesList] = useState([]);
+  const queryClient = useQueryClient();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+    watch,
+    trigger,
+  } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      mobileNumber: '',
-      landlineNumber: '',
-      email: '',
-      address: '',
-      state: '',
-      country: {
-        id: '',
-        iso2:''
-      },
-      mobileCountryCode: COUNTRIES[0].isdCode,
-      landlineCountryCode: COUNTRIES[0].isdCode
-    }
+      firstName: "",
+      lastName: "",
+      mobileNumber: "",
+      landlineNumber: "",
+      email: "",
+      address: "",
+      state: "",
+      country: "",
+      mobileCountryCode: "+91",
+      landlineCountryCode: "+91",
+    },
   });
-  const country:any = watch("country");
-  console.log(country)
 
+  const country: any = watch("country");
+
+  const { data: countries } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const countriesList = await GetCountries();
+      const neededCountries = countriesList.filter(
+        (x: any) => COUNTRIES[x.iso2.toLowerCase() as "bh"]
+      );
+      const countryList = neededCountries.map((x: any) => ({
+        value: x.iso2,
+        label: x.name,
+      }));
+      setCountriesList(countryList);
+      return neededCountries;
+    },
+    retry: 3,
+  });
+
+  const { data: states } = useQuery({
+    queryKey: ["states", country],
+    queryFn: async () => {
+      if (country) {
+        const selectedCountry = countries.find(
+          (cty: any) => cty.iso2 === country
+        );
+        const statesList = await GetState(selectedCountry?.id);
+        return statesList.map((state: any) => ({
+          value: state.state_code,
+          label: state.name,
+        }));
+      }
+      return [];
+    },
+    retry: 3,
+  });
 
   const onSubmit = async (data: any) => {
     console.log("Data:", data);
@@ -58,20 +95,28 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     try {
       const userDetails = {
         ...data,
-        role: 2, 
-        country: data.country.iso2,
-        state: data.state.state_code,
-        pass: "123",
+        role: 2,
+        country: data.country,
+        state: data.state,
+        mobile: `${data.mobileCountryCode}-${data.mobileNumber}`,
+        landline: `${data.landlineCountryCode}-${data.landlineNumber}`,
       };
       const response = await inviteUser(userDetails);
       console.log("Submitting data:", response);
       toast.success("User invited successfully");
-      reset();
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          console.log(query.queryKey, query.queryKey.includes("users"));
+          return query.queryKey.includes("jobs");
+        },
+        refetchType: "all",
+      });
+      handleCancel();
+      setLoading(false);
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("Error inviting user. Please try again.");
-    } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -79,219 +124,242 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
     reset();
     onCancel();
   };
-  
+
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h3>Create User</h3>
+        <h2>Create Admin User</h2>
         <IoClose className={styles.closeButton} onClick={handleCancel} />
       </div>
-      <Form className={styles.postForm} onSubmit={handleSubmit(onSubmit)}>
-        <Row>
-          <Col md={6}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                type="text"
-                {...register('firstName', { 
-                  required: 'First name is required',
-                  onChange: () => trigger('firstName'), 
-                })}
-                className={styles.inputField}
-              />
-              {errors.firstName && <Form.Text className="error">{errors.firstName.message}</Form.Text>}
-            </Form.Group>
-          </Col>
-
-          <Col md={6}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                type="text"
-                {...register('lastName', { 
-                  required: 'Last name is required',
-                  onChange: () => trigger('lastName'), 
-                })}
-                className={styles.inputField}
-              />
-              {errors.lastName && <Form.Text className="error">{errors.lastName.message}</Form.Text>}
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col md={12}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>Mobile Number</Form.Label>
-              <InputGroup className={`contact-field`}>
-                <Form.Select
-                  className={styles.input}
-                  {...register('mobileCountryCode', {
-                    required: 'Country code is required',
-                    onChange: () => trigger('mobileCountryCode'),
-                  })}
-                >
-                {
-                  Object.values(COUNTRIES).map(country => (
-                    <option value={country.isdCode} key={country.isdCode}>
-                      {country.isdCode} 
-                    </option>
-                  ))
-                }
-                </Form.Select>
+      {loading ? (
+        <div className={styles.popupContent}>
+          <p className={styles.loadingContent}>User creation in progress</p>
+          <div className={styles.createSpinner}></div>
+        </div>
+      ) : (
+        <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+          <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>First Name</Form.Label>
                 <Form.Control
-                  aria-label="Mobile number"
-                  {...register('mobileNumber', {
-                    required: 'Mobile number is required',
-                    pattern: {
-                      value: phoneRegex,
-                      message: 'Enter a valid mobile number',
-                    },
-                    onChange: () => trigger('mobileNumber'),
+                  type="text"
+                  placeholder="Enter First Name"
+                  className={styles.input}
+                  {...register("firstName", {
+                    required: "First name is required",
+                    onChange: () => trigger("firstName"),
                   })}
-                  isInvalid={!!errors.mobileNumber}
                 />
-              </InputGroup>
-              {errors.mobileNumber && (
-                <Form.Text className="error">
-                  {errors.mobileNumber.message}
-                </Form.Text>
-              )}
-            </Form.Group>
-          </Col>
+                {errors.firstName && (
+                  <Form.Text className="error">
+                    {errors.firstName.message}
+                  </Form.Text>
+                )}
+              </Form.Group>
+            </Col>
 
-          <Col md={12}>
-            <Form.Group className={styles.formGroup}>
-              <Form.Label>Landline Number</Form.Label>
-              <InputGroup className={`contact-field`}>
-            <Form.Select
-            className={styles.input}
-            {...register('landlineCountryCode', {
-            required: 'Country code is required',
-            onChange: () => trigger('landlineCountryCode'),
-            })}
-          >
-          {Object.values(COUNTRIES).map((country) => (
-            <option value={country.isdCode} key={country.isdCode}>
-              {country.isdCode}
-            </option>
-          ))}
-        </Form.Select>
-        <Form.Control
-          aria-label="Landline number"
-          {...register('landlineNumber', {
-            required: 'Landline number is required',
-            pattern: {
-              value: phoneRegex,
-              message: 'Enter a valid Landline number',
-            },
-            onChange: () => trigger('landlineNumber'),
-          })}
-        />
-      </InputGroup>
-      {errors.landlineNumber && (
-        <Form.Text className="error">
-          {errors.landlineNumber.message}
-        </Form.Text>
-      )}
-    </Form.Group>
-      </Col>
-    </Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Last Name"
+                  className={styles.input}
+                  {...register("lastName", {
+                    required: "Last name is required",
+                    onChange: () => trigger("lastName"),
+                  })}
+                />
+                {errors.lastName && (
+                  <Form.Text className="error">
+                    {errors.lastName.message}
+                  </Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Email ID</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Email Id"
-            className={styles.input}
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
-              onChange: () => trigger('email'),
-            })}
-          />
+          <Row>
+            <Col md={12}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Mobile Number</Form.Label>
+                <InputGroup className={`contact-field`}>
+                  <Form.Select
+                    className={styles.input}
+                    {...register("mobileCountryCode", {
+                      required: "Country code is required",
+                      onChange: () => trigger("mobileCountryCode"),
+                    })}
+                  >
+                    {Object.values(COUNTRIES).map((country, i) => {
+                      return (
+                        <option value={country.isdCode} key={country.isdCode}>
+                          {country.isdCode}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                  <Form.Control
+                    aria-label="Mobile number"
+                    {...register("mobileNumber", {
+                      required: "Mobile number is required",
+                      pattern: {
+                        value: phoneRegex,
+                        message: "Enter a valid mobile number",
+                      },
+                      onChange: () => trigger("mobileNumber"),
+                    })}
+                    isInvalid={!!errors.mobileNumber}
+                  />
+                </InputGroup>
+                {errors.mobileNumber && (
+                  <Form.Text className="error">
+                    {errors.mobileNumber.message}
+                  </Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+
+            <Col md={12}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Landline Number</Form.Label>
+                <InputGroup className={`contact-field`}>
+                  <Form.Select
+                    className={styles.input}
+                    {...register("landlineCountryCode", {
+                      required: "Country code is required",
+                      onChange: () => trigger("landlineCountryCode"),
+                    })}
+                  >
+                    {Object.values(COUNTRIES).map((country) => {
+                      return (
+                        <option value={country.isdCode} key={country.isdCode}>
+                          {country.isdCode}
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                  <Form.Control
+                    aria-label="Landline number"
+                    {...register("landlineNumber", {
+                      required: "Landline number is required",
+                      pattern: {
+                        value: phoneRegex,
+                        message: "Enter a valid Landline number",
+                      },
+                      onChange: () => trigger("landlineNumber"),
+                    })}
+                  />
+                </InputGroup>
+                {errors.landlineNumber && (
+                  <Form.Text className="error">
+                    {errors.landlineNumber.message}
+                  </Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Company Email ID</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Email Id"
+              className={styles.input}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Invalid email address",
+                },
+                onChange: () => trigger("email"),
+              })}
+            />
+            <Form.Text>
+              *An OTP will be sent to this email for authentication
+            </Form.Text>
             {errors.email && (
               <Form.Text className="error">{errors.email.message}</Form.Text>
-            )}        
-        </Form.Group>
+            )}
+          </Form.Group>
 
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Address</Form.Label>
-          <Form.Control
-            type="text"
-            {...register('address', { 
-              required: 'Address is required',
-              onChange: () => trigger('address'), 
-            })}
-            className={styles.inputField}
-          />
-          {errors.address && <Form.Text className="error">{errors.address.message}</Form.Text>}
-        </Form.Group>
-        <Row>
-  <Col md={6}>
-    <Form.Group className={styles.formGroup}>
-      <Form.Label>Country</Form.Label>
-      <Controller
-        name={"country"}
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <CountrySelect
-          onChange={onChange}
-          placeHolder="Select Country"
-        />
-        )}
-        defaultValue={""}
-      />
-        
-      {errors.country && (
-        <Form.Text className="error">{errors.country.message}</Form.Text>
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Address</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("address", {
+                required: "Address is required",
+                onChange: () => trigger("address"),
+              })}
+              placeholder="Enter Address"
+              className={styles.inputField}
+            />
+            {errors.address && (
+              <Form.Text className="error">{errors.address.message}</Form.Text>
+            )}
+          </Form.Group>
+          <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Country</Form.Label>
+                <MultiSelect
+                  name={`country`}
+                  control={control}
+                  // @ts-ignore
+                  error={errors[`country`]}
+                  options={countriesList}
+                  defaultValue={""}
+                  customStyles={{}}
+                  rules={{ required: "Country is required" }}
+                  menuPortalTarget={
+                    document.getElementsByClassName("modal")[0] as HTMLElement
+                  }
+                  menuPosition={"fixed"}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>State</Form.Label>
+                {states && (
+                  <MultiSelect
+                    name={`state`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`state`]}
+                    customStyles={{}}
+                    options={states}
+                    defaultValue={""}
+                    rules={{ required: "state is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <div className={styles.actions}>
+            <Button
+              type="button"
+              className={`outlined action-buttons`}
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className={`action-buttons`}
+              disabled={loading}
+            >
+              {loading ? <div className={styles.spinner}></div> : "Create"}
+            </Button>
+          </div>
+        </Form>
       )}
-    </Form.Group>
-  </Col>
-  <Col md={6}>
-      <Form.Group className={styles.formGroup}>
-        <Form.Label>State</Form.Label>
-          <Controller
-          name={"state"}
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <StateSelect
-            countryid={country.id}
-            onChange={onChange}
-            placeHolder="Select State"
-          />
-          )}
-          defaultValue={""}
-        />
-      </Form.Group>
-    </Col>
-    </Row>
-
-
-        <div className={styles.actions}>
-          <Button
-            type="button"
-            className={`outlined action-buttons`}
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className={`action-buttons`}
-            disabled={loading}
-          >
-    {loading ? (
-      <div className={styles.spinner}></div> 
-    ) : (
-      "Create" 
-    )}       
-    </Button>
-        </div>
-      </Form>
     </div>
   );
 };
