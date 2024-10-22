@@ -1,4 +1,3 @@
-
 .expand-button {
     position: absolute;
     bottom: 0px;
@@ -11,4 +10,8 @@
   }
   .danger{
     color: $color-danger !important;
+  }
+
+  .success{
+    color: $color-success !important;
   }

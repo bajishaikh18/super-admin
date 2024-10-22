@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import { User } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
@@ -18,7 +18,17 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
-import { INDUSTRIES } from "@/helpers/constants";
+import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
+import CreateUserForm from "../users/CreateUsers";
+import { Button, Modal } from "react-bootstrap";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { BsPlus, BsPlusLg } from "react-icons/bs";
+import { FaPlus } from "react-icons/fa6";
+import { GetCountries, GetState } from "react-country-state-city";
+
+type RegisteredUsersProps = {
+  showButton: boolean;
+};
 
 type TabType = "admin" | "app";
 
@@ -26,8 +36,11 @@ const columnHelper = createColumnHelper<User>();
 
 const fetchSize = 100;
 
-const RegisteredUsers: React.FC = () => {
+const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
+  const [showCreateUser, setShowCreateUser] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("app");
+  // const [countries, setCountries] = useState<any[] | null>(null);
+  // const [states, setStates] = useState<any[] | null>(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
@@ -43,6 +56,76 @@ const RegisteredUsers: React.FC = () => {
   const debouncedSearchTerm = useDebounce(search, 300);
   const debouncedSearchTermAdmin = useDebounce(searchAdmin, 300);
 
+
+  const {
+    data: countries
+  } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async ()=>{
+      const countriesList = await GetCountries();
+      const neededCountries = countriesList.filter((x:any)=>COUNTRIES[x.iso2.toLowerCase() as "bh"]);
+      return neededCountries;
+    },
+    retry: 3,
+  });
+
+
+  const {
+    data: states
+  } = useQuery({
+    queryKey: ["states", countries],
+    queryFn: async ()=>{
+      if(countries){
+        const statesList = await Promise.all(countries.map(async (cty:any)=>{
+          const statesOfCty = await GetState(cty.id);
+          return {
+           id: cty.id,
+           states: statesOfCty
+          }
+         }));
+        return statesList
+      }
+    },
+    retry: 3,
+  });
+
+  
+  // const getCountryAndStates = async ()=>{
+  //   const countriesList = await GetCountries();
+  //   const neededCountries = countriesList.filter((x:any)=>COUNTRIES[x.iso2.toLowerCase() as "bh"]);
+  //   const statesList = await Promise.all(neededCountries.map(async (cty:any)=>{
+  //    const statesOfCty = await GetState(cty.id);
+  //    return {
+  //     id: cty.id,
+  //     states: statesOfCty
+  //    }
+  //   }));
+  //   setStates(statesList);
+  //   setCountries(countriesList)
+  // }
+  // useEffect(() => {
+  //   getCountryAndStates();
+  // }, []);
+
+
+  const getStateName = useCallback(
+    (country: string, state: string) => {
+      if (!countries || !states || !country || !state) {
+        return "N/A";
+      }
+      const userCountry =  countries.find((cty:any)=>cty.iso2 === country.toUpperCase());
+      if(!userCountry){
+         return state || "N/A"
+      }
+      const stateList = states.find((st: any) => st.id === userCountry.id);
+      
+      if(!stateList){
+        return state || "N/A"
+      }
+      return stateList.states.find((st:any) => st.state_code === state)
+      ?.name ||  state
+    },[countries, states]);
+    
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
@@ -225,7 +308,7 @@ const RegisteredUsers: React.FC = () => {
           classes: "px-10",
         },
       }),
-      columnHelper.accessor("phone", {
+      columnHelper.accessor("mobile", {
         header: "Mobile No",
         cell: (info) => info.renderValue() || "N/A",
       }),
@@ -233,10 +316,8 @@ const RegisteredUsers: React.FC = () => {
       columnHelper.accessor("state", {
         header: "State",
         cell: (info) =>
-          INDIAN_STATES.find((state) => state.state_code === info.renderValue())
-            ?.name ||
-          info.renderValue() ||
-          "N/A",
+          getStateName(info.row.original.country, info.getValue()),
+
         meta: {
           filterType: "select",
           selectOptions: INDIAN_STATES.map((val) => ({
@@ -278,7 +359,7 @@ const RegisteredUsers: React.FC = () => {
         },
       }),
     ],
-    []
+    [countries,states]
   );
 
   const {
@@ -294,7 +375,7 @@ const RegisteredUsers: React.FC = () => {
   const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
     User[]
   >({
-    queryKey: ["people", "app", activeTab, debouncedSearchTerm, sorting],
+    queryKey: ["users", "app", activeTab, debouncedSearchTerm, sorting],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getUsers(
@@ -319,7 +400,7 @@ const RegisteredUsers: React.FC = () => {
     isFetching: isAdminFetching,
     isLoading: isAdminLoading,
   } = useInfiniteQuery<User[]>({
-    queryKey: ["people", "admin", activeTab, debouncedSearchTermAdmin, sorting],
+    queryKey: ["users", "admin", activeTab, debouncedSearchTermAdmin, sorting],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getUsers(
@@ -357,6 +438,14 @@ const RegisteredUsers: React.FC = () => {
     setActiveTab(tab);
   };
 
+  const handleCreateUserClick = () => {
+    setShowCreateUser(true);
+  };
+
+  const handleCancelCreateUser = () => {
+    setShowCreateUser(false);
+  };
+
   return (
     <Card>
       <div className={"header-row"}>
@@ -374,6 +463,7 @@ const RegisteredUsers: React.FC = () => {
             Admin Users ({summaryData?.adminCount || 0})
           </button>
         </div>
+
         {
           {
             app: (
@@ -398,6 +488,21 @@ const RegisteredUsers: React.FC = () => {
             ),
           }[activeTab]
         }
+        {showButton && (
+          <div className={dataTableStyles.buttonContainer}>
+            <Button
+              href="#"
+              className="btn-img"
+              onClick={handleCreateUserClick}
+            >
+              <FaPlus />
+              Create Admin User
+            </Button>
+            <Modal show={showCreateUser} onHide={handleCancelCreateUser} centered backdrop="static">
+              <CreateUserForm onCancel={handleCancelCreateUser} />
+            </Modal>
+          </div>
+        )}
       </div>
       {
         {
@@ -412,6 +517,7 @@ const RegisteredUsers: React.FC = () => {
                 }}
                 data={flatData}
                 isSearch={!!search}
+                tableHeight={showButton ? "75vh": undefined}
                 fetchNextPage={fetchNextPage}
                 isLoading={isLoading}
                 isFetching={isFetching}
@@ -428,6 +534,7 @@ const RegisteredUsers: React.FC = () => {
                   setSortingAdmin(updater);
                 }}
                 data={flatDataAdmin}
+                tableHeight={showButton ? "75vh": undefined}
                 isSearch={!!searchAdmin}
                 fetchNextPage={fetchAdminNextPage}
                 isLoading={isAdminLoading}

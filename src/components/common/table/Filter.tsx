@@ -50,7 +50,7 @@ export const TableFilter = ({
     };
   });
   return (
-    <div className="filter-section">
+    <div className="filter-section ms-auto">
       {
         {
           text: (

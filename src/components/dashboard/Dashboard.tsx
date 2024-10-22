@@ -142,7 +142,7 @@ const Dashboard = () => {
 
         <div className="page-block">
           <h3 className="section-heading">Registered users</h3>
-          <RegisteredUsers />
+          <RegisteredUsers showButton={false} />
         </div>
       </main>
     </>

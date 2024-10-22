@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getJobDetails, updateJob } from "@/apis/job";
-import styles from "./PostedJobDetail.module.scss";
+import styles from "../common/styles/Details.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -32,12 +32,10 @@ import { LuExpand } from "react-icons/lu";
 
 type PostedJobDetailsProps = {
   jobId: string;
-  onClose: () => void;
 };
 
 const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   jobId,
-  onClose,
 }) => {
   const queryClient = useQueryClient()
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -59,19 +57,20 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     _id,
     createdAt,
     expiry,
-    agencyName,
+    agencyId,
     imageUrl,
     location,
     positions,
     contactNumbers,
     email,
+    viewed,
     status,
     description,
     amenities,
   } = data?.job || {};
 
   const goBack = () => {
-    router.back();
+    router.push('/posted-jobs');
   };
 
   const changePostStatus = useCallback(async ()=>{
@@ -184,7 +183,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       height={18}
                       alt="view"
                     />
-                    Viewed by 1,186 Candidates
+                    Viewed by {viewed} candidates
                   </li>
                   <li>
                     <Image
@@ -232,7 +231,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                   />
                   <div>
                     <div className={styles.agencyNameContainer}>
-                      <h2 className={styles.agencyName}>Muthu International</h2>
+                      <h2 className={styles.agencyName}>{agencyId?.name}</h2>
                       <Image
                         src="/verified.svg"
                         width={13}

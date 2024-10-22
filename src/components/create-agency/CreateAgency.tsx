@@ -1,0 +1,81 @@
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+import styles from "./CreateAgency.module.scss";
+import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
+import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
+import CreateAgencyScreen from "./CreateAgencyScreen";
+import { useQuery } from "@tanstack/react-query";
+import {
+  GetCities,
+  GetState,
+} from "react-country-state-city";
+
+function CreateAgency({
+  handleModalClose,
+  agencyDetails,
+}: {
+  handleModalClose: () => void;
+  agencyDetails?: Agency;
+}) {
+  const [screen, setScreen] = useState(0);
+  const [isEdit, setIsEdit] = useState(false);
+  const { selectedFile, handleFileChange, resetData,setFormData } = useAgencyStore();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(()=>{
+    console.log("AGENCY",agencyDetails);
+    if(agencyDetails){
+      const [countryCode, contactNumber] =  agencyDetails.phone?.split("-");
+      setIsEdit(true)
+      const agencyData = {
+        ...agencyDetails,
+        countryCode,
+        contactNumber
+      }
+      setFormData(agencyData);
+    }
+  },[agencyDetails])
+ 
+ 
+  const handleClose = () => {
+    reset();
+    handleModalClose();
+  };
+  const reset = () => {
+    resetData();
+  };
+  return (
+    <div className={styles.modalContainer}>
+      {
+        {
+          0: (
+            <InitialAgencyScreen
+              isEdit={isEdit}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              selectedFile={selectedFile}
+              handleClose={handleClose}
+              handleCreateNowClick={() => {
+                setScreen(1);
+              }}
+            />
+          ),
+          1: (
+            <CreateAgencyScreen
+              isEdit={isEdit}
+              handleClose={handleClose}
+              handleContinueClick={() => {
+                reset();
+                handleClose();
+              }}
+              handleBackToPostJobClick={() => setScreen(0)}
+            />
+          ),
+        }[screen]
+      }
+    </div>
+  );
+}
+
+export default CreateAgency;
