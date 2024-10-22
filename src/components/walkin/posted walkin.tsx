@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
+import { useUserStore } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
@@ -8,13 +9,15 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
+import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getJobs, getJobSummary } from "@/apis/job";
 import { DateTime } from "luxon";
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
+import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { FullScreenImage } from "../common/FullScreenImage";
 import usePostJobStore from "@/stores/usePostJobStore";
@@ -49,7 +52,7 @@ export type JobApiResponse = {
   jobs: JobType[];
 };
 
-const PostedWalkInTable: React.FC = () => {
+const PostedWakInTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Active");
   const [sortingActive, setSortingActive] = React.useState<SortingState>([]);
   const [sortingExpired, setSortingExpired] = React.useState<SortingState>([]);
@@ -97,7 +100,6 @@ const PostedWalkInTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "active",
         start,
         fetchSize,
@@ -123,7 +125,6 @@ const PostedWalkInTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "expired",
         start,
         fetchSize,
@@ -150,7 +151,6 @@ const PostedWalkInTable: React.FC = () => {
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getJobs(
-        "status",
         "pending",
         start,
         fetchSize,
@@ -337,7 +337,7 @@ const PostedWalkInTable: React.FC = () => {
         <path d="M11.75 11.25C12.1642 11.25 12.5 10.9142 12.5 10.5C12.5 10.0858 12.1642 9.75 11.75 9.75C11.3358 9.75 11 10.0858 11 10.5C11 10.9142 11.3358 11.25 11.75 11.25Z" fill="white"/>
         </svg>
 
-            Post a Walk-In
+            Post a New Walk-In
           </Button>
         </div>
       </div>
@@ -429,4 +429,4 @@ const PostedWalkInTable: React.FC = () => {
   );
 };
 
-export default PostedWalkInTable;
+export default PostedWakInTable;

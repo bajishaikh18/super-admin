@@ -92,9 +92,9 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
           refetchType:'all'
         })
       }
-      toast.success("Job status changed successfully");
+      toast.success("walkin status changed successfully");
     }catch(e){
-      toast.error("Error while deleting job. Please try again");
+      toast.error("Error while deleting walkin. Please try again");
       return
     }
   },[status,jobId])
