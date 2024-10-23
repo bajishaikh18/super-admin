@@ -1,12 +1,14 @@
 "use client"
 
+import { Authorize } from "@/components/common/Authorize";
 import Agencies from "../../components/agencies/Agencies";
+import { ROLE } from "@/helpers/constants";
 
 const AgenciesPage =() => {
     return (
-        <div>
+        <Authorize roles={[ROLE.superAdmin,ROLE.admin]}>
             <Agencies />
-        </div>
+        </Authorize>
     )
 
 }

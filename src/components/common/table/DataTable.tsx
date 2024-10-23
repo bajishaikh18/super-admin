@@ -10,9 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import styles from "./DataTable.module.scss";
-import {
-  Person,
-} from "../../../helpers/makeData";
+
 import { BsSortUp,BsSortDown } from "react-icons/bs";
 import { Loader, NotFound } from "../Feedbacks";
 
@@ -187,7 +185,7 @@ export function DataTable({
             }}
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<Person>;
+              const row = rows[virtualRow.index] as Row<any>;
               return (
                 <tr
                   data-index={virtualRow.index} //needed for dynamic row height measurement

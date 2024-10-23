@@ -15,12 +15,12 @@ export const isTokenValid = () => {
     }  
   };
 
-export const getTokenClaims = (token:string)=>{
+export const getTokenClaims = ()=>{
     try{
+        const token = localStorage.getItem('token');
         if(!token)
             return null;
         const user = jwtDecode(token);
-        console.log(user);
         return user;
     }catch(e){
         return null;

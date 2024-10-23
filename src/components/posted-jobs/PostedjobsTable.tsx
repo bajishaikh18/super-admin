@@ -9,7 +9,6 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getJobs, getJobSummary } from "@/apis/job";
