@@ -25,7 +25,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
-import CreateJob from "../create-job/CreateJob";
+import CreateWalkIn from "../create-walkin/CreateWalkIn";
 import toast from "react-hot-toast";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { LuExpand } from "react-icons/lu";
@@ -50,7 +50,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
       if (jobId) {
         return getJobDetails(jobId);
       }
-      throw new Error("jobId is null or undefined");
+      throw new Error("walkinId is null or undefined");
     },
     enabled: !!jobId,
   });
@@ -344,7 +344,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
         imageUrl={imageUrl}
       />
        <Modal show={openEdit} onHide={()=>setOpenEdit(false)} centered backdrop="static">
-        {openEdit && <CreateJob handleModalClose={()=>setOpenEdit(false)} jobDetails={data.job} />}
+        {openEdit && <CreateWalkIn handleModalClose={()=>setOpenEdit(false)} jobDetails={data.job} />}
       </Modal>
     </main>
   );

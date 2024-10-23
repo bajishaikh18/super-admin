@@ -3,10 +3,10 @@ import React, { useEffect } from "react";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
-import PostedWalkInTable from "./posted walkin";
+import PostedWalkInTable from "./PostedWalkIn";
 import { getJobSummary } from "@/apis/job";
 
-const PostedJobs = () => {
+const WalkIn = () => {
   const {
     data: summaryData,
     isLoading: summaryLoading,
@@ -45,7 +45,7 @@ const PostedJobs = () => {
           <h3 className="section-heading">Walk-In Summary</h3>
           {summaryLoading && (
             <Loader
-              text="Fetching job summary details"
+              text="Fetching walkin summary details"
               size="md"
               textSize="md"
             />
@@ -65,4 +65,4 @@ const PostedJobs = () => {
   );
 };
 
-export default PostedJobs;
+export default WalkIn;

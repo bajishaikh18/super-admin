@@ -1,5 +1,5 @@
 "use client";
-import WalkIn from '@/components/walkin/walkin summary';
+import WalkIn from '@/components/walkin/WalkInSummary';
 import { ReactQueryProvider } from '../react-quuery-provider';
 
 
