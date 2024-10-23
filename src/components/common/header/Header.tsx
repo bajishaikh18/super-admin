@@ -13,6 +13,7 @@ import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 import { getTokenClaims } from "@/helpers/jwt";
 import { ROLE } from "@/helpers/constants";
+import { Notifications } from "../notifications/Notifications";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
@@ -20,6 +21,7 @@ const HIDEPATHS = ["/login", "/reset-password"];
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [showNotification, setShowNotification] = useState(false);
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
   const { authUser, setAuthUser, role, setRole } = useAuthUserStore();
@@ -137,8 +139,9 @@ const Header: React.FC<HeaderProps> = () => {
           </Nav>
 
           <Nav className={styles.rightNavItems}>
-            <Nav.Link onClick={() => {}} className={styles.faBell}>
+            <Nav.Link href="javascript:;" onClick={() => {setShowNotification(!showNotification)}} className={styles.notificationTrigger}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
+              {showNotification && <Notifications/>}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}
