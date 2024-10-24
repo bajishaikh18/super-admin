@@ -51,7 +51,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
   });
 
   const state  = watch("state")
-  
+
 
   const { data: states } = useQuery({
     queryKey: ["states"],
@@ -68,9 +68,9 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
   });
   
   const { data: cities } = useQuery({
-    queryKey: ["cities", state],
+    queryKey: ["cities", state, stateList],
     queryFn: async () => {
-      if (state) {
+      if (state && stateList.length>0) {
         const selectedState:any = states?.find(
           (cty: any) => cty.state_code === state
         );
@@ -84,8 +84,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     },
     retry: 3,
   });
- 
-  
+
   const onSubmit = async (data: CreateAgencyFormData) => {
     try {
       let resp;
