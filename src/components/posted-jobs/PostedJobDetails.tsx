@@ -63,6 +63,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     positions,
     contactNumbers,
     email,
+    numberofApplications,
     viewed,
     status,
     description,
@@ -192,7 +193,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       height={18}
                       alt="applie"
                     />
-                    Applied by <Link href={""}>200 Candidates</Link>
+                    Applied by <Link href={""}>{numberofApplications || 0} Candidates</Link>
                   </li>
                 </ul>
                 <ul className={styles.footerInfo}>
@@ -223,10 +224,10 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
             <Card className={styles.detailsCard}>
               <CardHeader className={styles.detailsCardHeader}>
                 <div className={styles.agencyDetails}>
-                  <Image
-                    src="/ag_logo.svg"
-                    width={66}
-                    height={66}
+                <Image
+                    src={`${agencyId?.profilePic ? `${IMAGE_BASE_URL}/${agencyId?.profilePic}`: '/no_image.jpg'}`}
+                    width={55}
+                    height={55}
                     alt="agency-logo"
                   />
                   <div>

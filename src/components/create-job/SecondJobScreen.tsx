@@ -177,10 +177,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         resp = await getSignedUrl("jobImage", selectedFile?.type!,"jobId",res.job._id || formData?._id);
         if (resp) {
           await uploadFile(resp.uploadurl, selectedFile!);
+          await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
           setRefreshImage(true)
         }
       }
-      await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
       setNewlyCreatedJob(res.job)
       toast.success(`Job ${isEdit?'created':'updated'} successfully`)
       handleCreateJobClick();

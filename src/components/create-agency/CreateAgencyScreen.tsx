@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import usePostJobStore from "@/stores/usePostJobStore";
 import styles from "./CreateAgency.module.scss";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
@@ -51,6 +51,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
   });
 
   const state  = watch("state")
+  
 
   const { data: states } = useQuery({
     queryKey: ["states"],
@@ -66,7 +67,6 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     retry: 3,
   });
   
-  console.log(states);
   const { data: cities } = useQuery({
     queryKey: ["cities", state],
     queryFn: async () => {
@@ -85,7 +85,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     retry: 3,
   });
  
-
+  
   const onSubmit = async (data: CreateAgencyFormData) => {
     try {
       let resp;
@@ -315,7 +315,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={""}
+                    defaultValue={formData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -336,7 +336,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`city`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={""}
+                    defaultValue={formData?.city}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
