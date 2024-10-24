@@ -108,14 +108,23 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
       </Button>}
       </div>
       <div className={styles.createSection}>
-        <h3>{isEdit ?"Edit your media" : "Don’t have a media ready?" }</h3>
+        {selectedFile && <h3>{isEdit ?"Edit job details" : "Enter job details at next step" }</h3>}
+        {!selectedFile &&  <h3>{isEdit ?"Edit job details" : "Don’t have a media ready?" }</h3>}
         <Button
         className={`outlined ${styles.outlinedButton}`}
           onClick={handleCreateNowClick}
         >
           {
-            isEdit ? "Edit Now" : "Create Now"
+            selectedFile &&  <>{
+              isEdit ? "Edit Now" : "Proceed"
+            }</>
           }
+           {
+            !selectedFile && <>{
+              isEdit ? "Edit Now" : "Create Now"
+            }</>
+          }
+         
          
         </Button>
       </div>

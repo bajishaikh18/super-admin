@@ -65,6 +65,9 @@ const Agencies: React.FC = () => {
             {info.renderValue()}
           </Link>;
         },
+        meta: {
+          classes: "f-3",
+        },
       }),
       columnHelper.accessor("name", {
         header: "Agency Name",
@@ -90,10 +93,16 @@ const Agencies: React.FC = () => {
       columnHelper.accessor("phone", {
         header: "Mobile",
         cell: (info) => info.renderValue() || "N/A",
+        meta: {
+          classes: "f-7",
+        },
       }),
       columnHelper.accessor("postedJobs", {
         header: "Job Posts",
         cell: (info) => info.renderValue()  || 0,
+        meta: {
+          classes: "f-5",
+        },
       }),
       columnHelper.accessor("address", {
         header: "Address",
@@ -102,7 +111,8 @@ const Agencies: React.FC = () => {
       columnHelper.accessor("approved", {
         header: "MEA Approved",
         cell: (info) => info.renderValue() ? <span className="success">Approved</span> : "",
-        meta: { filter: false },
+        meta: { filter: false,classes: "f-5"
+        },
       }),
       columnHelper.accessor("createdAt", {
         header: "Created Date",
@@ -110,12 +120,12 @@ const Agencies: React.FC = () => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
-        meta: { filterType: "date" },
+        meta: { filterType: "date",classes:'f-5' },
       }),
       columnHelper.accessor("status", {
         header: "Status",
         meta: {
-          classes: "capitalize",
+          classes: "capitalize f-4",
           filter: false,
         },
         cell: (info) => {

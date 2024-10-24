@@ -120,7 +120,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         }
         await updateAgency(res?.agency?._id! || formData?._id!, {profilePic: resp?.keyName});
       }
-      toast.success(`Agency ${isEdit ? "created" : "updated"} successfully`);
+      toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
     } catch (error) {
