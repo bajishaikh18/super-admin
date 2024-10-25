@@ -52,7 +52,6 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
 
   const state  = watch("state")
 
-
   const { data: states } = useQuery({
     queryKey: ["states"],
     queryFn: async () => {
