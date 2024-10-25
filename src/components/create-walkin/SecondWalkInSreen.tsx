@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./CreateWalkIn.module.scss";
-import usePostJobStore from "@/stores/usePostJobStore";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { AiOutlineDelete } from "react-icons/ai";
 import { Button, Form, InputGroup, Table } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -34,8 +34,8 @@ interface FormValues {
   description?: string;
 }
 interface SecondWalkInScreenProps {
-  handleBackToPostJobClick: () => void;
-  handleCreateJobClick: () => void;
+  handleBackToPostWalkinClick: () => void;
+  handleCreateWalkinClick: () => void;
   handleClose: () => void;
   isEdit?:boolean;
 }
@@ -43,8 +43,8 @@ const phoneRegex = /^[0-9]{10}$/
 
 const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
   isEdit,
-  handleBackToPostJobClick,
-  handleCreateJobClick,
+  handleBackToPostWalkinClick,
+  handleCreateWalkinClick,
   handleClose
 }) => {
   const queryClient = useQueryClient();
@@ -64,7 +64,7 @@ const createWalkInMutation = useMutation({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -183,9 +183,9 @@ const createWalkInMutation = useMutation({
       }
 
       await updateInterview(res.job._id! || formData?._id!, { imageUrl: res.keyName });
-      setNewlyCreatedJob(res.job);
+      setNewlyCreatedWalkin(res.job);
       toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
-      handleCreateJobClick();
+      handleCreateWalkinClick();
       setLoading(false);
     } catch (error) {
       toast.error(`Error while ${isEdit ? "updating" : "creating"} Interview. Please try again.`);
@@ -422,7 +422,7 @@ const createWalkInMutation = useMutation({
             <Button
               type="button"
               className={`outlined action-buttons`}
-              onClick={handleBackToPostJobClick}
+              onClick={handleBackToPostWalkinClick}
             >
               Back
             </Button>

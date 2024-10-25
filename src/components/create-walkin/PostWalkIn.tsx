@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import styles from "./CreateWalkIn.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
-import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
+import usePostWalkinStore, { PostWalkinFormData } from "@/stores/usePostWalkinStore";
 import { COUNTRIES, FACILITIES_IMAGES } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
@@ -33,7 +33,7 @@ const WalkInPostingImage = ({
   isFullScreen,
   color,
 }: {
-  formData: PostJobFormData | null;
+  formData: PostWalkinFormData | null;
   agency: AgencyType,
   selectedFacilities: string[];
   handleFullScreen: (fullScreen: boolean) => void;
@@ -452,7 +452,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
 }) => {
 
   const queryClient = useQueryClient()
-  const { formData, selectedFacilities, newlyCreatedJob,setRefreshImage } = usePostJobStore();
+  const { formData, selectedFacilities, newlyCreatedWalkin,setRefreshImage } = usePostWalkinStore();
   const {
     data: agencyResp,
     isLoading,
@@ -495,7 +495,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const id = newlyCreatedJob?._id || formData?._id;
+      const id = newlyCreatedWalkin?._id || formData?._id;
       if (!id) {
         throw "Not found";
       }
@@ -525,7 +525,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
           refetchType:'all'
         })
        
-        toast.success("Job posted successfully");
+        toast.success("Walkin posted successfully");
         handleClose();
         setRefreshImage(true)
       }

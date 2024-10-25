@@ -4,19 +4,20 @@ import styles from "./CreateWalkIn.module.scss";
 import InitialScreen from "./InitialScreen";
 import FirstWalkInScreen from "./FirstWalkInScreen";
 import SecondWalkInScreen from "./SecondWalkInSreen";
-import useStore, { Job } from "@/stores/usePostJobStore"; 
+import useStore, {Walkin} from "@/stores/usePostWalkinStore"; 
 import PostWalkInScreen from "./PostWalkIn";
-import usePostJobStore from "@/stores/usePostJobStore";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 export default function CreateWalkIn({
   handleModalClose,
   jobDetails
 }: {
   handleModalClose: () => void;
-  jobDetails?: Job
+  jobDetails?: Walkin
+
 }) {
   const [screen, setScreen] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
-  const {setFormData,setFacilities} = usePostJobStore();
+  const {setFormData,setFacilities} = usePostWalkinStore();
   const {
     selectedFile,
     handleFileChange,
@@ -104,9 +105,9 @@ export default function CreateWalkIn({
           2: (
             <SecondWalkInScreen
               isEdit={isEdit}
-              handleBackToPostJobClick={() => setScreen(1)}
+              handleBackToPostWalkinClick={() => setScreen(1)}
               handleClose={handleClose}
-              handleCreateJobClick={() => {
+              handleCreateWalkinClick={() => {
                 if(selectedFile){
                   handleClose()
                 }else{

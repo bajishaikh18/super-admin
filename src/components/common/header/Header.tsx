@@ -10,6 +10,7 @@ import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
 import { AuthHeader } from "./AuthHeader";
 import usePostJobStore from "@/stores/usePostJobStore";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 
@@ -37,6 +38,7 @@ const Header: React.FC<HeaderProps> = () => {
   if (HIDEPATHS.includes(pathname)) {
     return <AuthHeader/>;
   }
+
   return (
     <>
       <Navbar className={styles.header} expand="lg" fixed={"top"}>
@@ -76,7 +78,7 @@ const Header: React.FC<HeaderProps> = () => {
             >
               Walk In
             </Link>
-          <Link className={styles.navListItem} href="#agencies">
+            <Link className={styles.navListItem} href="#agencies">
               Agencies
             </Link>
             <Link
@@ -113,14 +115,13 @@ const Header: React.FC<HeaderProps> = () => {
             <Nav.Link onClick={() => {}} className={styles.faBell}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
             </Nav.Link>
-            <Nav.Link
-              onClick={() => setShowPostJob(true)}
-              className={`${styles.postJob} d-flex align-items-center gap-2`}
-            >
-              <Image src="/upload.png" alt="bell" width={16} height={16} />
-              Post Job
-            </Nav.Link>
-
+              <Nav.Link
+                onClick={() => setShowPostJob(true)} 
+                className={`${styles.postJob} d-flex align-items-center gap-2`}
+              >
+                <Image src="/upload.png" alt="upload" width={16} height={16} />
+                Post Job
+              </Nav.Link>
 
             {authUser && authUser.firstName && authUser.lastName && (
               <NavDropdown
@@ -147,11 +148,12 @@ const Header: React.FC<HeaderProps> = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+
       <Modal show={showPostJob} onHide={handleModalClose} centered backdrop="static">
         {showPostJob && <CreateJob handleModalClose={handleModalClose} />}
       </Modal>
       <Modal show={showCreateAgency} onHide={handleModalClose} centered backdrop="static">
-         {showCreateAgency && <CreateAgency handleModalClose={handleModalClose} /> }
+        {showCreateAgency && <CreateAgency handleModalClose={handleModalClose} />}
       </Modal>
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styles from "./CreateWalkIn.module.scss";
-import usePostJobStore from "@/stores/usePostJobStore";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { Button, Form } from "react-bootstrap";
 import { FieldError, useForm } from "react-hook-form";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
@@ -34,7 +34,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
 }) => {
   // Zustand store management
   const { selectedFacilities, handleFacilityClick, setFormData, formData } =
-    usePostJobStore();
+    usePostWalkinStore();
   const agencies = [
     { label: "Agency 1", value: "5f2c6e02e4b0a914d4a9fcb8" },
     { label: "Agency 2", value: "5f2c6e02e4b0a914d4a9fcb5" },
@@ -76,11 +76,11 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>
+      <h2>
           {
             isEdit ? "Edit " : "Create a "
           }
-          WalkIn <span>(1/2)</span>
+          WalkIn <span>(1/2)</span> 
         </h2>
         
         <IoClose

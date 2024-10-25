@@ -42,7 +42,7 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>{isEdit ? "Edit":"Post a"} Walk-In</h2>
+      <h2>{isEdit ? "Edit":"Post a"} Walk-In</h2>
         <IoClose
           className={styles.closeButton}
           onClick={handleClose}
