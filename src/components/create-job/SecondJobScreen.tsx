@@ -217,7 +217,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.overFlowSection}>
+          <div className={`${styles.overFlowSection} scroll-box`}>
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
             {/* <div className={styles.overFlowTable}> */}

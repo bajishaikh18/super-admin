@@ -123,7 +123,7 @@ export function DataTable({
   return (
     <div className="app">
       <div
-        className={styles.tableContainer}
+        className={`${styles.tableContainer} scroll-box`}
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         ref={tableContainerRef}
         style={{
