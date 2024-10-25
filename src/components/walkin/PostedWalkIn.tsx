@@ -12,7 +12,7 @@ import {
 import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
-import { getJobs, getJobSummary } from "@/apis/job";
+import { getInterviewDetails, getInterviews } from "@/apis/walkin";
 import { DateTime } from "luxon";
 import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -53,6 +53,12 @@ export type JobApiResponse = {
 };
 
 const PostedWakInTable: React.FC = () => {
+    const status = "active"; 
+    const page = 0; 
+    const limit = 10;
+    const filter = ""; 
+    const field = ""; 
+  
   const [activeTab, setActiveTab] = useState<TabType>("Active");
   const [sortingActive, setSortingActive] = React.useState<SortingState>([]);
   const [sortingExpired, setSortingExpired] = React.useState<SortingState>([]);
@@ -80,16 +86,11 @@ const PostedWakInTable: React.FC = () => {
   const debouncedSearchExpired = useDebounce(searchExpired, 300);
   const debouncedSearchPending = useDebounce(searchPending, 300);
 
-  const {
-    data: summaryData,
-    isLoading: summaryLoading,
-    error: summaryError,
-  } = useQuery({
-    queryKey: ["summary", "jobs"],
-    queryFn: getJobSummary,
+  const { data: summaryData } = useQuery({
+    queryKey: ["summary", "jobs","agencyId"],
+    queryFn: () => getInterviews(status, page, limit, filter, field), 
     retry: 3,
   });
-
   const {
     data: activeJobsData,
     fetchNextPage: fetchActiveJobsNextPage,
@@ -99,7 +100,7 @@ const PostedWakInTable: React.FC = () => {
     queryKey: ["jobs", "active", debouncedSearchActive],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
-      const fetchedData = await getJobs(
+      const fetchedData = await getInterviews(
         "active",
         start,
         fetchSize,
@@ -124,7 +125,7 @@ const PostedWakInTable: React.FC = () => {
     queryKey: ["jobs", "expired", debouncedSearchExpired],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
-      const fetchedData = await getJobs(
+      const fetchedData = await getInterviews(
         "expired",
         start,
         fetchSize,
@@ -150,7 +151,7 @@ const PostedWakInTable: React.FC = () => {
     queryKey: ["jobs", "pending", debouncedSearchPending],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
-      const fetchedData = await getJobs(
+      const fetchedData = await getInterviews(
         "pending",
         start,
         fetchSize,

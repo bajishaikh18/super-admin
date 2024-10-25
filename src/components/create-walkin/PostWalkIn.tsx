@@ -8,7 +8,7 @@ import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
 import { COUNTRIES, FACILITIES_IMAGES } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
-import { createJob, updateJob } from "@/apis/job";
+import { createInterview, updateInterview } from "@/apis/walkin";
 import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
@@ -517,7 +517,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
       );
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
-        await updateJob(id, { imageUrl: resp.keyName });
+        await updateInterview(id, { imageUrl: resp.keyName });
         await queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey.includes('jobs');
@@ -531,7 +531,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
       }
       setLoading(false);
     } catch (error: unknown) {
-      toast.error("Error while posting job. Please try again");
+      toast.error("Error while posting walkin. Please try again");
       setLoading(false);
     }
   };
@@ -553,7 +553,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
             ></IoClose>{" "}
           </div>
           <div className={styles.headerContainer}>
-            <h4 className={styles.h4}>Your job is successfully {isEdit?"updated":"created"}</h4>
+            <h4 className={styles.h4}>Your walkin is successfully {isEdit?"updated":"created"}</h4>
           </div>
           <WalkInPostingImage
             formData={formData}
@@ -622,7 +622,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
               className={`btn ${loading ? "btn-loading" : ""} action-buttons`}
               disabled={loading}
             >
-              {loading ? <div className="spinner"></div> : "Post Job"}
+              {loading ? <div className="spinner"></div> : "Post Walkin"}
             </Button>
           </div>
         </div>

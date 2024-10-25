@@ -2,7 +2,7 @@
 import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getJobDetails, updateJob } from "@/apis/job";
+import { getInterviewDetails, updateInterview } from "@/apis/walkin";
 import Image from "next/image";
 import styles from './PostedWalkInDetails.module.scss'
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
@@ -48,7 +48,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
     queryKey: ["jobDetails", jobId],
     queryFn: () => {
       if (jobId) {
-        return getJobDetails(jobId);
+        return getInterviewDetails(jobId);
       }
       throw new Error("walkinId is null or undefined");
     },
@@ -86,7 +86,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
                         break;
       }
       if(newStatus){
-        await updateJob(_id,{status:newStatus});
+        await updateInterview(_id,{status:newStatus});
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",jobId],
           refetchType:'all'
@@ -102,7 +102,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
 
   const deletePost = useCallback(async ()=>{
     try{
-        await updateJob(_id,{isDeleted:true});
+        await updateInterview(_id,{isDeleted:true});
         router.push("/walk-in")
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",jobId],

@@ -1,24 +1,28 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
 import PostedWalkInTable from "./PostedWalkIn";
-import { getJobSummary } from "@/apis/job";
+import { getInterviews } from "@/apis/walkin";
 
 const WalkIn = () => {
+  const status = "active"; 
+  const page = 0; 
+  const limit = 10;
+  const filter = ""; 
+  const field = ""; 
+
   const {
     data: summaryData,
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "jobs"],
-    queryFn: getJobSummary,
+    queryKey: ["summary", "jobs", "agencyId"], 
+    queryFn: () => getInterviews(status, page, limit, filter, field), 
     retry: 3,
     refetchOnMount: true,
   });
-
-
   const dashboardSummary = [
     {
       label: "Posted",
@@ -59,7 +63,7 @@ const WalkIn = () => {
           {summaryData && <SummarySection summaryData={dashboardSummary} />}
         </div>
         
-          <PostedWalkInTable />
+        <PostedWalkInTable />
       </main>
     </>
   );

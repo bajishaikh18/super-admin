@@ -8,7 +8,7 @@ import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect
 import { IoClose } from "react-icons/io5";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
-import { createJob, updateJob } from "@/apis/job";
+import { createInterview, updateInterview } from "@/apis/walkin";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
@@ -58,9 +58,10 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
     []
 );
 
-  const createWalkInMutation = useMutation({
-    mutationFn: createJob
-  })
+const createWalkInMutation = useMutation({
+  mutationFn: createInterview
+});
+
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
@@ -90,7 +91,6 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
       { title: {value:"",label:""}, experience: "0", salary: "" },
     ];
     setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
   };
 
   const handleRemove = (index: number) => {
@@ -110,7 +110,6 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
       return x;
     });
     setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
   };
 
   const experienceLevels = [
@@ -135,60 +134,62 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
     try {
       setLoading(true);
       setFormData(data);
-      let resp;
-   
+
       const contacts = [`${data.countryCode}-${data.contactNumber}`];
-      if(data.altContactNumber && data.altCountryCode){
+      if (data.altContactNumber && data.altCountryCode) {
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
+
       const jobData = {
         agencyId: formData?.agency?.value,
         location: formData?.location,
         expiry: formData?.expiry,
-        positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
-          jobTitleId: position.title.value,
-          experience: Number(position.experience),
-          salary: position.salary,
-        })),
+        positions: data?.jobPositions
+          .filter((x) => x && x.title?.value)
+          .map((position) => ({
+            jobTitleId: position.title.value,
+            experience: Number(position.experience),
+            salary: position.salary,
+          })),
         amenities: selectedFacilities,
         contactNumbers: contacts,
-        country: formData?.country || 'in',
-        email:data.email,
-        description:data.description,
-      }
-      let res;
-      if(isEdit && formData?._id){
-        res = await updateJob(formData?._id,jobData);
+        country: formData?.country || "in",
+        email: data.email,
+        description: data.description,
+      };
+
+      let res; 
+
+      if (isEdit && formData?._id) {
+        res = await updateInterview(formData?._id, jobData);
         await queryClient.invalidateQueries({
-          queryKey:["jobDetails",formData?.jobId?.toString()],
-          refetchType:'all'
-        })
-      }else{
-        res = await createWalkInMutation.mutateAsync(jobData);
+          queryKey: ["jobDetails", formData?.jobId?.toString()],
+          refetchType: "all",
+        });
+      } else {
+        res = await createWalkInMutation.mutateAsync(jobData); 
         await queryClient.invalidateQueries({
-          predicate: (query) => {
-            console.log(query.queryKey ,query.queryKey.includes('jobs'))
-            return query.queryKey.includes('jobs');
-          },
-          refetchType:'all'
-        })
+          predicate: (query) => query.queryKey.includes("jobs"),
+          refetchType: "all",
+        });
       }
-      if(selectedFile){
-        resp = await getSignedUrl("jobImage", selectedFile?.type!,"jobId",res.job._id || formData?._id);
-        if (resp) {
-          await uploadFile(resp.uploadurl, selectedFile!);
-          setRefreshImage(true)
+
+      if (selectedFile) {
+        const response = await getSignedUrl("jobImage", selectedFile?.type!, "jobId", res.job._id || formData?._id);
+        if (response) {
+          await uploadFile(response.uploadurl, selectedFile!);
+          setRefreshImage(true);
         }
       }
-      await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
-      setNewlyCreatedJob(res.job)
-      toast.success(`Job ${isEdit?'created':'updated'} successfully`)
+
+      await updateInterview(res.job._id! || formData?._id!, { imageUrl: res.keyName });
+      setNewlyCreatedJob(res.job);
+      toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
       handleCreateJobClick();
       setLoading(false);
     } catch (error) {
-      toast.error(`Error while ${isEdit?'updating':'creating'} job. Please try again`)
+      toast.error(`Error while ${isEdit ? "updating" : "creating"} Interview. Please try again.`);
       setLoading(false);
-    } finally {
     }
   };
 
@@ -199,7 +200,7 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
           {
             isEdit ? "Edit " : "Create a "
           }
-          Job <span>(1/2)</span>
+          Walkin <span>(1/2)</span>
         </h2>
         <IoClose
           className={styles.closeButton}
@@ -211,7 +212,7 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
       {loading ? (
         <div className={styles.popupContent}>
           <p className={styles.loadingContent}>
-            Your job is {isEdit?"updating":"creating"} please wait
+            Your Interview is {isEdit?"updating":"creating"} please wait
           </p>
           <div className={styles.createSpinner}></div>
         </div>
@@ -435,7 +436,7 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
                {
             isEdit ? "Edit " : "Create a "
           }
-              Job
+              Walkin
             </Button>
           </div>
         </Form>
