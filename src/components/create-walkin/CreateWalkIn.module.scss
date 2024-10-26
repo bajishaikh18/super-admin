@@ -12,6 +12,19 @@
   position: relative;
 }
 
+.overFlowTable{
+  max-height: 300px;
+  overflow-y: overlay;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+}
+.overFlowSection{
+  max-height: 600px;
+  padding-right: 32px;
+  overflow-y: auto;
+  margin-right: -32px;
+}
 
 .modalHeader {
   display: flex;

@@ -50,6 +50,11 @@ export type PostWalkinFormData =  {
   altContactNumber?:string;
   altCountryCode?:string;
   email?: string;
+  interviewDate?: string;
+  interviewLocation?: string;
+  interviewAddress?: string;
+  latitude?:string;
+  longitude?:string;
   description?: string;
   jobPositions?: JobPosition[];
   experienceRequired?: string;

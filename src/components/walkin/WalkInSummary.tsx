@@ -4,22 +4,16 @@ import SummarySection from "@/components/common/Summary";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
 import PostedWalkInTable from "./PostedWalkIn";
-import { getInterviews } from "@/apis/walkin";
+import { getInterviewSummary } from "@/apis/walkin";
 
 const WalkIn = () => {
-  const status = "active"; 
-  const page = 0; 
-  const limit = 10;
-  const filter = ""; 
-  const field = ""; 
-
   const {
     data: summaryData,
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({
-    queryKey: ["summary", "jobs", "agencyId"], 
-    queryFn: () => getInterviews(status, page, limit, filter, field), 
+    queryKey: ["summary", "walkins"], 
+    queryFn: getInterviewSummary, 
     retry: 3,
     refetchOnMount: true,
   });

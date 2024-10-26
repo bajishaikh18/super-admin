@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styles from "./CreateWalkIn.module.scss";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { AiOutlineDelete } from "react-icons/ai";
-import { Button, Form, InputGroup, Table } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row, Table } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
@@ -10,10 +10,15 @@ import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { createInterview, updateInterview } from "@/apis/walkin";
 import { COUNTRIES } from "@/helpers/constants";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce } from "lodash";
-
+import { CustomDatePicker } from "../common/form-fields/DatePicker";
+import { DateTime } from "luxon";
+import {
+  GetCity,
+  GetState,
+} from "react-country-state-city";
 interface JobPosition {
   title: {
     value:string,
@@ -30,6 +35,12 @@ interface FormValues {
   altCountryCode : string;
   email: string;
   countryCode: string;
+  latitude:string;
+  longitude:string;
+  interviewDate: string;
+  interviewLocation: string;
+  interviewAddress: string;
+  state:string;
   jobPositions: JobPosition[];
   description?: string;
 }
@@ -65,6 +76,7 @@ const createWalkInMutation = useMutation({
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
+  const [stateList,setStateList] = useState([]);
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -125,11 +137,46 @@ const createWalkInMutation = useMutation({
     getValues,
     control,
     setValue,
+    watch,
     formState: { errors,isValid },
   } = useForm<FormValues>({
     mode: 'all'
   });
 
+  const state  = watch("state")
+
+
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const statesList = await GetState(101);
+      const formattedList =  statesList.map((state: any) => ({
+        value: state.state_code,
+        label: state.name,
+      }));
+      setStateList(formattedList)
+      return statesList;
+    },
+    retry: 3,
+  });
+  
+  const { data: cities } = useQuery({
+    queryKey: ["cities", state, stateList],
+    queryFn: async () => {
+      if (state && stateList.length>0) {
+        const selectedState:any = states?.find(
+          (cty: any) => cty.state_code === state
+        );
+        const cityList = await GetCity(101,selectedState?.id);
+        return cityList.map((city: any) => ({
+          value: city.name,
+          label: city.name,
+        }));
+      }
+      return [];
+    },
+    retry: 3,
+  });
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
@@ -156,6 +203,11 @@ const createWalkInMutation = useMutation({
         country: formData?.country || "in",
         email: data.email,
         description: data.description,
+        interviewDate: data.interviewDate,
+        interviewLocation:data.interviewLocation,
+        interviewAddress: data.interviewAddress,
+        latitude:data.latitude,
+        longitude:data.longitude
       };
 
       let res; 
@@ -163,13 +215,13 @@ const createWalkInMutation = useMutation({
       if (isEdit && formData?._id) {
         res = await updateInterview(formData?._id, jobData);
         await queryClient.invalidateQueries({
-          queryKey: ["jobDetails", formData?.jobId?.toString()],
+          queryKey: ["walkinDetails", formData?.jobId?.toString()],
           refetchType: "all",
         });
       } else {
         res = await createWalkInMutation.mutateAsync(jobData); 
         await queryClient.invalidateQueries({
-          predicate: (query) => query.queryKey.includes("jobs"),
+          predicate: (query) => query.queryKey.includes("walkins"),
           refetchType: "all",
         });
       }
@@ -178,11 +230,10 @@ const createWalkInMutation = useMutation({
         const response = await getSignedUrl("jobImage", selectedFile?.type!, "jobId", res.job._id || formData?._id);
         if (response) {
           await uploadFile(response.uploadurl, selectedFile!);
+          await updateInterview(res.job._id! || formData?._id!, { imageUrl: res.keyName });
           setRefreshImage(true);
         }
       }
-
-      await updateInterview(res.job._id! || formData?._id!, { imageUrl: res.keyName });
       setNewlyCreatedWalkin(res.job);
       toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
       handleCreateWalkinClick();
@@ -218,6 +269,8 @@ const createWalkInMutation = useMutation({
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+                    <div className={`${styles.overFlowSection} scroll-box`}>
+
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
             <div className={styles.overFlowTable}>
@@ -410,6 +463,112 @@ const createWalkInMutation = useMutation({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
+          <Form.Label>Walkin Date</Form.Label>
+          <CustomDatePicker
+            name="interviewDate"
+            control={control}
+            error={errors.interviewDate}
+            defaultValue={formData?.interviewDate}
+            minDate={new Date()}
+            rules={{ required: "interviewDate date is required" }}
+          />
+        </Form.Group>
+        <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>State</Form.Label>
+                {stateList && (
+                  <MultiSelect
+                    name={`state`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`state`]}
+                    customStyles={{}}
+                    options={stateList}
+                    defaultValue={""}
+                    rules={{ required: "State is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>City</Form.Label>
+                {cities && (
+                  <MultiSelect
+                    name={`interviewLocation`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`interviewLocation`]}
+                    customStyles={{}}
+                    options={cities}
+                    defaultValue={""}
+                    rules={{ required: "City is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Form.Group className={styles.formGroup}>
+          <Form.Label>Address</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            defaultValue={formData?.interviewAddress}
+            {...register("interviewAddress", { required: true })}
+          />
+          {errors.interviewAddress && (
+            <Form.Text className="error">{errors.interviewAddress.message}</Form.Text>
+          )}
+        </Form.Group>
+        <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Latitude</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Latitude"
+                  className={styles.input}
+                  defaultValue={formData?.latitude}
+                  isInvalid={!!errors.latitude}
+                  {...register("latitude", {
+                    required: "Latitude is required",
+                  })}
+                />
+                {errors.latitude && (
+                  <Form.Text className="error">{errors.latitude.message}</Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Longitude</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Longitude"
+                  className={styles.input}
+                  defaultValue={formData?.longitude}
+                  isInvalid={!!errors.longitude}
+                  {...register("longitude", {
+                    required: "Longitude is required",
+                  })}
+                />
+                {errors.longitude && (
+                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Form.Group className={styles.formGroup}>
             <Form.Label>Description (Optional)</Form.Label>
             <Form.Control
               as="textarea"
@@ -418,6 +577,7 @@ const createWalkInMutation = useMutation({
               {...register("description")}
             />
           </Form.Group>
+          </div>
           <div className={styles.actions}>
             <Button
               type="button"

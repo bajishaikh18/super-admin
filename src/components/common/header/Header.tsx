@@ -90,6 +90,17 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
 
+              {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
+              <Link
+                className={`${styles.navListItem} ${
+                  pathname == "/walk-in" ? styles.active : ""
+                }`}
+                href="/walk-in"
+              >
+                Walkins
+              </Link>
+            )}
+
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <Link
                 className={`${styles.navListItem} ${

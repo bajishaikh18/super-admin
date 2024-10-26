@@ -10,6 +10,16 @@ export const createInterview = async (data: object) => {
   }
 };
 
+export const getInterviewSummary = async () => {
+  try {
+    const response = await apiClient.get(`${basePath}/summary`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const updateInterview = async (id:string,data: object) => {
   try {
     const response = await apiClient.put(`${basePath}/${id}`, data);
@@ -27,7 +37,7 @@ export const getInterviews = async (
   field: string
 ) => {
   try {
-    const response = await apiClient.get(`${basePath}/interviews`, {
+    const response = await apiClient.get(`${basePath}/interviews/admin/${status}`, {
       params: {
         page: page+1,
         limit: limit,

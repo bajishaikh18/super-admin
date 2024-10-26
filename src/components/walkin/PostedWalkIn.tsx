@@ -9,30 +9,18 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
-import { getInterviewDetails, getInterviews } from "@/apis/walkin";
+import { getInterviews, getInterviewSummary } from "@/apis/walkin";
 import { DateTime } from "luxon";
-import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
+import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
-import Image from "next/image";
-import { IoClose } from "react-icons/io5";
 import { FullScreenImage } from "../common/FullScreenImage";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
+import CreateWalkIn from "../create-walkin/CreateWalkIn";
 
 type TabType = "Active" | "Pending" | "Expired";
-type Person = {
-  jobId: string;
-  agencyName: string;
-  location: string;
-  amenities: string[];
-  noOfPositions: number;
-  imageUrl: string;
-  postedDate: string;
-  expiry: string;
-};
 
 const fetchSize = 100;
 
@@ -50,20 +38,15 @@ export type JobType = {
 
 export type JobApiResponse = {
   jobs: JobType[];
+  totalInterviewCount: number;
 };
 
-const PostedWakInTable: React.FC = () => {
-    const status = "active"; 
-    const page = 0; 
-    const limit = 10;
-    const filter = ""; 
-    const field = ""; 
-  
+const PostedWakInTable: React.FC = () => {  
   const [activeTab, setActiveTab] = useState<TabType>("Active");
   const [sortingActive, setSortingActive] = React.useState<SortingState>([]);
   const [sortingExpired, setSortingExpired] = React.useState<SortingState>([]);
   const [sortingPending, setSortingPending] = React.useState<SortingState>([]);
-
+  const [ showCreate, setShowCreate] = React.useState<boolean>(false);
   const [showImage, setShowImage] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [searchActive, setSearchActive] = React.useState<string>("");
@@ -86,18 +69,13 @@ const PostedWakInTable: React.FC = () => {
   const debouncedSearchExpired = useDebounce(searchExpired, 300);
   const debouncedSearchPending = useDebounce(searchPending, 300);
 
-  const { data: summaryData } = useQuery({
-    queryKey: ["summary", "jobs","agencyId"],
-    queryFn: () => getInterviews(status, page, limit, filter, field), 
-    retry: 3,
-  });
   const {
-    data: activeJobsData,
-    fetchNextPage: fetchActiveJobsNextPage,
-    isFetching: isActiveJobsFetching,
-    isLoading: isActiveJobsLoading,
+    data: activeWalkinData,
+    fetchNextPage: fetchActiveWalkinNextPage,
+    isFetching: isActiveWalkinFetching,
+    isLoading: isActiveWalkinLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", "active", debouncedSearchActive],
+    queryKey: ["walkins", "active", debouncedSearchActive],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getInterviews(
@@ -117,12 +95,12 @@ const PostedWakInTable: React.FC = () => {
   });
 
   const {
-    data: expiredJobsData,
-    fetchNextPage: fetchExpiredJobsNextPage,
-    isFetching: isExpiredJobsFetching,
-    isLoading: isExpiredJobsLoading,
+    data: expiredWalkinData,
+    fetchNextPage: fetchExpiredWalkinNextPage,
+    isFetching: isExpiredWalkinFetching,
+    isLoading: isExpiredWalkinLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", "expired", debouncedSearchExpired],
+    queryKey: ["walkins", "expired", debouncedSearchExpired],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getInterviews(
@@ -143,12 +121,12 @@ const PostedWakInTable: React.FC = () => {
   const {setShowPostWalkin} = usePostWalkinStore();
 
   const {
-    data: pendingJobsData,
-    fetchNextPage: fetchPendingJobsNextPage,
-    isFetching: isPendingJobsFetching,
-    isLoading: isPendingJobsLoading,
+    data: pendingWalkinData,
+    fetchNextPage: fetchPendingWalkinNextPage,
+    isFetching: isPendingWalkinFetching,
+    isLoading: isPendingWalkinLoading,
   } = useInfiniteQuery<JobApiResponse>({
-    queryKey: ["jobs", "pending", debouncedSearchPending],
+    queryKey: ["walkins", "pending", debouncedSearchPending],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam as number;
       const fetchedData = await getInterviews(
@@ -171,24 +149,24 @@ const PostedWakInTable: React.FC = () => {
     setActiveTab(tab);
   };
 
-  const flattendActiveJobData = React.useMemo(
-    () => activeJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
-    [activeJobsData]
+  const flattendActiveWalkinData = React.useMemo(
+    () => activeWalkinData?.pages?.flatMap((page: any) => page?.interviews) ?? [],
+    [activeWalkinData]
   );
 
-  const flattendExpiredJobData = React.useMemo(
-    () => expiredJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
-    [expiredJobsData]
+  const flattendExpiredWalkinData = React.useMemo(
+    () => expiredWalkinData?.pages?.flatMap((page: any) => page?.interviews) ?? [],
+    [expiredWalkinData]
   );
 
-  const flattendPendingJobData = React.useMemo(
-    () => pendingJobsData?.pages?.flatMap((page: any) => page?.jobs) ?? [],
-    [pendingJobsData]
+  const flattendPendingWalkinData = React.useMemo(
+    () => pendingWalkinData?.pages?.flatMap((page: any) => page?.interviews) ?? [],
+    [pendingWalkinData]
   );
 
-  const totalActiveCount = summaryData?.activeCount ?? 0;
-  const totalPendingCount = summaryData?.pendingCount ?? 0;
-  const totalExpiredCount = summaryData?.expiredCount ?? 0;
+  const totalActiveCount = activeWalkinData?.pages?.[0]?.totalInterviewCount ?? 0;
+  const totalPendingCount = pendingWalkinData?.pages?.[0]?.totalInterviewCount ?? 0;
+  const totalExpiredCount = expiredWalkinData?.pages?.[0]?.totalInterviewCount ?? 0;
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
@@ -330,7 +308,7 @@ const PostedWakInTable: React.FC = () => {
               ),
             }[activeTab]
           }
-          <Button href="#" className="btn-img" onClick={()=>setShowPostWalkin(true)}>
+          <Button href="#" className="btn-img" onClick={()=>setShowCreate(true)}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 8H14C14.1326 8 14.2598 8.05268 14.3536 8.14645C14.4473 8.24021 14.5 8.36739 14.5 8.5V12.5C14.5 12.6326 14.4473 12.7598 14.3536 12.8536C14.2598 12.9473 14.1326 13 14 13H2C1.86739 13 1.74021 12.9473 1.64645 12.8536C1.55268 12.7598 1.5 12.6326 1.5 12.5V8.5C1.5 8.36739 1.55268 8.24021 1.64645 8.14645C1.74021 8.05268 1.86739 8 2 8H5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M8 8V1.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -379,10 +357,10 @@ const PostedWakInTable: React.FC = () => {
                   totalCount={totalActiveCount}
                   isSearch={!!searchActive}
                   sortingChanged={(updater: any) => setSortingActive(updater)}
-                  data={flattendActiveJobData}
-                  fetchNextPage={fetchActiveJobsNextPage}
-                  isLoading={isActiveJobsLoading}
-                  isFetching={isActiveJobsFetching}
+                  data={flattendActiveWalkinData}
+                  fetchNextPage={fetchActiveWalkinNextPage}
+                  isLoading={isActiveWalkinLoading}
+                  isFetching={isActiveWalkinFetching}
                 />
               </div>
             ),
@@ -394,10 +372,10 @@ const PostedWakInTable: React.FC = () => {
                   totalCount={totalExpiredCount}
                   isSearch={!!searchExpired}
                   sortingChanged={(updater: any) => setSortingExpired(updater)}
-                  data={flattendExpiredJobData}
-                  fetchNextPage={fetchExpiredJobsNextPage}
-                  isLoading={isExpiredJobsLoading}
-                  isFetching={isExpiredJobsFetching}
+                  data={flattendExpiredWalkinData}
+                  fetchNextPage={fetchExpiredWalkinNextPage}
+                  isLoading={isExpiredWalkinLoading}
+                  isFetching={isExpiredWalkinFetching}
                 />
               </div>
             ),
@@ -409,16 +387,26 @@ const PostedWakInTable: React.FC = () => {
                   totalCount={totalPendingCount}
                   isSearch={!!searchPending}
                   sortingChanged={(updater: any) => setSortingPending(updater)}
-                  data={flattendPendingJobData}
-                  fetchNextPage={fetchPendingJobsNextPage}
-                  isLoading={isPendingJobsLoading}
-                  isFetching={isPendingJobsFetching}
+                  data={flattendPendingWalkinData}
+                  fetchNextPage={fetchPendingWalkinNextPage}
+                  isLoading={isPendingWalkinLoading}
+                  isFetching={isPendingWalkinFetching}
                 />
               </div>
             ),
           }[activeTab]
         }
       </Card>
+      <Modal
+        show={showCreate}
+        onHide={()=>setShowCreate(false)}
+        centered
+        backdrop="static"
+      >
+        {showCreate && (
+          <CreateWalkIn handleModalClose={()=>setShowCreate(false)} />
+        )}
+      </Modal>
       <FullScreenImage
         isOpen={showImage}
         handleClose={() => {

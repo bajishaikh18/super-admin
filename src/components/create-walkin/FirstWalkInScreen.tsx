@@ -18,6 +18,7 @@ import { CustomDatePicker } from "../common/form-fields/DatePicker";
 import { debounce } from "lodash";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
+import { DateTime } from "luxon";
 interface FormValues {
   agency: SelectOption;
   location: string;
@@ -140,7 +141,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
             name="expiry"
             control={control}
             error={errors.expiry}
-            defaultValue={formData?.expiry}
+            defaultValue={formData?.expiry || DateTime.now().plus({days:45}).toISO()}
             minDate={new Date()}
             rules={{ required: "Expiry date is required" }}
           />

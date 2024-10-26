@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./CreateWalkIn.module.scss";
 import InitialScreen from "./InitialScreen";
 import FirstWalkInScreen from "./FirstWalkInScreen";
-import SecondWalkInScreen from "./SecondWalkInSreen";
+import SecondWalkInScreen from "./SecondWalkInScreen";
 import useStore, {Walkin} from "@/stores/usePostWalkinStore"; 
 import PostWalkInScreen from "./PostWalkIn";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
