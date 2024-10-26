@@ -35,6 +35,9 @@
 .formGroup {
   margin-bottom: 16px;
   position: relative;
+  input{
+    z-index: 0 !important;
+  }
 }
 
 
@@ -615,10 +618,16 @@
 }
 .overFlowTable{
   max-height: 300px;
-  overflow-y: auto;
+  overflow-y: overlay;
   ::-webkit-scrollbar {
     width: 5px;
   }
+}
+.overFlowSection{
+  max-height: 600px;
+  padding-right: 32px;
+  overflow-y: auto;
+  margin-right: -32px;
 }
 
 .expandButton {

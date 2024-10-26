@@ -45,11 +45,11 @@ function Reset() {
     }
 
     if (!code) {
-      alert("Reset code is missing");
+      toast.error("Reset code is missing");
       return;
     }
     if (!email) {
-      alert("Email is missing");
+      toast.error("Email is missing");
       return;
     }
 
@@ -65,7 +65,6 @@ function Reset() {
     } catch (error) {
       toast.error('Something went wrong! Please try again later')
       console.error("Error resetting password:", error);
-      alert("Error resetting password. Please try again.");
     } finally {
       setLoading(false);
     }

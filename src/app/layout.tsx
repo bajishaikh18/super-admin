@@ -22,7 +22,7 @@ export default function RootLayout({
       <NextTopLoader />
         <ReactQueryProvider>
           <Header/>
-          <Toaster position="top-right" />
+          <Toaster position="top-center" />
           <AuthCheck>{children}</AuthCheck>
         </ReactQueryProvider>
       </body>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import usePostJobStore from "@/stores/usePostJobStore";
 import styles from "./CreateAgency.module.scss";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
@@ -52,6 +52,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
 
   const state  = watch("state")
 
+
   const { data: states } = useQuery({
     queryKey: ["states"],
     queryFn: async () => {
@@ -66,11 +67,10 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     retry: 3,
   });
   
-  console.log(states);
   const { data: cities } = useQuery({
-    queryKey: ["cities", state],
+    queryKey: ["cities", state, stateList],
     queryFn: async () => {
-      if (state) {
+      if (state && stateList.length>0) {
         const selectedState:any = states?.find(
           (cty: any) => cty.state_code === state
         );
@@ -84,7 +84,6 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     },
     retry: 3,
   });
- 
 
   const onSubmit = async (data: CreateAgencyFormData) => {
     try {
@@ -121,7 +120,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         }
         await updateAgency(res?.agency?._id! || formData?._id!, {profilePic: resp?.keyName});
       }
-      toast.success(`Agency ${isEdit ? "created" : "updated"} successfully`);
+      toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
     } catch (error) {
@@ -315,7 +314,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={""}
+                    defaultValue={formData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -336,7 +335,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`city`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={""}
+                    defaultValue={formData?.city}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement

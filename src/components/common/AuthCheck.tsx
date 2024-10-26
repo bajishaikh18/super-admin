@@ -9,7 +9,7 @@ const ALLOWEDPATH = ['/login','/reset-password']
 export const AuthCheck = ({children}:{children:any})=>{
     const router = useRouter();
     const pathname = usePathname()
-    const {authUser,setAuthUser}=  useAuthUserStore();
+    const {authUser,setAuthUser,setRole}=  useAuthUserStore();
     const isAuthenticated = isTokenValid();
     
     const getUser =async ()=>{

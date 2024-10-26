@@ -177,10 +177,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         resp = await getSignedUrl("jobImage", selectedFile?.type!,"jobId",res.job._id || formData?._id);
         if (resp) {
           await uploadFile(resp.uploadurl, selectedFile!);
+          await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
           setRefreshImage(true)
         }
       }
-      await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
       setNewlyCreatedJob(res.job)
       toast.success(`Job ${isEdit?'created':'updated'} successfully`)
       handleCreateJobClick();
@@ -217,9 +217,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+          <div className={`${styles.overFlowSection} scroll-box`}>
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
-            <div className={styles.overFlowTable}>
+            {/* <div className={styles.overFlowTable}> */}
             <Table>
               <thead>
                 <tr>
@@ -302,7 +303,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 })}
               </tbody>
             </Table>
-            </div>
+            {/* </div> */}
             {errorMessage && (
               <div>
                 <Form.Text className="error">{errorMessage}</Form.Text>
@@ -417,6 +418,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               {...register("description")}
             />
           </Form.Group>
+          </div>
           <div className={styles.actions}>
             <Button
               type="button"

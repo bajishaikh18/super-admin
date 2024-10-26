@@ -21,8 +21,6 @@ import { SelectOption } from "@/helpers/types";
 import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
 import CreateUserForm from "../users/CreateUsers";
 import { Button, Modal } from "react-bootstrap";
-import { IoAddCircleOutline } from "react-icons/io5";
-import { BsPlus, BsPlusLg } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa6";
 import { GetCountries, GetState } from "react-country-state-city";
 
@@ -132,12 +130,14 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
         header: " Name",
         cell: (info) => info.renderValue() || "N/A",
         enableColumnFilter: true,
+        
       }),
       columnHelper.accessor("phone", {
         header: "Mobile No",
         cell: (info) => (
           <Link href={`/user/${info.renderValue()}`}>{info.renderValue()}</Link>
         ),
+       
       }),
       columnHelper.accessor("email", {
         header: "Email Id",
@@ -189,6 +189,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
         header: "Experience",
         meta: {
           filterType: "number",
+          classes:"f-7"
         },
         cell: (info) =>
           info.renderValue() ? `${info.renderValue()} Years` : "N/A",
@@ -196,7 +197,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
         meta: {
-          classes: "capitalize",
+          classes: "capitalize f-6",
           filterType: "select",
           selectOptions: [
             { value: "yes", label: "Yes" },
@@ -260,12 +261,12 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
-        meta: { filterType: "date" },
+        meta: { filterType: "date",classes:"f-7" },
       }),
       columnHelper.accessor("status", {
         header: "Status",
         meta: {
-          classes: "capitalize",
+          classes: "capitalize f-7",
           filterType: "select",
           selectOptions: [
             { value: "active", label: "Active" },

@@ -5,7 +5,7 @@ import styles from "./CreateJob.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
-import { COUNTRIES, FACILITIES_IMAGES } from "@/helpers/constants";
+import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
 import { createJob, updateJob } from "@/apis/job";
@@ -67,6 +67,7 @@ const JobPostingImage = ({
                 color: "#fff",
                 textAlign: "center",
                 padding: "12px",
+                fontFamily:'"Inter", sans-serif',
                 borderRadius: "4px",
                 fontSize: "29px",
                 fontWeight: "700",
@@ -80,6 +81,7 @@ const JobPostingImage = ({
                   style={{
                     width: "100%",
                     borderCollapse: "collapse",
+                    fontFamily:'"Inter", sans-serif',
                     marginBottom: "15px",
                   }}
                 >
@@ -94,6 +96,8 @@ const JobPostingImage = ({
                             padding: "22px 8px",
                             borderBottom: "1px solid rgba(189, 189, 189, 1)",
                             fontSize: "14px",
+                            fontFamily:'"Inter", sans-serif',
+
                             fontWeight: 600,
                             textAlign: "left",
                             backgroundColor: "#ffffff",
@@ -105,6 +109,7 @@ const JobPostingImage = ({
                               height: "6px",
                               background: color,
                               borderRadius: "100px",
+                              fontFamily:'"Inter", sans-serif',
                               display: "inline-block",
                               verticalAlign: "middle",
                               marginRight: "8px",
@@ -118,6 +123,7 @@ const JobPostingImage = ({
                             padding: "22px 8px",
                             borderBottom: "1px solid rgba(189, 189, 189, 1)",
                             fontSize: "14px",
+                            fontFamily:'"Inter", sans-serif',
                             fontWeight: 400,
                             textAlign: "left",
                             backgroundColor: "#ffffff",
@@ -131,6 +137,7 @@ const JobPostingImage = ({
                             borderBottom: "1px solid rgba(189, 189, 189, 1)",
                             fontSize: "14px",
                             fontWeight: 400,
+                            fontFamily:'"Inter", sans-serif',
                             textAlign: "left",
                             backgroundColor: "#ffffff",
                           }}
@@ -166,6 +173,7 @@ const JobPostingImage = ({
                 backgroundColor: "rgba(247, 247, 247, 1)",
                 borderRadius: "8px",
                 margin: "20px 0px",
+                fontFamily:'"Inter", sans-serif',
                 alignItems: "center",
                 padding: "14px 15px",
               }}
@@ -174,6 +182,7 @@ const JobPostingImage = ({
                 style={{
                   marginBottom: "0px",
                   fontSize: "13px",
+                  fontFamily:'"Inter", sans-serif',
                   lineHeight: "15px",
                   fontWeight: 600,
                 }}
@@ -185,6 +194,7 @@ const JobPostingImage = ({
                   display: "flex",
                   gap: "7px",
                   flexWrap: "wrap",
+                  fontFamily:'"Inter", sans-serif',
                   margin: "0px",
                   paddingLeft: "10px",
                   alignItems: "center",
@@ -205,6 +215,7 @@ const JobPostingImage = ({
                         color: "rgba(117, 117, 117, 1)",
                         fontSize: "12px",
                         marginLeft: "5px",
+                        fontFamily:'"Inter", sans-serif',
                         display:'block'
                       }}
                     >
@@ -219,6 +230,7 @@ const JobPostingImage = ({
                 textAlign: "left",
                 fontSize: "14px",
                 marginTop: "2px",
+                fontFamily:'"Inter", sans-serif',
                 marginBottom: "15px",
               }}
             >
@@ -226,6 +238,7 @@ const JobPostingImage = ({
                 style={{
                   fontSize: "13px",
                   lineHeight: "15px",
+                  fontFamily:'"Inter", sans-serif',
                   fontWeight: 600,
                   marginBottom: "5px",
                 }}
@@ -239,6 +252,7 @@ const JobPostingImage = ({
                   fontSize: "14px",
                   fontWeight: 400,
                   lineHeight: "20px",
+                  fontFamily:'"Inter", sans-serif',
                   color: "rgba(33, 33, 33, 1)",
                   borderRadius: "7px",
                   marginBottom: "12px",
@@ -256,6 +270,7 @@ const JobPostingImage = ({
                   lineHeight: "15px",
                   color: "#fff",
                   textAlign: "center",
+                  fontFamily:'"Inter", sans-serif',
                   borderRadius: "7px",
                   marginBottom: "12px",
                 }}
@@ -276,7 +291,7 @@ const JobPostingImage = ({
               <div
                 style={{ display: "flex", alignItems: "center", gap: "7px" }}
               >
-                <img src="/ag_logo.svg" />
+                <Image width={38} height={38} alt="" src={`${agency.profilePic ? `${IMAGE_BASE_URL}/${agency.profilePic}`: '/no_image.jpg'}`}/>
                 <div>
                   <div style={{
                     display:"flex",
@@ -289,6 +304,7 @@ const JobPostingImage = ({
                       fontSize: "18px",
                       margin: "0px",
                       textAlign:'left',
+                      fontFamily:'"Inter", sans-serif',
                       fontWeight: 600,
                       lineHeight: "24px",
                     }}
@@ -301,6 +317,7 @@ const JobPostingImage = ({
                     style={{
                       fontSize: "13px",
                       margin: "0px",
+                      fontFamily:'"Inter", sans-serif',
                       fontWeight: 500,
                       lineHeight: "17px",
                       color: "rgba(91, 91, 91, 1)",
@@ -331,8 +348,9 @@ const JobPostingImage = ({
                     <p
                       style={{
                         margin: 0,
-                        fontSize: "13px",
+                        fontSize: "11px",
                         fontWeight: 600,
+                        fontFamily:'"Inter", sans-serif',
                         lineHeight: "22px",
                         marginLeft: "8px",
                       }}
@@ -343,6 +361,7 @@ const JobPostingImage = ({
                         style={{
                           fontWeight: 400,
                           color: "rgba(189, 189, 189, 1)",
+                          fontFamily:'"Inter", sans-serif',
                         }}
                       >
                         |
@@ -355,10 +374,11 @@ const JobPostingImage = ({
                     style={{
                       display: "flex",
                       alignItems: "center",
+                      fontFamily:'"Inter", sans-serif',
                       marginTop: "12px",
                     }}
                   >
-                    {agency.website &&                     <img src="/globe.svg" />
+                    {agency.website && <img src="/globe.svg" />
                     }
                     <p
                       style={{
@@ -366,6 +386,7 @@ const JobPostingImage = ({
                         fontSize: "12px",
                         fontWeight: 500,
                         lineHeight: "22px",
+                        fontFamily:'"Inter", sans-serif',
                         marginLeft: "8px",
                       }}
                     >
@@ -392,6 +413,7 @@ const JobPostingImage = ({
                       style={{
                         margin: 0,
                         fontSize: "13px",
+                        fontFamily:'"Inter", sans-serif',
                         fontWeight: 600,
                         lineHeight: "22px",
                         marginLeft: "8px",
@@ -414,6 +436,7 @@ const JobPostingImage = ({
                         margin: 0,
                         fontSize: "12px",
                         fontWeight: 500,
+                        fontFamily:'"Inter", sans-serif',
                         lineHeight: "22px",
                         marginLeft: "8px",
                       }}

@@ -41,6 +41,32 @@ a {
   background: #555;
 }
 
+.scroll-box{
+  /* width */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  &:hover {
+   &::-webkit-scrollbar {
+    width: 10px;
+  }
+    &::-webkit-scrollbar-thumb {
+      background-color: #888;
+    }
+  }
+}
+
 .btn {
   width: 100%;
   padding: 10px;
@@ -80,6 +106,9 @@ a {
     line-height: 16px;
     width: auto;
     margin: 0px !important;
+  }
+  &.br-normal{
+    border-radius: 4px;
   }
   &.bg-white{
     background-color: #fff;
@@ -432,7 +461,33 @@ a {
     padding-left: 0px !important;
     padding-right: 0px !important;
   }
-
+  .f-1{
+    flex: 0.1 !important;
+  }
+  .f-2{
+    flex: 0.2 !important;
+  }
+  .f-3{
+    flex: 0.3 !important;
+  }
+  .f-4{
+    flex: 0.4 !important;
+  }
+  .f-5{
+    flex: 0.5 !important;
+  }
+  .f-6{
+    flex: 0.6 !important;
+  }
+  .f-7{
+    flex: 0.7 !important;
+  }
+  .f-8{
+    flex: 0.8 !important;
+  }
+  .f-9{
+    flex: 0.9 !important;
+  }
   .px-10{
     padding-left: 10px !important;
     padding-right: 10px !important;

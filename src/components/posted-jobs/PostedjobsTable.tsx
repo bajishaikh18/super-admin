@@ -9,7 +9,6 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import { fetchData, PersonApiResponse } from "../../helpers/makeData";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getJobs, getJobSummary } from "@/apis/job";
@@ -196,6 +195,9 @@ const PostedJobsTable: React.FC = () => {
       cell: (info) => (
         <Link href={`/posted-jobs/${info.getValue()}`}>{info.getValue()}</Link>
       ),
+      meta: {
+        classes: "f-3",
+      },
     }),
     columnHelper.accessor("agency", {
       cell: (info) => info.renderValue() || "N/A",
@@ -208,7 +210,7 @@ const PostedJobsTable: React.FC = () => {
         info.renderValue() ||
         "N/A",
       meta: {
-        classes: "capitalize",
+        classes: "capitalize f-5",
         filterType: "select",
         selectOptions: Object.entries(COUNTRIES).map(([key, val]) => ({
           label: val.label,
@@ -248,7 +250,7 @@ const PostedJobsTable: React.FC = () => {
     columnHelper.accessor("positions", {
       header: "No. of positions",
       cell: (info) => info.getValue()?.length || "N/A",
-      meta: { filterType: "number" },
+      meta: { filterType: "number",classes:"f-7" },
     }),
     columnHelper.accessor("imageUrl", {
       cell: (info) => (
@@ -270,7 +272,7 @@ const PostedJobsTable: React.FC = () => {
         
       ),
       header: "Media",
-      meta: { filter: false },
+      meta: { filter: false,classes:'f-5' },
     }),
     columnHelper.accessor("createdAt", {
       header: "Posted Date",
@@ -278,7 +280,7 @@ const PostedJobsTable: React.FC = () => {
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
-      meta: { filterType: "date" },
+      meta: { filterType: "date",classes:'f-5' },
     }),
     columnHelper.accessor("expiry", {
       header: "Expiry",
@@ -286,7 +288,7 @@ const PostedJobsTable: React.FC = () => {
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
-      meta: { filterType: "date" },
+      meta: { filterType: "date",classes:'f-5' },
     }),
   ];
 
