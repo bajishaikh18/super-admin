@@ -63,7 +63,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   })
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, newlyCreatedJob, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -157,8 +157,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         description:data.description,
       }
       let res;
-      if(isEdit && formData?._id){
-        res = await updateJob(formData?._id,jobData);
+      if(isEdit && (formData?._id || newlyCreatedJob?._id)){
+        res = await updateJob((formData?._id || newlyCreatedJob?._id)!,jobData);
         await queryClient.invalidateQueries({
           queryKey:["jobDetails",formData?.jobId?.toString()],
           refetchType:'all'
@@ -181,6 +181,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           setRefreshImage(true)
         }
       }
+      setFormData({_id: res.job?._id,...data});
       setNewlyCreatedJob(res.job)
       toast.success(`Job ${isEdit?'created':'updated'} successfully`)
       handleCreateJobClick();

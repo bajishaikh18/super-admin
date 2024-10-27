@@ -25,6 +25,7 @@ export interface Walkin {
   country: string,
   description: string
   viewed: any[]
+  interviewDate: string;
   status: string
   _id: string
   __v: number
@@ -40,11 +41,12 @@ export interface Position {
 
 export type PostWalkinFormData =  {
   _id?:string;
-  jobId?:string;
+  interviewId?:string;
   agency?: SelectOption;
   location?: string;
   country?: string;
   expiry?: string;
+  state?: string;
   countryCode?:string;
   contactNumber?: string;
   altContactNumber?:string;

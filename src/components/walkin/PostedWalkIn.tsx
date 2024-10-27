@@ -26,11 +26,13 @@ const fetchSize = 100;
 
 export type JobType = {
   _id: string;
+  interviewId:string;
   jobId: string;
   agency: string;
   location: string;
   amenities: string[];
   positions: object[];
+  interviewDate: string;
   imageUrl: string;
   createdAt: string;
   expiry: string;
@@ -53,15 +55,15 @@ const PostedWakInTable: React.FC = () => {
   const [searchPending, setSearchPending] = React.useState<string>("");
   const [searchExpired, setSearchExpired] = React.useState<string>("");
   const [fieldActive, setFieldActive] = React.useState<SelectOption>({
-    value: "jobId",
+    value: "interviewId",
     label: "Post Id",
   } as SelectOption);
   const [fieldPending, setFieldPending] = React.useState<SelectOption>({
-    value: "jobId",
+    value: "interviewId",
     label: "Post Id",
   } as SelectOption);
   const [fieldExpired, setFieldExpired] = React.useState<SelectOption>({
-    value: "jobId",
+    value: "interviewId",
     label: "Post Id",
   } as SelectOption);
 
@@ -170,7 +172,7 @@ const PostedWakInTable: React.FC = () => {
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
-    columnHelper.accessor("jobId", {
+    columnHelper.accessor("interviewId", {
       header: "Post Id",
       cell: (info) => (
         <Link href={`/walk-in/${info.getValue()}`}>{info.getValue()}</Link>
@@ -228,6 +230,11 @@ const PostedWakInTable: React.FC = () => {
       header: "No. of positions",
       cell: (info) => info.getValue()?.length || "N/A",
       meta: { filterType: "number" },
+    }),
+    columnHelper.accessor("interviewDate", {
+      header: "Interview Date & Time",
+      cell: (info) => DateTime.fromISO(info.getValue()).toFormat("dd MMM yyyy hh:ss a"),
+      meta: { filterType: "dateTime" },
     }),
     columnHelper.accessor("imageUrl", {
       cell: (info) => (

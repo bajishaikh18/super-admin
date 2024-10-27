@@ -4,8 +4,14 @@ import html2canvas from "html2canvas";
 import styles from "./CreateWalkIn.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
-import usePostWalkinStore, { PostWalkinFormData } from "@/stores/usePostWalkinStore";
-import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
+import usePostWalkinStore, {
+  PostWalkinFormData,
+} from "@/stores/usePostWalkinStore";
+import {
+  COUNTRIES,
+  FACILITIES_IMAGES,
+  IMAGE_BASE_URL,
+} from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
 import { createInterview, updateInterview } from "@/apis/walkin";
@@ -18,10 +24,11 @@ import { LuExpand } from "react-icons/lu";
 import { getAgencyById } from "@/apis/agency";
 import { Loader, NotFound } from "../common/Feedbacks";
 import { AgencyType } from "@/stores/useAgencyStore";
+import { DateTime } from "luxon";
 
 interface FourthWalkInScreenProps {
-  isEdit?:boolean;
-  handleBack: () => void;
+  isEdit?: boolean;
+  handleBack: (isEdit?:boolean) => void;
   handleClose: () => void;
 }
 
@@ -34,16 +41,14 @@ const WalkInPostingImage = ({
   color,
 }: {
   formData: PostWalkinFormData | null;
-  agency: AgencyType,
+  agency: AgencyType;
   selectedFacilities: string[];
   handleFullScreen: (fullScreen: boolean) => void;
   isFullScreen: boolean;
   color: string;
 }) => {
- 
   return (
     <div className={styles.imageContainer}>
-
       <div
         className={`${styles.jobDetailsModal} ${
           isFullScreen ? styles.fullScreen : ""
@@ -67,13 +72,16 @@ const WalkInPostingImage = ({
                 color: "#fff",
                 textAlign: "center",
                 padding: "12px",
-                fontFamily:'"Inter", sans-serif',
+                fontFamily: '"Inter", sans-serif',
                 borderRadius: "4px",
                 fontSize: "29px",
                 fontWeight: "700",
               }}
             >
-              Required for {formData?.location === "ae" ? "UAE" : COUNTRIES[formData?.location as "bh"]?.label}
+              Required for{" "}
+              {formData?.location === "ae"
+                ? "UAE"
+                : COUNTRIES[formData?.location as "bh"]?.label}
             </h3>
             <div>
               {formData?.jobPositions && formData.jobPositions?.length > 0 ? (
@@ -81,7 +89,7 @@ const WalkInPostingImage = ({
                   style={{
                     width: "100%",
                     borderCollapse: "collapse",
-                    fontFamily:'"Inter", sans-serif',
+                    fontFamily: '"Inter", sans-serif',
                     marginBottom: "15px",
                   }}
                 >
@@ -89,78 +97,80 @@ const WalkInPostingImage = ({
                     <tr></tr>
                   </thead>
                   <tbody>
-                    {formData.jobPositions.filter(x=>x.title && x.title.value).map((position, index) => (
-                      <tr key={index}>
-                        <td
-                          style={{
-                            padding: "22px 8px",
-                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
-                            fontSize: "14px",
-                            fontFamily:'"Inter", sans-serif',
+                    {formData.jobPositions
+                      .filter((x) => x.title && x.title.value)
+                      .map((position, index) => (
+                        <tr key={index}>
+                          <td
+                            style={{
+                              padding: "22px 8px",
+                              borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                              fontSize: "14px",
+                              fontFamily: '"Inter", sans-serif',
 
-                            fontWeight: 600,
-                            textAlign: "left",
-                            backgroundColor: "#ffffff",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: "6px",
-                              height: "6px",
-                              background: color,
-                              borderRadius: "100px",
-                              fontFamily:'"Inter", sans-serif',
-                              display: "inline-block",
-                              verticalAlign: "middle",
-                              marginRight: "8px",
-                            }}
-                          ></div>
-
-                          <span>{position.title.label}</span>
-                        </td>
-                        <td
-                          style={{
-                            padding: "22px 8px",
-                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
-                            fontSize: "14px",
-                            fontFamily:'"Inter", sans-serif',
-                            fontWeight: 400,
-                            textAlign: "left",
-                            backgroundColor: "#ffffff",
-                          }}
-                        >
-                          {position.experience} years Exp
-                        </td>
-                        <td
-                          style={{
-                            padding: "22px 8px",
-                            borderBottom: "1px solid rgba(189, 189, 189, 1)",
-                            fontSize: "14px",
-                            fontWeight: 400,
-                            fontFamily:'"Inter", sans-serif',
-                            textAlign: "left",
-                            backgroundColor: "#ffffff",
-                          }}
-                        >
-                          <img
-                            src={"/dollar.svg"}
-                            alt="dollar"
-                            style={{
-                              display: "inline-block",
-                              verticalAlign: "middle",
-                            }}
-                          />{" "}
-                          <span
-                            style={{
-                              display: "inline-block",
-                              verticalAlign: "middle",
+                              fontWeight: 600,
+                              textAlign: "left",
+                              backgroundColor: "#ffffff",
                             }}
                           >
-                            {position.salary ? `(${position.salary})` : ""}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                            <div
+                              style={{
+                                width: "6px",
+                                height: "6px",
+                                background: color,
+                                borderRadius: "100px",
+                                fontFamily: '"Inter", sans-serif',
+                                display: "inline-block",
+                                verticalAlign: "middle",
+                                marginRight: "8px",
+                              }}
+                            ></div>
+
+                            <span>{position.title.label}</span>
+                          </td>
+                          <td
+                            style={{
+                              padding: "22px 8px",
+                              borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                              fontSize: "14px",
+                              fontFamily: '"Inter", sans-serif',
+                              fontWeight: 400,
+                              textAlign: "left",
+                              backgroundColor: "#ffffff",
+                            }}
+                          >
+                            {position.experience} years Exp
+                          </td>
+                          <td
+                            style={{
+                              padding: "22px 8px",
+                              borderBottom: "1px solid rgba(189, 189, 189, 1)",
+                              fontSize: "14px",
+                              fontWeight: 400,
+                              fontFamily: '"Inter", sans-serif',
+                              textAlign: "left",
+                              backgroundColor: "#ffffff",
+                            }}
+                          >
+                            <img
+                              src={"/dollar.svg"}
+                              alt="dollar"
+                              style={{
+                                display: "inline-block",
+                                verticalAlign: "middle",
+                              }}
+                            />{" "}
+                            <span
+                              style={{
+                                display: "inline-block",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              {position.salary ? `(${position.salary})` : ""}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               ) : (
@@ -170,67 +180,123 @@ const WalkInPostingImage = ({
             <div
               style={{
                 display: "flex",
-                backgroundColor: "rgba(247, 247, 247, 1)",
-                borderRadius: "8px",
-                margin: "20px 0px",
-                fontFamily:'"Inter", sans-serif',
-                alignItems: "center",
-                padding: "14px 15px",
+                margin: "0px 0px 20px 0px",
+                justifyContent: "space-between",
               }}
             >
-              <h5
-                style={{
-                  marginBottom: "0px",
-                  fontSize: "13px",
-                  fontFamily:'"Inter", sans-serif',
-                  lineHeight: "15px",
-                  fontWeight: 600,
-                }}
-              >
-                Benefits
-              </h5>
-              <ul
+              <div
                 style={{
                   display: "flex",
-                  gap: "7px",
-                  flexWrap: "wrap",
-                  fontFamily:'"Inter", sans-serif',
-                  margin: "0px",
-                  paddingLeft: "10px",
                   alignItems: "center",
+                  marginTop: "12px",
                 }}
               >
-                {selectedFacilities.map((facility, index) => (
-                  <>
-                    <Image
-                      src={FACILITIES_IMAGES[facility as "Food"]}
-                      alt={facility}
-                      width={14}
-                      height={14}
-                      style={{ marginLeft: "5px" }}
-                    />
-                    <li
-                      key={index}
-                      style={{
-                        color: "rgba(117, 117, 117, 1)",
-                        fontSize: "12px",
-                        marginLeft: "5px",
-                        fontFamily:'"Inter", sans-serif',
-                        display:'block'
-                      }}
-                    >
-                      {facility}
-                    </li>
-                  </>
-                ))}
-              </ul>
+                <img src="/location.svg" />
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    fontFamily: '"Inter", sans-serif',
+                    lineHeight: "22px",
+                    marginLeft: "8px",
+                  }}
+                >
+                  {formData?.interviewLocation}
+                </p>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "12px",
+                }}
+              >
+                <img src="/clock.svg" />
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    fontFamily: '"Inter", sans-serif',
+                    lineHeight: "22px",
+                    marginLeft: "8px",
+                  }}
+                >
+                  {typeof formData?.interviewDate === "string" ? DateTime.fromISO(formData.interviewDate).toFormat(
+                    "dd MMM yyyy hh:mm a"
+                  ) : DateTime.fromObject(formData?.interviewDate as any).toFormat(
+                    "dd MMM yyyy hh:mm a"
+                  )}
+                </p>
+              </div>
             </div>
+            {selectedFacilities && selectedFacilities.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  backgroundColor: "rgba(247, 247, 247, 1)",
+                  borderRadius: "8px",
+                  margin: "20px 0px",
+                  fontFamily: '"Inter", sans-serif',
+                  alignItems: "center",
+                  padding: "14px 15px",
+                }}
+              >
+                <h5
+                  style={{
+                    marginBottom: "0px",
+                    fontSize: "13px",
+                    fontFamily: '"Inter", sans-serif',
+                    lineHeight: "15px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Benefits
+                </h5>
+                <ul
+                  style={{
+                    display: "flex",
+                    gap: "7px",
+                    flexWrap: "wrap",
+                    fontFamily: '"Inter", sans-serif',
+                    margin: "0px",
+                    paddingLeft: "10px",
+                    alignItems: "center",
+                  }}
+                >
+                  {selectedFacilities.map((facility, index) => (
+                    <>
+                      <Image
+                        src={FACILITIES_IMAGES[facility as "Food"]}
+                        alt={facility}
+                        width={14}
+                        height={14}
+                        style={{ marginLeft: "5px" }}
+                      />
+                      <li
+                        key={index}
+                        style={{
+                          color: "rgba(117, 117, 117, 1)",
+                          fontSize: "12px",
+                          marginLeft: "5px",
+                          fontFamily: '"Inter", sans-serif',
+                          display: "block",
+                        }}
+                      >
+                        {facility}
+                      </li>
+                    </>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div
               style={{
                 textAlign: "left",
                 fontSize: "14px",
                 marginTop: "2px",
-                fontFamily:'"Inter", sans-serif',
+                fontFamily: '"Inter", sans-serif',
                 marginBottom: "15px",
               }}
             >
@@ -238,7 +304,7 @@ const WalkInPostingImage = ({
                 style={{
                   fontSize: "13px",
                   lineHeight: "15px",
-                  fontFamily:'"Inter", sans-serif',
+                  fontFamily: '"Inter", sans-serif',
                   fontWeight: 600,
                   marginBottom: "5px",
                 }}
@@ -252,7 +318,7 @@ const WalkInPostingImage = ({
                   fontSize: "14px",
                   fontWeight: 400,
                   lineHeight: "20px",
-                  fontFamily:'"Inter", sans-serif',
+                  fontFamily: '"Inter", sans-serif',
                   color: "rgba(33, 33, 33, 1)",
                   borderRadius: "7px",
                   marginBottom: "12px",
@@ -270,7 +336,7 @@ const WalkInPostingImage = ({
                   lineHeight: "15px",
                   color: "#fff",
                   textAlign: "center",
-                  fontFamily:'"Inter", sans-serif',
+                  fontFamily: '"Inter", sans-serif',
                   borderRadius: "7px",
                   marginBottom: "12px",
                 }}
@@ -291,40 +357,52 @@ const WalkInPostingImage = ({
               <div
                 style={{ display: "flex", alignItems: "center", gap: "7px" }}
               >
-                <Image width={38} height={38} alt="" src={`${agency.profilePic ? `${IMAGE_BASE_URL}/${agency.profilePic}`: '/no_image.jpg'}`}/>
+                <Image
+                  width={38}
+                  height={38}
+                  alt=""
+                  src={`${
+                    agency.profilePic
+                      ? `${IMAGE_BASE_URL}/${agency.profilePic}`
+                      : "/no_image.jpg"
+                  }`}
+                />
+
                 <div>
-                  <div style={{
-                    display:"flex",
-                    alignItems:'center',
-                    gap:"10px",
-                    marginBottom:"5px"
-                  }}>
-                  <h6
+                  <div
                     style={{
-                      fontSize: "18px",
-                      margin: "0px",
-                      textAlign:'left',
-                      fontFamily:'"Inter", sans-serif',
-                      fontWeight: 600,
-                      lineHeight: "24px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      marginBottom: "5px",
                     }}
                   >
-                     {agency.name}
-                  </h6>
-                  <img src="/verified.svg"  />
+                    <h6
+                      style={{
+                        fontSize: "18px",
+                        margin: "0px",
+                        textAlign: "left",
+                        fontFamily: '"Inter", sans-serif',
+                        fontWeight: 600,
+                        lineHeight: "24px",
+                      }}
+                    >
+                      {agency.name}
+                    </h6>
+                    <img src="/verified.svg" />
                   </div>
                   <p
                     style={{
                       fontSize: "13px",
                       margin: "0px",
-                      fontFamily:'"Inter", sans-serif',
+                      fontFamily: '"Inter", sans-serif',
                       fontWeight: 500,
                       lineHeight: "17px",
                       color: "rgba(91, 91, 91, 1)",
                       textAlign: "left",
                     }}
                   >
-                   {agency.regNo}
+                    {agency.regNo}
                   </p>
                 </div>
               </div>
@@ -333,7 +411,7 @@ const WalkInPostingImage = ({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap:"20px",
+                    gap: "20px",
                     justifyContent: "space-between",
                   }}
                 >
@@ -350,7 +428,7 @@ const WalkInPostingImage = ({
                         margin: 0,
                         fontSize: "11px",
                         fontWeight: 600,
-                        fontFamily:'"Inter", sans-serif',
+                        fontFamily: '"Inter", sans-serif',
                         lineHeight: "22px",
                         marginLeft: "8px",
                       }}
@@ -361,7 +439,7 @@ const WalkInPostingImage = ({
                         style={{
                           fontWeight: 400,
                           color: "rgba(189, 189, 189, 1)",
-                          fontFamily:'"Inter", sans-serif',
+                          fontFamily: '"Inter", sans-serif',
                         }}
                       >
                         |
@@ -374,23 +452,22 @@ const WalkInPostingImage = ({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      fontFamily:'"Inter", sans-serif',
+                      fontFamily: '"Inter", sans-serif',
                       marginTop: "12px",
                     }}
                   >
-                    {agency.website && <img src="/globe.svg" />
-                    }
+                    {agency.website && <img src="/globe.svg" />}
                     <p
                       style={{
                         margin: 0,
                         fontSize: "12px",
                         fontWeight: 500,
                         lineHeight: "22px",
-                        fontFamily:'"Inter", sans-serif',
+                        fontFamily: '"Inter", sans-serif',
                         marginLeft: "8px",
                       }}
                     >
-                       {agency.website}
+                      {agency.website}
                     </p>
                   </div>
                 </div>
@@ -413,14 +490,13 @@ const WalkInPostingImage = ({
                       style={{
                         margin: 0,
                         fontSize: "13px",
-                        fontFamily:'"Inter", sans-serif',
+                        fontFamily: '"Inter", sans-serif',
                         fontWeight: 600,
                         lineHeight: "22px",
                         marginLeft: "8px",
                       }}
                     >
                       {formData?.email}
-                      
                     </p>
                   </div>
                   <div
@@ -436,7 +512,7 @@ const WalkInPostingImage = ({
                         margin: 0,
                         fontSize: "12px",
                         fontWeight: 500,
-                        fontFamily:'"Inter", sans-serif',
+                        fontFamily: '"Inter", sans-serif',
                         lineHeight: "22px",
                         marginLeft: "8px",
                       }}
@@ -460,8 +536,13 @@ const WalkInPostingImage = ({
         </button>
       ) : (
         <>
-          <button className={styles.expandButton} style={{bottom:`${(((formData?.jobPositions?.length||0)-1) * 10)}px`}}>
-          <LuExpand size={20} onClick={() => handleFullScreen(true)}/>
+          <button
+            className={styles.expandButton}
+            style={{
+              bottom: `${((formData?.jobPositions?.length || 0) - 1) * 10}px`,
+            }}
+          >
+            <LuExpand size={20} onClick={() => handleFullScreen(true)} />
           </button>
         </>
       )}
@@ -473,18 +554,22 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
   handleBack,
   handleClose,
 }) => {
-
-  const queryClient = useQueryClient()
-  const { formData, selectedFacilities, newlyCreatedWalkin,setRefreshImage } = usePostWalkinStore();
+  const queryClient = useQueryClient();
+  const { formData, selectedFacilities, newlyCreatedWalkin, setRefreshImage } =
+    usePostWalkinStore();
   const {
     data: agencyResp,
     isLoading,
     error,
-  } = useQuery({ queryKey: ["agencyDetails", formData?.agency?.value], queryFn:()=>{
-    if(formData?.agency?.value){
-      return getAgencyById(formData.agency?.value)
-    }
-  },retry:2 });
+  } = useQuery({
+    queryKey: ["agencyDetails", formData?.agency?.value],
+    queryFn: () => {
+      if (formData?.agency?.value) {
+        return getAgencyById(formData.agency?.value);
+      }
+    },
+    retry: 2,
+  });
   const [color, setColor] = useState("#0045E6");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -532,25 +617,20 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
           resolve(blob);
         })
       );
-      const resp = await getSignedUrl(
-        "jobImage",
-        blob?.type!,
-        "jobId",
-        id
-      );
+      const resp = await getSignedUrl("jobImage", blob?.type!, "jobId", id);
       if (resp) {
         await uploadFile(resp.uploadurl, blob!);
         await updateInterview(id, { imageUrl: resp.keyName });
         await queryClient.invalidateQueries({
           predicate: (query) => {
-            return query.queryKey.includes('walkins');
+            return query.queryKey.includes("walkins");
           },
-          refetchType:'all'
-        })
-       
+          refetchType: "all",
+        });
+
         toast.success("Walkin posted successfully");
         handleClose();
-        setRefreshImage(true)
+        setRefreshImage(true);
       }
       setLoading(false);
     } catch (error: unknown) {
@@ -558,11 +638,13 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
       setLoading(false);
     }
   };
-  if(isLoading){
-    return <Loader text="Fetching details to generate image"/>
+  if (isLoading) {
+    return <Loader text="Fetching details to generate image" />;
   }
-  if(error || !agencyResp.agency){
-    return <NotFound text="Something went wrong while fetching needed details"/>
+  if (error || !agencyResp.agency) {
+    return (
+      <NotFound text="Something went wrong while fetching needed details" />
+    );
   }
   return (
     <>
@@ -576,7 +658,9 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
             ></IoClose>{" "}
           </div>
           <div className={styles.headerContainer}>
-            <h4 className={styles.h4}>Your walkin is successfully {isEdit?"updated":"created"}</h4>
+            <h4 className={styles.h4}>
+              Your walkin is successfully {isEdit ? "updated" : "created"}
+            </h4>
           </div>
           <WalkInPostingImage
             formData={formData}
@@ -634,7 +718,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
             </Button> */}
             <Button
               type="button"
-              onClick={handleBack}
+              onClick={()=>handleBack(true)}
               className={`outlined action-buttons`}
             >
               Edit

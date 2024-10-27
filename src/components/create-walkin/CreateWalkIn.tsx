@@ -9,10 +9,10 @@ import PostWalkInScreen from "./PostWalkIn";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
 export default function CreateWalkIn({
   handleModalClose,
-  jobDetails
+  walkinDetails
 }: {
   handleModalClose: () => void;
-  jobDetails?: Walkin
+  walkinDetails?: Walkin
 
 }) {
   const [screen, setScreen] = useState(0);
@@ -38,21 +38,22 @@ export default function CreateWalkIn({
   ];
 
   useEffect(()=>{
-    if(jobDetails){
-      const [countryCode, contactNo] =  jobDetails.contactNumbers?.[0]?.split("-");
-      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers?.[1] ? jobDetails.contactNumbers[1]?.split("-"):[];
+    if(walkinDetails){
+      const [countryCode, contactNo] =  walkinDetails.contactNumbers?.[0]?.split("-");
+      const [altCountryCode, altContactNo] =  walkinDetails.contactNumbers?.[1] ? walkinDetails.contactNumbers[1]?.split("-"):[];
       const payload = {
-        ...jobDetails,
+        ...walkinDetails,
         agency: {
-          value:jobDetails.agencyId._id,
-          label:jobDetails.agencyId.name
+          value:walkinDetails.agencyId._id,
+          label:walkinDetails.agencyId.name
         },
-        country: jobDetails.country,
+        country: walkinDetails.country,
         countryCode:countryCode,
+        interviewDate: walkinDetails.interviewDate,
         contactNumber: contactNo,
         altContactNumber:altContactNo,
         altCountryCode:altCountryCode,
-        jobPositions: jobDetails.positions.map(position=>{
+        jobPositions: walkinDetails.positions.map(position=>{
           return {
             title:{
               value:position.jobTitleId,
@@ -65,9 +66,9 @@ export default function CreateWalkIn({
       }
       setFormData(payload)
       setIsEdit(true);
-      setFacilities(jobDetails.amenities)
+      setFacilities(walkinDetails.amenities)
     }
-  },[jobDetails])
+  },[walkinDetails])
 
   const handleClose = () => {
     reset();
@@ -119,7 +120,12 @@ export default function CreateWalkIn({
           3: (
             <PostWalkInScreen
               isEdit={isEdit}
-              handleBack={() => setScreen(2)}
+              handleBack={(isEdit) => {
+                if(isEdit){
+                  setIsEdit(isEdit);
+                  setScreen(2)
+                }
+              }}
               handleClose={handleClose}
             />
           ),

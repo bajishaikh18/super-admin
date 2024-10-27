@@ -53,7 +53,7 @@ export const getInterviews = async (
 
 export const getInterviewDetails = async (id: string) => {
   try {
-    const response = await apiClient.get(`${basePath}/${id}`);
+    const response = await apiClient.get(`${basePath}/admin/${id}`);
     console.log("API Response:", response.data);
     return response.data; 
   } catch (error) {

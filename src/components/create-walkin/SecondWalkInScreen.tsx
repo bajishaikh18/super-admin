@@ -13,7 +13,7 @@ import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce } from "lodash";
-import { CustomDatePicker } from "../common/form-fields/DatePicker";
+import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
 import { DateTime } from "luxon";
 import {
   GetCity,
@@ -75,7 +75,7 @@ const createWalkInMutation = useMutation({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, newlyCreatedWalkin, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
   const [stateList,setStateList] = useState([]);
 
   useEffect(()=>{
@@ -200,6 +200,7 @@ const createWalkInMutation = useMutation({
           })),
         amenities: selectedFacilities,
         contactNumbers: contacts,
+        state: data.state,
         country: formData?.country || "in",
         email: data.email,
         description: data.description,
@@ -212,10 +213,10 @@ const createWalkInMutation = useMutation({
 
       let res; 
 
-      if (isEdit && formData?._id) {
-        res = await updateInterview(formData?._id, jobData);
+      if (isEdit && (formData?._id || newlyCreatedWalkin?._id)) {
+        res = await updateInterview((formData?._id || newlyCreatedWalkin?._id)!, jobData);
         await queryClient.invalidateQueries({
-          queryKey: ["walkinDetails", formData?.jobId?.toString()],
+          queryKey: ["walkinDetails", formData?.interviewId?.toString()],
           refetchType: "all",
         });
       } else {
@@ -234,7 +235,8 @@ const createWalkInMutation = useMutation({
           setRefreshImage(true);
         }
       }
-      setNewlyCreatedWalkin(res.job);
+      setFormData({_id: res.interview?._id,...data});
+      setNewlyCreatedWalkin(res.interview);
       toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
       handleCreateWalkinClick();
       setLoading(false);
@@ -463,8 +465,8 @@ const createWalkInMutation = useMutation({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
-          <Form.Label>Walkin Date</Form.Label>
-          <CustomDatePicker
+          <Form.Label>Walkin Date & Time</Form.Label>
+          <CustomDateTimePicker
             name="interviewDate"
             control={control}
             error={errors.interviewDate}
@@ -485,7 +487,7 @@ const createWalkInMutation = useMutation({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={""}
+                    defaultValue={formData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -506,7 +508,7 @@ const createWalkInMutation = useMutation({
                     error={errors[`interviewLocation`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={""}
+                    defaultValue={formData?.interviewLocation}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement

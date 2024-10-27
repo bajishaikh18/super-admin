@@ -88,11 +88,11 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     const newData = formData || {}
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
-  setNewlyCreatedJob:(job)=>set(() => ({ newlyCreatedJob:job})),
+  setNewlyCreatedJob:(job)=>set((state) => ({ ...state, newlyCreatedJob:job})),
   setShowPostJob:(val)=>set(() => ({ showPostJob:val})),
   
   resetData:()=>{
-    set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
+    set(()=>({formData:null,selectedFacilities:[],selectedFile:null,newlyCreatedJob:null}))
   },
   
   // Existing actions
@@ -100,6 +100,7 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     set({ selectedFile: file });
   },
   setFacilities: (facilities) => set((state) => ({
+    ...state,
     selectedFacilities: facilities
   })),
   handleFacilityClick: (facility) => set((state) => ({

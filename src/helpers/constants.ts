@@ -2,8 +2,8 @@
 export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const COUNTRIES = {
-  sa: { label: "Saudi Arabia", isdCode: "+966" },
   in: { label: "India", isdCode: "+91" },
+  sa: { label: "Saudi Arabia", isdCode: "+966" },
   qa: { label: "Qatar", isdCode: "+974" },
   ae: { label: "United Arab Emrites", isdCode: "+971" },
   om: { label: "Oman", isdCode: "+968" },

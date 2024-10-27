@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getInterviewDetails, updateInterview } from "@/apis/walkin";
 import Image from "next/image";
-import styles from './PostedWalkInDetails.module.scss'
+import styles from "../common/styles/Details.module.scss";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa6";
 import {
@@ -45,7 +45,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["jobDetails", jobId],
+    queryKey: ["walkinDetails", jobId],
     queryFn: () => {
       if (jobId) {
         return getInterviewDetails(jobId);
@@ -58,20 +58,24 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
   const {
     _id,
     createdAt,
+    agencyId,
     expiry,
-    agencyName,
     imageUrl,
     location,
     positions,
     contactNumbers,
+    interviewLocation,
+    interviewDate,
+    interviewAddress,
     email,
+    viewed,
     status,
     description,
     amenities,
-  } = data?.job || {};
+  } = data?.interview || {};
 
   const goBack = () => {
-    router.back();
+    router.push('/walk-in');
   };
 
   const changePostStatus = useCallback(async ()=>{
@@ -88,7 +92,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
       if(newStatus){
         await updateInterview(_id,{status:newStatus});
         await queryClient.invalidateQueries({
-          queryKey:["jobDetails",jobId],
+          queryKey:["walkinDetails",jobId],
           refetchType:'all'
         })
       }
@@ -184,17 +188,9 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
                       height={18}
                       alt="view"
                     />
-                    Viewed by 1,186 Candidates
+                    Viewed by {viewed} candidates
                   </li>
-                  <li>
-                    <Image
-                      src={"/applied.svg"}
-                      width={18}
-                      height={18}
-                      alt="applie"
-                    />
-                    Applied by <Link href={""}>200 Candidates</Link>
-                  </li>
+                
                 </ul>
                 <ul className={styles.footerInfo}>
                   <li>
@@ -223,16 +219,16 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
           <Col lg={8}>
             <Card className={styles.detailsCard}>
               <CardHeader className={styles.detailsCardHeader}>
-                <div className={styles.agencyDetails}>
-                  <Image
-                    src="/ag_logo.svg"
-                    width={66}
-                    height={66}
+              <div className={styles.agencyDetails}>
+                <Image
+                    src={`${agencyId?.profilePic ? `${IMAGE_BASE_URL}/${agencyId?.profilePic}`: '/no_image.jpg'}`}
+                    width={55}
+                    height={55}
                     alt="agency-logo"
                   />
                   <div>
                     <div className={styles.agencyNameContainer}>
-                      <h2 className={styles.agencyName}>Muthu International</h2>
+                      <h2 className={styles.agencyName}>{agencyId?.name}</h2>
                       <Image
                         src="/verified.svg"
                         width={13}
@@ -314,6 +310,21 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
                   </table>
                 </div>
                 <div className={styles.line}></div>
+                <div className={`${styles.jobDescription} ${styles.walkinDetail}`}>
+                  <h3>Walk-In Details</h3>
+                  <div className={`d-flex align-items-center ${styles.walkinInfoCont}`}>
+                  <div className={styles.walkinInfo}> 
+                    <Image width={20} height={20} alt="" src="/location.svg" />
+                    <p>{interviewLocation}</p>
+                  </div>
+                  <div className={styles.walkinInfo}> 
+                    <Image width={15} height={15} alt="" src="/clock.svg" />
+                    <p>{DateTime.fromISO(interviewDate).toFormat('dd MMM yyyy hh:mm a')}</p>
+                  </div>
+                  </div>
+                  <h4>Address</h4>
+                  <p>{interviewAddress}</p>
+                </div>
                 <div className={styles.jobDescription}>
                   <h3>Walk-In Description</h3>
                   <p>{description || "N/A"}</p>
@@ -344,7 +355,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
         imageUrl={imageUrl}
       />
        <Modal show={openEdit} onHide={()=>setOpenEdit(false)} centered backdrop="static">
-        {openEdit && <CreateWalkIn handleModalClose={()=>setOpenEdit(false)} jobDetails={data.job} />}
+        {openEdit && <CreateWalkIn handleModalClose={()=>setOpenEdit(false)} walkinDetails={data.interview} />}
       </Modal>
     </main>
   );

@@ -106,6 +106,24 @@
             }
         }
     }
+    .jobDescription{
+        h4{
+            font-size: 16px;
+            margin-top: 40px;
+        }
+        
+    }
+    .walkinDetail{
+        margin-bottom: 50px;
+    }
+    .walkinInfoCont{
+        gap:10px
+    }
+    .walkinInfo{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
 
     .detailsCardBody {
         padding: 0px;

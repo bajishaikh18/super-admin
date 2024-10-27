@@ -21,7 +21,7 @@ import { AgencyType } from "@/stores/useAgencyStore";
 
 interface FourthJobScreenProps {
   isEdit?:boolean;
-  handleBack: () => void;
+  handleBack: (isEdit?:boolean) => void;
   handleClose: () => void;
 }
 
@@ -634,7 +634,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
             </Button> */}
             <Button
               type="button"
-              onClick={handleBack}
+              onClick={()=>handleBack(true)}
               className={`outlined action-buttons`}
             >
               Edit

@@ -190,6 +190,42 @@ export const TableFilter = ({
             </InputGroup>
             </>
           ),
+          dateTime: (
+            <>
+            <p className="field-label">
+            {field.label}
+            </p>
+            <InputGroup>
+              <InputGroup.Text>
+                <BsCalendar2 fontSize={12} />
+              </InputGroup.Text>
+              <DatePicker
+                showTimeSelect
+                selected={search ? new Date(search): new Date()}
+                onChange={(val)=>{
+                  handleChange(val)
+
+                }}
+                dateFormat="dd-MM-yyyy hh:mm a"
+                placeholderText="DD-MM-YYYY"
+                popperClassName="custom-date-picker"
+                customInput={
+                  <Form.Control
+                    type="text"
+                    className="extra-small"
+                    placeholder="YYYY-MM-DD"
+                    value={search}
+                    onChange={(val)=>{
+                      handleChange(val)
+                    }}
+                    readOnly
+                  />
+                }
+                popperPlacement="bottom"
+              />
+            </InputGroup>
+            </>
+          ),
         }[type]
       }
 

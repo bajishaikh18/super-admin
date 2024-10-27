@@ -118,7 +118,13 @@ export default function CreateJob({
           3: (
             <PostJobScreen
               isEdit={isEdit}
-              handleBack={() => setScreen(2)}
+              handleBack={(isEdit?:boolean) => {
+                if(isEdit){
+                  setIsEdit(isEdit);
+                }
+                setScreen(2)
+
+              }}
               handleClose={handleClose}
             />
           ),
