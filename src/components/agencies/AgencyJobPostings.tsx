@@ -62,7 +62,6 @@ const JobCard = ({
 
   return (
     <>
-    <Tooltip id="my-tooltip" />
       {data.jobs.map((job: JobType) => {
         return (
           <>

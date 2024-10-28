@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
-import styles from "./CreateJob.module.scss";
-import usePostJobStore from "@/stores/usePostJobStore";
+import styles from "./CreateWalkIn.module.scss";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { Button, Form } from "react-bootstrap";
 import { FieldError, useForm } from "react-hook-form";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
-interface FirstJobScreenProps {
+interface FirstWalkInScreenProps {
   countries?: string[]; // Make the countries prop optional
   isEdit?:boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
-  handleBackToPostJobClick: () => void;
+  handleBackToPostWalkInClick: () => void;
 }
 import { COUNTRIES } from "@/helpers/constants";
 import { CustomDatePicker } from "../common/form-fields/DatePicker";
@@ -26,16 +26,16 @@ interface FormValues {
   expiry: string;
 }
 
-const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
+const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
   countries = [], // Provide a default value of an empty array
   isEdit,
   handleContinueClick,
   handleClose,
-  handleBackToPostJobClick,
+  handleBackToPostWalkInClick,
 }) => {
   // Zustand store management
   const { selectedFacilities, handleFacilityClick, setFormData, formData } =
-    usePostJobStore();
+    usePostWalkinStore();
   const agencies = [
     { label: "Agency 1", value: "5f2c6e02e4b0a914d4a9fcb8" },
     { label: "Agency 2", value: "5f2c6e02e4b0a914d4a9fcb5" },
@@ -77,11 +77,11 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
-        <h2>
+      <h2>
           {
             isEdit ? "Edit " : "Create a "
           }
-          Job <span>(1/2)</span>
+          WalkIn <span>(1/2)</span> 
         </h2>
         
         <IoClose
@@ -173,7 +173,7 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
           <Button
             type="button"
             className={`outlined action-buttons`}
-            onClick={handleBackToPostJobClick}
+            onClick={handleBackToPostWalkInClick}
           >
             Back
           </Button>
@@ -192,4 +192,4 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   );
 };
 
-export default FirstJobScreen;
+export default FirstWalkInScreen;
