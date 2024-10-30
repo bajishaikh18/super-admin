@@ -13,8 +13,8 @@ import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 import { getTokenClaims } from "@/helpers/jwt";
 import { ROLE } from "@/helpers/constants";
-// import CreateNotification from "@/components/create-notification/CreateNotification";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import CreateNotification from "@/components/create-notification/CreateNotification";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
@@ -226,9 +226,9 @@ const Header: React.FC<HeaderProps> = () => {
           <CreateAgency handleModalClose={handleModalClose} />
         )}
       </Modal>
-      {/* <Modal show={showCreateNotification} onHide={handleModalClose} centered backdrop="static">
+      <Modal show={showCreateNotification} onHide={handleModalClose} centered backdrop="static">
          {showCreateNotification && <CreateNotification handleModalClose={handleModalClose} /> }
-      </Modal> */}
+      </Modal>
     </>
   );
 };

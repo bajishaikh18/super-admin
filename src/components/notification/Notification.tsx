@@ -8,7 +8,8 @@ import { DataTable } from '../common/table/DataTable';
 import { createColumnHelper, SortingState } from '@tanstack/react-table';
 import { SelectOption } from '@/helpers/types';
 import { getNotifications } from "@/apis/notification";
-
+import { DateTime } from 'luxon';
+import { TableFilter } from '../common/table/Filter';
 
 
 type NotificationResponse = {
@@ -20,8 +21,11 @@ const Notification: React.FC = () => {
   
   
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [search] = React.useState<string>("");
-
+  const [search, setSearch] = React.useState<string>("");
+  const [field, setField] = useState<SelectOption>({
+    value: "title",
+    label: "Title",
+  } as SelectOption);
 
 
 
@@ -61,7 +65,24 @@ const Notification: React.FC = () => {
     columnHelper.accessor("title", {
       header: "Title",
       cell: (info) => info.renderValue() || "N/A",
-    })
+    }),
+    columnHelper.accessor("description", {
+      header: "Description",
+      cell: (info) => info.renderValue() || "N/A",
+    }),
+    columnHelper.accessor("target", {
+      header: "Target",
+      cell: (info) => info.renderValue() || "N/A",
+
+    }),
+    columnHelper.accessor("createdAt", {
+      header: "Created Date",
+      cell: (info) =>
+        info.renderValue()
+          ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+          : "N/A",
+      meta: { filterType: "date",classes:'f-5' },
+    }),
 
    ],[]
 );
@@ -78,11 +99,19 @@ const {setShowCreateNotification} = useNotificationStore();
       <div className="page-title">
         <h3 className="section-heading">Notifications</h3>
         <div className="filter-container">
+        <TableFilter
+              search={search}
+              field={field}
+              handleChange={(e) => setSearch(e)}
+              handleFilterChange={(newField) => setField(newField)}
+              columnsHeaders={columns}
+            />
           <Button className="btn-img" onClick={()=>setShowCreateNotification(true)}>
             Create Notification
           </Button>
         </div>
       </div>
+      
       <Card>
         <DataTable
           totalCount={totalCount}
