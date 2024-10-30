@@ -1,73 +1,156 @@
-// "use client";
+"use client";
 
-// import React, { useState, useRef, useEffect } from "react";
-// // import styles from "./CreateAgency.module.scss";
-// import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
-// import { useNotificationStore } from "@/stores/useNotificationStore";
-// import CreateNotificationScreen from "./CreateNotificationScreen";
+import React, { useState, useEffect } from "react";
+import { Button, Form } from "react-bootstrap";
+import styles from "./CreateNotification.module.scss";
+import { IoClose } from "react-icons/io5";
+import { CreateNotificationFormData, useNotificationStore } from "@/stores/useNotificationStore";
+import { useForm } from "react-hook-form";
+import { getJobTitles } from "@/apis/common";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { SelectOption } from "@/helpers/types";
 
-// function CreateNotification({
-//   handleModalClose,
-// }: {
-//   handleModalClose: () => void;
-// }) {
-//   const [screen, setScreen] = useState(0);
-//   const [isEdit, setIsEdit] = useState(false);
-//   const { selectedFile, handleFileChange, resetData,setFormData } = useNotificationStore();
-//   const fileInputRef = useRef<HTMLInputElement | null>(null);
+function CreateNotification({
+  handleModalClose,
+}: {
+  handleModalClose: () => void;
+}) {
+  const [isEdit, setIsEdit] = useState(false);
+  const {  formData, setFormData } = useNotificationStore();
+  const [loading, setLoading] = useState(false);
+  const [jobTitles, setJobTitles] = useState<string[]>([]); // State for job titles
+  const selectOptions: SelectOption[] = jobTitles.map(() => ({
+    value: "title",
+    label: "title",
+  }));
 
-//   useEffect(()=>{
-//     if(agencyDetails){
-//       const [countryCode, contactNumber] =  agencyDetails.phone?.split("-");
-//       setIsEdit(true)
-//       const agencyData = {
-//         ...agencyDetails,
-//         countryCode,
-//         contactNumber
-//       }
-//       setFormData(agencyData);
-//     }
-//   },[])
- 
- 
-//   const handleClose = () => {
-//     reset();
-//     handleModalClose();
-//   };
-//   const reset = () => {
-//     resetData();
-//   };
-//   return (
-//     <div className={styles.modalContainer}>
-//       {
-//         {
-//           0: (
-//             <InitialAgencyScreen
-//               isEdit={isEdit}
-//               handleFileChange={handleFileChange}
-//               fileInputRef={fileInputRef}
-//               selectedFile={selectedFile}
-//               handleClose={handleClose}
-//               handleCreateNowClick={() => {
-//                 setScreen(1);
-//               }}
-//             />
-//           ),
-//           1: (
-//             <CreateNotificationScreen
-//               isEdit={isEdit}
-//               handleClose={handleClose}
-//               handleContinueClick={() => {
-//                 reset();
-//                 handleClose();
-//               }}
-//               handleBackToPostJobClick={() => setScreen(0)}
-//             />
-//           ),
-//         }[screen]
-//       }
-//     </div>
-//   );
-// }
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<CreateNotificationFormData>({
+    mode: "all",
+  });
 
-// export default CreateNotification;
+
+  
+
+  useEffect(() => {
+    const fetchJobTitles = async () => {
+      try {
+        const jobTitles = await getJobTitles(); // Assuming getJobTitles is defined
+        setJobTitles(jobTitles);
+      } catch (error) {
+        console.error("Failed to load job titles", error);
+      }
+    };
+
+    fetchJobTitles();
+  }, []);
+
+  const handleClose = () => {
+    handleModalClose();
+  };
+
+  
+
+  const onSubmit = (data: any) => {
+    setLoading(true); 
+    setTimeout(() => {
+      setLoading(false);
+      handleClose();
+    }, 2000);
+  };
+
+  return (
+    <div className={styles.modal}>
+      <div className={styles.modalHeader}>
+        <h2>{isEdit ? "Edit" : "Create "} Notification</h2>
+        <IoClose
+          className={styles.closeButton}
+          onClick={handleClose}
+        />
+      </div>
+      {loading ? (
+        <div className={styles.popupContent}>
+          <p className={styles.loadingContent}>
+            Your notification is {isEdit ? "updating" : "creating"}, please wait
+          </p>
+          <div className={styles.createSpinner}></div>
+        </div>
+      ) : (
+        <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Title"
+              className={styles.input}
+              defaultValue={formData?.title}
+              {...register("title", { required: "Title is required" })}
+            />
+            {errors.title && <span className={styles.error}>{errors.title.message}</span>}
+          </Form.Group>
+
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              placeholder="Enter Description"
+              className={styles.input}
+              defaultValue={formData?.description}
+              {...register("description", { required: "Description is required" })}
+            />
+            {errors.description && (
+              <span className={styles.error}>{errors.description.message}</span>
+            )}
+          </Form.Group>
+
+          <Form.Group className={styles.formGroup}>
+            <Form.Label>Job Titles</Form.Label>
+            <MultiSelect
+                name="jobtitles"
+                control={control}
+                error={errors[`jobTitles`]}
+                customStyles={{}}
+                options={selectOptions}
+                defaultValue={formData?.jobTitles}
+                rules={{required: "Job Title is required"}}
+                menuPortalTarget={
+                    document.getElementsByClassName("modal") [0] as HTMLElement
+                }
+                 menuPosition={"fixed"}
+                />            
+            {errors.jobTitles && (
+              <span className={styles.error}>{errors.jobTitles.message}</span>
+            )}
+          </Form.Group>
+
+          <div className={styles.actions}>
+            <Button
+              type="button"
+              className={`outlined action-buttons`}
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className={`action-buttons ${styles.submitButton}`}
+              disabled={loading}
+            >
+              {isEdit ? "Update" : "Create"} Notification
+            </Button>
+          </div>
+        </Form>
+      )}
+    </div>
+  );
+}
+
+export default CreateNotification;
+
+
+
+
