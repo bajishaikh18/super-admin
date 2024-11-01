@@ -18,10 +18,12 @@ function CreateNotification({
   const [isEdit, setIsEdit] = useState(false);
   const {  formData, setFormData } = useNotificationStore();
   const [loading, setLoading] = useState(false);
-  const [jobTitles, setJobTitles] = useState<string[]>([]); // State for job titles
-  const selectOptions: SelectOption[] = jobTitles.map(() => ({
-    value: "title",
-    label: "title",
+  const [jobTitles, setJobTitles] = useState<{ title: string }[]>([]); 
+
+
+  const selectOptions: SelectOption[] = jobTitles.map((jobTitle) => ({
+    value: jobTitle.title, 
+    label: jobTitle.title, 
   }));
 
   const {
@@ -39,7 +41,7 @@ function CreateNotification({
   useEffect(() => {
     const fetchJobTitles = async () => {
       try {
-        const jobTitles = await getJobTitles(); // Assuming getJobTitles is defined
+        const jobTitles = await getJobTitles(); 
         setJobTitles(jobTitles);
       } catch (error) {
         console.error("Failed to load job titles", error);
@@ -110,13 +112,13 @@ function CreateNotification({
           <Form.Group className={styles.formGroup}>
             <Form.Label>Job Titles</Form.Label>
             <MultiSelect
-                name="jobtitles"
+                name="jobtitle"
                 control={control}
-                error={errors[`jobTitles`]}
+                error={errors[`title`]}
                 customStyles={{}}
                 options={selectOptions}
-                defaultValue={formData?.jobTitles}
-                rules={{required: "Job Title is required"}}
+                defaultValue={formData?.title}
+                rules={{required: "Title is required"}}
                 menuPortalTarget={
                     document.getElementsByClassName("modal") [0] as HTMLElement
                 }
