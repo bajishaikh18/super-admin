@@ -19,10 +19,11 @@ const fetchSize = 100;
 
 export type JobType = {
   _id: string; 
+  adminUserId:string;
   companyName: string;
   firstName: string;
   lastName: string;
-  phone: string; 
+  mobile: string; 
   landline: string; 
   email: string;
   createdAt: string;
@@ -69,8 +70,8 @@ const EmployersList: React.FC = () => {
         "active",
         start,
         fetchSize,
-        debouncedSearchActive,
-        fieldActive.value
+        fieldActive.value,
+        debouncedSearchActive
       );
       return fetchedData;
     },
@@ -93,8 +94,8 @@ const EmployersList: React.FC = () => {
         "pending",
         start,
         fetchSize,
-        debouncedSearchPending,
-        fieldPending.value
+        fieldPending.value,
+        debouncedSearchPending
       );
       return fetchedData;
     },
@@ -122,7 +123,7 @@ const EmployersList: React.FC = () => {
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
-    columnHelper.accessor("_id", {
+    columnHelper.accessor("adminUserId", {
       header: "Employer ID",
       cell: (info) => {
         const value = info.getValue() || "N/A";
@@ -143,7 +144,7 @@ const EmployersList: React.FC = () => {
       cell: (info) => info.renderValue() || "N/A",
       enableColumnFilter: true,
     }),
-    columnHelper.accessor("phone", {
+    columnHelper.accessor("mobile", {
       header: "Mobile No",
       cell: (info) => info.renderValue() || "N/A",
       enableColumnFilter: true,
