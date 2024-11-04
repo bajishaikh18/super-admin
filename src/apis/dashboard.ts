@@ -53,3 +53,26 @@ export const getUsers = async (type:string,start: number,size:number,filter:stri
     throw error;
   }
 };
+export const getEmployers = async (
+  status: string, 
+  page: number,    
+  limit: number,  
+  field: string,   
+  filterTerm: string 
+) => {
+  try {
+    const response = await apiClient.get(`/dashboard/employers/${status}`, {
+      params: {
+        page: page + 1,
+        limit: limit,
+        field: field || '',
+        filterTerm: filterTerm || ''
+      }
+    });
+    console.log("API Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch employers:", error);
+    throw error;
+  }
+};
