@@ -76,3 +76,15 @@ export const getEmployers = async (
     throw error;
   }
 };
+export const updateEmployers = async (id: string, action: 'approve' | 'reject') => {
+  try {
+    const response = await apiClient.patch(`/dashboard/employers/${id}/status`, {
+      action: action 
+    });
+    console.log("API Response:", response.data);
+    return response.data; 
+  } catch (error) {
+    console.error("Failed to update employer:", error);
+    throw error;
+  }
+};

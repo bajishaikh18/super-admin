@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
-import { getEmployers } from "@/apis/dashboard";
+import { getEmployers,updateEmployers } from "@/apis/dashboard";
 import { DateTime } from "luxon";
 import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
 import CreateEmployerForm from "./CreateEmployer";
 import { FaPlus } from "react-icons/fa6";
+import { toast } from "react-hot-toast";
+
 
 type TabType = "Active" | "Pending";
 
@@ -19,7 +21,7 @@ const fetchSize = 100;
 
 export type JobType = {
   _id: string; 
-  adminUserId:string;
+  adminUserId:number;
   companyName: string;
   firstName: string;
   lastName: string;
@@ -33,7 +35,7 @@ export type JobType = {
 
 export type JobApiResponse = {
   employers: JobType[];
-  totalInterviewCount: number;
+  employerscount: number;
 };
 
 const EmployersList: React.FC = () => {
@@ -46,11 +48,11 @@ const EmployersList: React.FC = () => {
   const [activeEmployerData, setActiveEmployerData] = useState<JobType[]>([]);
   const [pendingEmployerData, setPendingEmployerData] = useState<JobType[]>([]);
   const [fieldActive, setFieldActive] = React.useState<SelectOption>({
-    value: "empId",
+    value: "adminUserId",
     label: "Employer Id",
   } as SelectOption);
   const [fieldPending, setFieldPending] = React.useState<SelectOption>({
-    value: "empId",
+    value: "adminUserId",
     label: "Employer Id",
   } as SelectOption);
 
@@ -118,8 +120,8 @@ const EmployersList: React.FC = () => {
     [pendingEmployersData]
   );
 
-  const totalActiveCount = activeEmployersData?.pages?.[0]?.totalInterviewCount ?? 0;
-  const totalPendingCount = pendingEmployersData?.pages?.[0]?.totalInterviewCount ?? 0;
+  const totalActiveCount = activeEmployersData?.pages?.[0]?.employerscount ?? 0;
+  const totalPendingCount = pendingEmployersData?.pages?.[0]?.employerscount ?? 0;
 
   const columnHelper = createColumnHelper<JobType>();
   const columns = [
@@ -200,24 +202,26 @@ const EmployersList: React.FC = () => {
     }),
   ];
 
-  const handleApprove = (employer: JobType) => {
-    console.log("Approving employer:", employer);
-    setActiveEmployerData((prevActive) => [
-      ...prevActive,
-      { ...employer, status: "active" }, 
-    ]);
-    
-    setPendingEmployerData((prevPending) => 
-      prevPending.filter((item) => item._id !== employer._id)
-    );
+  const handleApprove = async (employer: JobType) => {
+    try {
+      await updateEmployers(employer._id, "approve");
+      toast.success("Employer approved successfully!");
+    } catch (error) {
+      toast.error("Failed to approve employer.");
+    }
   };
+
+  const handleReject = async (employer: JobType) => {
+    try {
+      await updateEmployers(employer._id, "reject");
+      toast.success("Employer rejected successfully!");
+    } catch (error) {
+      toast.error("Failed to reject employer.");
+    }
+  };
+
+
   
-  const handleReject = (employer: JobType) => {
-    console.log("Rejected employer:", employer);
-    setPendingEmployerData((prevPending) => 
-      prevPending.filter((item) => item._id !== employer._id)
-    );
-  };
   
   const handleCreateUserClick = () => {
     setShowCreate(true);
