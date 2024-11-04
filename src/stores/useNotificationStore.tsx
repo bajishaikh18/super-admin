@@ -1,3 +1,4 @@
+import { SelectOption } from '@/helpers/types';
 import { create } from 'zustand';
 
 export type NotificationType = {
@@ -23,7 +24,7 @@ export interface Notification {
 export type CreateNotificationFormData = {
   title?: string;
   description?: string;
-  jobTitles?: string;
+  jobTitle?: SelectOption;
 }
 
  interface NotificationStoreState {
