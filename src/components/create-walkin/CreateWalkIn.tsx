@@ -49,7 +49,7 @@ export default function CreateWalkIn({
         },
         country: walkinDetails.country,
         countryCode:countryCode,
-        interviewDate: walkinDetails.interviewDate,
+        interviewDate: new Date(walkinDetails.interviewDate) as any,
         contactNumber: contactNo,
         altContactNumber:altContactNo,
         altCountryCode:altCountryCode,

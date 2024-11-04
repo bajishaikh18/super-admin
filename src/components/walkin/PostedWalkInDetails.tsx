@@ -29,6 +29,7 @@ import CreateWalkIn from "../create-walkin/CreateWalkIn";
 import toast from "react-hot-toast";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { LuExpand } from "react-icons/lu";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 
 type PostedWalkInDetailsProps = {
   jobId: string;
@@ -41,7 +42,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
 }) => {
   const queryClient = useQueryClient()
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const {refreshImage} = usePostJobStore();
+  const {refreshImage} = usePostWalkinStore();
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
   const { data, isLoading, isError } = useQuery({

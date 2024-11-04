@@ -233,7 +233,7 @@ const PostedWakInTable: React.FC = () => {
     }),
     columnHelper.accessor("interviewDate", {
       header: "Interview Date & Time",
-      cell: (info) => DateTime.fromISO(info.getValue()).toFormat("dd MMM yyyy hh:ss a"),
+      cell: (info) => DateTime.fromISO(info.getValue()).toFormat("dd MMM yyyy hh:mm a"),
       meta: { filterType: "dateTime" },
     }),
     columnHelper.accessor("imageUrl", {
