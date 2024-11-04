@@ -3,41 +3,37 @@
 import { NotificationType, useNotificationStore } from '@/stores/useNotificationStore';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Modal } from 'react-bootstrap';
 import { DataTable } from '../common/table/DataTable';
 import { createColumnHelper, SortingState } from '@tanstack/react-table';
 import { SelectOption } from '@/helpers/types';
 import { getNotifications } from "@/apis/notification";
 import { DateTime } from 'luxon';
 import { TableFilter } from '../common/table/Filter';
+import CreateNotification from '../create-notification/CreateNotification';
+import { FaPlus } from 'react-icons/fa6';
 
-
-type NotificationResponse = {
-  notifications: NotificationType[],
-}
-
+const fetchSize = 10;
 
 const Notification: React.FC = () => {
   
   
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
+  const [showCreate, setShowCreate] = React.useState<boolean>(false);
   const [field, setField] = useState<SelectOption>({
     value: "title",
     label: "Title",
   } as SelectOption);
 
 
-
-
   const { data, isFetching, isLoading, isError, fetchNextPage } = useInfiniteQuery<
-  NotificationResponse
+  {notifications:NotificationType[],totalCount:number}
   >({
-    queryKey: ["notifications"],
+    queryKey: ["notifications",search,field],
     queryFn: async ({ pageParam = 0}) => {
-      const notificationId = '66ebbce50469faf30a2bd364';
       const start = pageParam as number;
-      const fetchedData = await getNotifications('_id', notificationId);
+      const fetchedData = await getNotifications(start,fetchSize,field.value,search);
       return fetchedData;
 
     },
@@ -52,10 +48,10 @@ const Notification: React.FC = () => {
 
   
 
-  const totalCount =  0;
-
+  const totalCount = data?.pages?.[0]?.totalCount || 0;
+  console.log("Total",totalCount);
   const flatData = React.useMemo(
-    () => data?.pages?.flatMap((page: any) => page?.notifications) ?? [],
+    () => data?.pages?.flatMap((page: any) => page.notifications) ?? [],
     [data]
   );
 
@@ -72,7 +68,7 @@ const Notification: React.FC = () => {
     }),
     columnHelper.accessor("target", {
       header: "Target",
-      cell: (info) => info.renderValue() || "N/A",
+      cell: (info) => info.getValue()?.length > 0 ? info.getValue().join(',') : "N/A"
 
     }),
     columnHelper.accessor("createdAt", {
@@ -83,7 +79,6 @@ const Notification: React.FC = () => {
           : "N/A",
       meta: { filterType: "date",classes:'f-5' },
     }),
-
    ],[]
 );
 
@@ -94,10 +89,11 @@ const {setShowCreateNotification} = useNotificationStore();
 
 
   return (
+    <>
     <main className="main-section">
     <div className="page-block">
       <div className="page-title">
-        <h3 className="section-heading">Notifications</h3>
+        <h3 className="section-heading">Notifications ({totalCount})</h3>
         <div className="filter-container">
         <TableFilter
               search={search}
@@ -106,7 +102,8 @@ const {setShowCreateNotification} = useNotificationStore();
               handleFilterChange={(newField) => setField(newField)}
               columnsHeaders={columns}
             />
-          <Button className="btn-img" onClick={()=>setShowCreateNotification(true)}>
+          <Button className="btn-img" onClick={()=>setShowCreate(true)}>
+            <FaPlus />
             Create Notification
           </Button>
         </div>
@@ -130,7 +127,10 @@ const {setShowCreateNotification} = useNotificationStore();
       </Card>
     </div>
   </main>
-
+  <Modal show={showCreate} onHide={()=>setShowCreate(false)} centered backdrop="static">
+     {showCreate && <CreateNotification handleModalClose={()=>setShowCreate(false)} /> }
+  </Modal>
+</>
   )
 }
 

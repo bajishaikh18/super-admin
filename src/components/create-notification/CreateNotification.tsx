@@ -5,17 +5,18 @@ import { Button, Form } from "react-bootstrap";
 import styles from "./CreateNotification.module.scss";
 import { IoClose } from "react-icons/io5";
 import {
-  CreateNotificationFormData,
   useNotificationStore,
 } from "@/stores/useNotificationStore";
 import { FieldError, useForm } from "react-hook-form";
-import { getJobTitles } from "@/apis/common";
 import {
   MultiSelectAsync,
 } from "../common/form-fields/MultiSelect";
 import { SelectOption } from "@/helpers/types";
 import { debounce } from "lodash";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
+import { createNotification } from "@/apis/notification";
+import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FormValues {
   title: string,
@@ -29,6 +30,7 @@ function CreateNotification({
 }: {
   handleModalClose: () => void;
 }) {
+  const queryClient = useQueryClient();
   const [isEdit, setIsEdit] = useState(false);
   const { formData } = useNotificationStore();
   const [loading, setLoading] = useState(false);
@@ -41,7 +43,10 @@ function CreateNotification({
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
-      getFormattedJobTitles(inputValue).then((options) => callback(options));
+      getFormattedJobTitles(inputValue).then((options) => {
+        const modified = [{value:'all',label:'All'},...options]
+        callback(modified)
+      });
     }, 500),
     []
   );
@@ -51,31 +56,36 @@ function CreateNotification({
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+     mode: 'all'
+  });
 
-  useEffect(() => {
-    const fetchJobTitles = async () => {
-      try {
-        const jobTitles = await getJobTitles();
-        setJobTitles(jobTitles);
-      } catch (error) {
-        console.error("Failed to load job titles", error);
-      }
-    };
 
-    fetchJobTitles();
-  }, []);
 
   const handleClose = () => {
     handleModalClose();
   };
 
-  const onSubmit = (data: any) => {
-    setLoading(true);
-    setTimeout(() => {
+  const onSubmit = async (data: any) => {
+    try{
+      setLoading(true);
+      const payload = {
+        title:data.title,
+        description:data.description,
+        target: data?.jobTitle?.map((x:any)=>x.value)
+      }
+      await createNotification(payload);
       setLoading(false);
+      toast.success("Notification added successfully");
+      await queryClient.invalidateQueries({
+        queryKey:["notifications"],
+        refetchType:'all'
+      });     
       handleClose();
-    }, 2000);
+    }catch(e){
+      toast.error("Error while adding notification");
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,14 +94,14 @@ function CreateNotification({
         <h2>{isEdit ? "Edit" : "Create "} Notification</h2>
         <IoClose className={styles.closeButton} onClick={handleClose} />
       </div>
-      {/* {loading ? (
+      {loading ? (
         <div className={styles.popupContent}>
           <p className={styles.loadingContent}>
             Your notification is {isEdit ? "updating" : "creating"}, please wait
           </p>
           <div className={styles.createSpinner}></div>
-        </div> */}
-      {/* ) : ( */}
+        </div>
+       ): ( 
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
           <Form.Group className={styles.formGroup}>
             <Form.Label>Title</Form.Label>
@@ -99,6 +109,7 @@ function CreateNotification({
               type="text"
               placeholder="Enter Title"
               className={styles.input}
+              isInvalid={!!errors.title}
               defaultValue={formData?.title}
               {...register("title", { required: "Title is required" })}
             />
@@ -108,16 +119,14 @@ function CreateNotification({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
-            <Form.Label>Description</Form.Label>
+            <Form.Label>Description (Optional)</Form.Label>
             <Form.Control
               as="textarea"
               rows={4}
               placeholder="Enter Description"
               className={styles.input}
               defaultValue={formData?.description}
-              {...register("description", {
-                required: "Description is required",
-              })}
+              {...register("description")}
             />
             {errors.description && (
               <span className={styles.error}>{errors.description.message}</span>
@@ -125,9 +134,10 @@ function CreateNotification({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
-            <Form.Label>Job Titles</Form.Label>
+            <Form.Label>Targetted job Titles</Form.Label>
             <MultiSelectAsync
               name="jobTitle"
+              isMulti={true}
               control={control}
               error={errors.jobTitle as FieldError}
               loadOptions={loadOptionsDebounced}
@@ -159,7 +169,7 @@ function CreateNotification({
             </Button>
           </div>
         </Form>
-      {/* ) */}
+      )}
     </div>
   );
 }

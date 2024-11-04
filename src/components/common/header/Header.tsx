@@ -13,8 +13,6 @@ import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 import { getTokenClaims } from "@/helpers/jwt";
 import { ROLE } from "@/helpers/constants";
-import { useNotificationStore } from "@/stores/useNotificationStore";
-import CreateNotification from "@/components/create-notification/CreateNotification";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
@@ -25,11 +23,10 @@ const Header: React.FC<HeaderProps> = () => {
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
   const { authUser, setAuthUser, role, setRole } = useAuthUserStore();
-  const {showCreateNotification, setShowCreateNotification} = useNotificationStore();
+
   const handleModalClose = () => {
     setShowPostJob(false);
     setShowCreateAgency(false);
-    setShowCreateNotification(false);
   };
 
   if (!role) {
@@ -226,9 +223,7 @@ const Header: React.FC<HeaderProps> = () => {
           <CreateAgency handleModalClose={handleModalClose} />
         )}
       </Modal>
-      <Modal show={showCreateNotification} onHide={handleModalClose} centered backdrop="static">
-         {showCreateNotification && <CreateNotification handleModalClose={handleModalClose} /> }
-      </Modal>
+   
     </>
   );
 };

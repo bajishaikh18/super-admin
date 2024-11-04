@@ -4,7 +4,7 @@ import { create } from 'zustand';
 export type NotificationType = {
     title: string;
     description: string;
-    target: string;
+    target: string[];
     createdAt: string
 
 }
