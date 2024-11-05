@@ -99,11 +99,11 @@ const CreateEmployerForm: React.FC<CreateEmployerProps> = ({ onCancel }) => {
       toast.success("Success! Employer has been created and waiting for approval");
       await queryClient.invalidateQueries({
         predicate: (query) => {
-          console.log(query.queryKey, query.queryKey.includes("users"));
-          return query.queryKey.includes("jobs");
+          return query.queryKey.includes("employers");
         },
         refetchType: "all",
       });
+      
       handleCancel();
       setLoading(false);
     } catch (error) {

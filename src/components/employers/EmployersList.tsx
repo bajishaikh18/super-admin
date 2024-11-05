@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getEmployers,updateEmployers } from "@/apis/dashboard";
 import { DateTime } from "luxon";
-import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
 import CreateEmployerForm from "./CreateEmployer";
@@ -45,8 +44,6 @@ const EmployersList: React.FC = () => {
   const [showCreate, setShowCreate] = React.useState<boolean>(false);
   const [searchActive, setSearchActive] = React.useState<string>("");
   const [searchPending, setSearchPending] = React.useState<string>("");
-  const [activeEmployerData, setActiveEmployerData] = useState<JobType[]>([]);
-  const [pendingEmployerData, setPendingEmployerData] = useState<JobType[]>([]);
   const [fieldActive, setFieldActive] = React.useState<SelectOption>({
     value: "adminUserId",
     label: "Employer Id",
