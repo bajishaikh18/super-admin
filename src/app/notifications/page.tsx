@@ -1,14 +1,16 @@
 "use client"
 
+import { Authorize } from "@/components/common/Authorize";
 import Notification from "@/components/notification/Notification";
+import { ROLE } from "@/helpers/constants";
 
 const NotificationPage =() => {
     console.log("Rendering NotificationPage");
 
     return (
-        <div>
+        <Authorize roles={[ROLE.superAdmin,ROLE.admin]}>
             <Notification />
-        </div>
+        </Authorize>
     )
 
 }
