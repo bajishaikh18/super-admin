@@ -221,6 +221,7 @@ const createWalkInMutation = useMutation({
         });
       } else {
         res = await createWalkInMutation.mutateAsync(jobData); 
+        if(!selectedFile)
         await queryClient.invalidateQueries({
           predicate: (query) => query.queryKey.includes("walkins"),
           refetchType: "all",
@@ -228,11 +229,15 @@ const createWalkInMutation = useMutation({
       }
 
       if (selectedFile) {
-        const response = await getSignedUrl("jobImage", selectedFile?.type!, "jobId", res.job._id || formData?._id);
+        const response = await getSignedUrl("jobImage", selectedFile?.type!, "jobId", res.interview._id || formData?._id);
         if (response) {
           await uploadFile(response.uploadurl, selectedFile!);
-          await updateInterview(res.job._id! || formData?._id!, { imageUrl: res.keyName });
+          await updateInterview(res.interview._id! || formData?._id!, { imageUrl: response.keyName });
           setRefreshImage(true);
+          await queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey.includes("walkins"),
+            refetchType: "all",
+          });
         }
       }
       setFormData({_id: res.interview?._id,...data});
