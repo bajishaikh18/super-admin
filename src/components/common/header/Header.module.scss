@@ -56,15 +56,8 @@
   padding-right: 48px;
 }
 
-.fa-bell {
-  color: black;
-  font-size: 1.2em;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.fa-bell:hover {
-  color: blue;
+.notificationTrigger{
+  position: relative;
 }
 
 .postJob {
