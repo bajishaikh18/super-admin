@@ -17,6 +17,26 @@ export const createNotification = async (data: {
         throw error; 
     }
 };
+export const getUserNotifications = async () => {
+      try {
+          const response = await apiClient.get(`${basePath}`, {
+          });
+          return response.data;
+      } catch (error) {
+          console.error("Error fetching notifications:", error);
+          throw error; 
+      }
+  };
+
+export const updateNotification = async (id:string,data:any) => {
+    try {
+        const response = await apiClient.patch(`${basePath}/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating notifications:", error);
+        throw error; 
+    }
+};
 
 export const getNotifications = async (
   start: number,

@@ -5,8 +5,7 @@ export type NotificationType = {
     title: string;
     description: string;
     target: string[];
-    createdAt: string
-
+    createdAt: string;
 }
 
 export interface Notification {
@@ -18,6 +17,7 @@ export interface Notification {
     dismissed: boolean,
     createdAt: string,
     updatedAt: string,
+    data?:string;
     __v: number
 }
 

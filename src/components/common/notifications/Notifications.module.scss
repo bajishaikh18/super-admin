@@ -63,16 +63,26 @@
 }
 .notificationSection {
     h4 {
-        margin-bottom: 5px;
+        margin-bottom: 0px;
         line-height: 19px;
         font-weight: 500;
         font-size: 16px;
         color: $color-grey-2;
-        padding:24px;
-        padding-bottom: 0px;
+
     }
     &.dismissed{
         background: rgba($color-border-grey,0.1);
+    }
+    .notificationCreateHeader{
+        display: flex;
+        align-items: center;
+        padding:24px;
+        padding-bottom: 0px;
+        justify-content: space-between;
+        a{
+            color: $color-brand-1;
+            font-weight: 600;
+        }
     }
 }
 
