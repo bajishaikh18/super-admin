@@ -134,20 +134,49 @@ const Header: React.FC<HeaderProps> = () => {
                 className={`${styles.navListItem} nav-list-item`}
               >
                 <NavDropdown.Item
-                  href="#action/3.1"
-                  className={styles.navListItem}
+                  className={`${styles.navListItem} ${
+                    pathname == "/job-posted" ? styles.active : ""
+                  }`}
+                  href="/job-posted"
                 >
-                  Report Item
+                Job Posted Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href="#action/3.2"
-                  className={styles.navListItem}
+                   className={`${styles.navListItem} ${
+                    pathname == "/application-received" ? styles.active : ""
+                  }`}
+                  href="/application-received"
                 >
-                  Report Item
+                Applications Received by Agency Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/job-applied" ? styles.active : ""
+                  }`}
+                  href="/job-applied"
+                >
+                  Job Applied Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/user-report" ? styles.active : ""
+                  }`}
+                  href="/user-report"
+                >
+                  Total Users/Candidates Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/employer-report" ? styles.active : ""
+                  }`}
+                  href="/employer-report"
+                >
+                  Employers Report
                 </NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>
+
 
           <Nav className={styles.rightNavItems}>
             <Nav.Link onClick={() => {}} className={styles.faBell}>
