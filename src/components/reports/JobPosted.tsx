@@ -59,26 +59,17 @@ const CustomOption = (props: {
 };
 
 function JobPosted() {
+  const [reportType, setReportType] = useState('Jobs Posted');
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
-
 
   const handleAgencyChange = (
     selected: MultiValue<Option>,
     actionMeta: ActionMeta<Option>
   ) => {
     const allAgenciesOption = selected.find(option => option.value === 'all');
-
-    if (allAgenciesOption) {
-      setSelectedAgencies(agencyOptions.slice(1)); 
-    } else {
-      setSelectedAgencies(selected as Option[]);
-      
-      if (selected.length === 0) {
-        setSelectedAgencies([]);
-      }
-    }
+    setSelectedAgencies(allAgenciesOption ? agencyOptions.slice(1) : selected as Option[]);
   };
 
   const handleCountryChange = (
@@ -86,16 +77,7 @@ function JobPosted() {
     actionMeta: ActionMeta<Option>
   ) => {
     const allCountriesOption = selected.find(option => option.value === 'all');
-
-    if (allCountriesOption) {
-      setSelectedCountries(countryOptions.slice(1)); 
-    } else {
-      setSelectedCountries(selected as Option[]);
-      
-      if (selected.length === 0) {
-        setSelectedCountries([]);
-      }
-    }
+    setSelectedCountries(allCountriesOption ? countryOptions.slice(1) : selected as Option[]);
   };
 
   const handleIndustryChange = (
@@ -103,36 +85,16 @@ function JobPosted() {
     actionMeta: ActionMeta<Option>
   ) => {
     const allIndustriesOption = selected.find(option => option.value === 'all');
-
-    if (allIndustriesOption) {
-      setSelectedIndustries(industryOptions.slice(1)); 
-    } else {
-      setSelectedIndustries(selected as Option[]);
-      
-      if (selected.length === 0) {
-        setSelectedIndustries([]);
-      }
-    }
+    setSelectedIndustries(allIndustriesOption ? industryOptions.slice(1) : selected as Option[]);
   };
 
+  const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setReportType(event.target.value);
+  };
 
-
-  return (
-    <div className={styles.outerContainer}>
-      <div className={styles.container}>
-        <Form.Group className={styles.reportTypeField}>
-          <Form.Label>Report Type</Form.Label>
-          <Col>
-            <Form.Select>
-              <option>Jobs Posted</option>
-              <option>Agency Applications Report</option>
-              <option>Job Applied Report</option>
-              <option>Users Report</option>
-              <option>Employers Applications Report</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
-
+  const renderReportFields = () => {
+    if (reportType === "Jobs Posted") {
+      return (
         <Row>
           <Col>
             <Form.Group className={styles.selectField}>
@@ -147,7 +109,7 @@ function JobPosted() {
                 placeholder="Select Agency"
                 value={selectedAgencies}
                 className={styles.customSelect}
-              />           
+              />
             </Form.Group>
           </Col>
           <Col>
@@ -158,7 +120,7 @@ function JobPosted() {
                 isMulti
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                components={{ Option: CustomOption }} 
+                components={{ Option: CustomOption }}
                 onChange={handleCountryChange}
                 placeholder="Select Country"
                 value={selectedCountries}
@@ -174,7 +136,7 @@ function JobPosted() {
                 isMulti
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                components={{ Option: CustomOption }} 
+                components={{ Option: CustomOption }}
                 onChange={handleIndustryChange}
                 placeholder="Select Industry"
                 value={selectedIndustries}
@@ -208,6 +170,27 @@ function JobPosted() {
             </Button>
           </Col>
         </Row>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className={styles.outerContainer}>
+      <div className={styles.container}>
+        <Form.Group className={styles.reportTypeField}>
+          <Form.Label>Report Type</Form.Label>
+          <Col>
+            <Form.Select onChange={handleReportTypeChange} value={reportType}>
+              <option>Jobs Posted</option>
+              <option>Agency Applications Report</option>
+              <option>Job Applied Report</option>
+              <option>Users Report</option>
+              <option>Employers Applications Report</option>
+            </Form.Select>
+          </Col>
+        </Form.Group>
+        {renderReportFields()}
       </div>
 
       <div className={styles.generateReportImage}>
@@ -216,7 +199,6 @@ function JobPosted() {
       <h3>Generate Report</h3>
       <p>Please select report details you are looking for</p>
     </div>
-  
   );
 }
 
