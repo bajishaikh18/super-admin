@@ -41,6 +41,32 @@ a {
   background: #555;
 }
 
+.scroll-box{
+  /* width */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  &:hover {
+   &::-webkit-scrollbar {
+    width: 10px;
+  }
+    &::-webkit-scrollbar-thumb {
+      background-color: #888;
+    }
+  }
+}
+
 .btn {
   width: 100%;
   padding: 10px;
@@ -401,6 +427,9 @@ a {
         padding-left: 0px;
         border-radius: 0px 8px 8px 0px;
       }
+    }
+    .custom-date-picker{
+      width: 350px !important;
     }
   }
 

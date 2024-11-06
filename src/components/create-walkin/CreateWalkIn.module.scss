@@ -12,6 +12,19 @@
   position: relative;
 }
 
+.overFlowTable{
+  max-height: 300px;
+  overflow-y: overlay;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+}
+.overFlowSection{
+  max-height: 600px;
+  padding-right: 32px;
+  overflow-y: auto;
+  margin-right: -32px;
+}
 
 .modalHeader {
   display: flex;
@@ -35,9 +48,6 @@
 .formGroup {
   margin-bottom: 16px;
   position: relative;
-  input{
-    z-index: 0 !important;
-  }
 }
 
 
@@ -618,16 +628,10 @@
 }
 .overFlowTable{
   max-height: 300px;
-  overflow-y: overlay;
+  overflow-y: auto;
   ::-webkit-scrollbar {
     width: 5px;
   }
-}
-.overFlowSection{
-  max-height: 600px;
-  padding-right: 32px;
-  overflow-y: auto;
-  margin-right: -32px;
 }
 
 .expandButton {

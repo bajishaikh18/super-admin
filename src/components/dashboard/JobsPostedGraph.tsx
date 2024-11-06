@@ -52,7 +52,7 @@ const durations = [
   },
   {
     value: "1",
-    label: "Last Month",
+    label: "Last 1 Month",
   },
   {
     value: "3",

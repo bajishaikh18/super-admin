@@ -9,6 +9,7 @@ import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
 import { AuthHeader } from "./AuthHeader";
 import usePostJobStore from "@/stores/usePostJobStore";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 import { getTokenClaims } from "@/helpers/jwt";
@@ -54,6 +55,7 @@ const Header: React.FC<HeaderProps> = () => {
   if (HIDEPATHS.includes(pathname)) {
     return <AuthHeader />;
   }
+
   return (
     <>
       <Navbar className={styles.header} expand="lg" fixed={"top"}>
@@ -87,6 +89,17 @@ const Header: React.FC<HeaderProps> = () => {
                 href="/posted-jobs"
               >
                 Posted Jobs
+              </Link>
+            )}
+
+              {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
+              <Link
+                className={`${styles.navListItem} ${
+                  pathname == "/walk-in" ? styles.active : ""
+                }`}
+                href="/walk-in"
+              >
+                Walkins
               </Link>
             )}
 

@@ -30,13 +30,13 @@ const Dashboard = () => {
       label: "Agencies Registered",
       value: summaryData?.agenciesRegistered || "0",
       image: "/agencies.png",
-      link: '/posted-jobs'
+      link: '/agency'
     },
     {
       label: "Users Registered",
       value: summaryData?.usersRegistered || "0",
       image: "/users.png",
-      link: '/posted-jobs'
+      link: '/users'
     },
     {
       label: "Employers",

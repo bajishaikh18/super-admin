@@ -1,19 +1,24 @@
 import React, { useCallback, useEffect, useState } from "react";
-import styles from "./CreateJob.module.scss";
-import usePostJobStore from "@/stores/usePostJobStore";
+import styles from "./CreateWalkIn.module.scss";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { AiOutlineDelete } from "react-icons/ai";
-import { Button, Form, InputGroup, Table } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row, Table } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
-import { createJob, updateJob } from "@/apis/job";
+import { createInterview, updateInterview } from "@/apis/walkin";
 import { COUNTRIES } from "@/helpers/constants";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce } from "lodash";
-
+import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
+import { DateTime } from "luxon";
+import {
+  GetCity,
+  GetState,
+} from "react-country-state-city";
 interface JobPosition {
   title: {
     value:string,
@@ -30,21 +35,27 @@ interface FormValues {
   altCountryCode : string;
   email: string;
   countryCode: string;
+  latitude:string;
+  longitude:string;
+  interviewDate: string;
+  interviewLocation: string;
+  interviewAddress: string;
+  state:string;
   jobPositions: JobPosition[];
   description?: string;
 }
-interface SecondJobScreenProps {
-  handleBackToPostJobClick: () => void;
-  handleCreateJobClick: () => void;
+interface SecondWalkInScreenProps {
+  handleBackToPostWalkinClick: () => void;
+  handleCreateWalkinClick: () => void;
   handleClose: () => void;
   isEdit?:boolean;
 }
 const phoneRegex = /^[0-9]{10}$/
 
-const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
+const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
   isEdit,
-  handleBackToPostJobClick,
-  handleCreateJobClick,
+  handleBackToPostWalkinClick,
+  handleCreateWalkinClick,
   handleClose
 }) => {
   const queryClient = useQueryClient();
@@ -58,12 +69,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     []
 );
 
-  const createJobMutation = useMutation({
-    mutationFn: createJob
-  })
+const createWalkInMutation = useMutation({
+  mutationFn: createInterview
+});
+
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { selectedFacilities, setFormData,selectedFile, formData, newlyCreatedJob, setNewlyCreatedJob, setRefreshImage } = usePostJobStore();
+  const { selectedFacilities, setFormData,selectedFile, formData, newlyCreatedWalkin, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
+  const [stateList,setStateList] = useState([]);
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -90,7 +103,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       { title: {value:"",label:""}, experience: "0", salary: "" },
     ];
     setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
   };
 
   const handleRemove = (index: number) => {
@@ -110,7 +122,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       return x;
     });
     setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
   };
 
   const experienceLevels = [
@@ -126,78 +137,117 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     getValues,
     control,
     setValue,
+    watch,
     formState: { errors,isValid },
   } = useForm<FormValues>({
     mode: 'all'
   });
 
+  const state  = watch("state")
+
+
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const statesList = await GetState(101);
+      const formattedList =  statesList.map((state: any) => ({
+        value: state.state_code,
+        label: state.name,
+      }));
+      setStateList(formattedList)
+      return statesList;
+    },
+    retry: 3,
+  });
+  
+  const { data: cities } = useQuery({
+    queryKey: ["cities", state, stateList],
+    queryFn: async () => {
+      if (state && stateList.length>0) {
+        const selectedState:any = states?.find(
+          (cty: any) => cty.state_code === state
+        );
+        const cityList = await GetCity(101,selectedState?.id);
+        return cityList.map((city: any) => ({
+          value: city.name,
+          label: city.name,
+        }));
+      }
+      return [];
+    },
+    retry: 3,
+  });
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
       setFormData(data);
-      let resp;
-   
+
       const contacts = [`${data.countryCode}-${data.contactNumber}`];
-      if(data.altContactNumber && data.altCountryCode){
+      if (data.altContactNumber && data.altCountryCode) {
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
+
       const jobData = {
         agencyId: formData?.agency?.value,
         location: formData?.location,
         expiry: formData?.expiry,
-        positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
-          jobTitleId: position.title.value,
-          experience: Number(position.experience),
-          salary: position.salary,
-        })),
+        positions: data?.jobPositions
+          .filter((x) => x && x.title?.value)
+          .map((position) => ({
+            jobTitleId: position.title.value,
+            experience: Number(position.experience),
+            salary: position.salary,
+          })),
         amenities: selectedFacilities,
         contactNumbers: contacts,
-        country: formData?.country || 'in',
-        email:data.email,
-        description:data.description,
-      }
-      let res;
-      if(isEdit && (formData?._id || newlyCreatedJob?._id)){
-        res = await updateJob((formData?._id || newlyCreatedJob?._id)!,jobData);
+        state: data.state,
+        country: formData?.country || "in",
+        email: data.email,
+        description: data.description,
+        interviewDate: data.interviewDate,
+        interviewLocation:data.interviewLocation,
+        interviewAddress: data.interviewAddress,
+        latitude:data.latitude,
+        longitude:data.longitude
+      };
+
+      let res; 
+
+      if (isEdit && (formData?._id || newlyCreatedWalkin?._id)) {
+        res = await updateInterview((formData?._id || newlyCreatedWalkin?._id)!, jobData);
         await queryClient.invalidateQueries({
-          queryKey:["jobDetails",formData?.jobId?.toString()],
-          refetchType:'all'
-        })
-      }else{
-        res = await createJobMutation.mutateAsync(jobData);
+          queryKey: ["walkinDetails", formData?.interviewId?.toString()],
+          refetchType: "all",
+        });
+      } else {
+        res = await createWalkInMutation.mutateAsync(jobData); 
         if(!selectedFile)
         await queryClient.invalidateQueries({
-          predicate: (query) => {
-            console.log(query.queryKey ,query.queryKey.includes('jobs'))
-            return query.queryKey.includes('jobs');
-          },
-          refetchType:'all'
-        })
+          predicate: (query) => query.queryKey.includes("walkins"),
+          refetchType: "all",
+        });
       }
-      if(selectedFile){
-        resp = await getSignedUrl("jobImage", selectedFile?.type!,"jobId",res.job._id || formData?._id);
-        if (resp) {
-          await uploadFile(resp.uploadurl, selectedFile!);
-          await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
-          setRefreshImage(true)
+
+      if (selectedFile) {
+        const response = await getSignedUrl("jobImage", selectedFile?.type!, "jobId", res.interview._id || formData?._id);
+        if (response) {
+          await uploadFile(response.uploadurl, selectedFile!);
+          await updateInterview(res.interview._id! || formData?._id!, { imageUrl: response.keyName });
+          setRefreshImage(true);
           await queryClient.invalidateQueries({
-            predicate: (query) => {
-              console.log(query.queryKey ,query.queryKey.includes('jobs'))
-              return query.queryKey.includes('jobs');
-            },
-            refetchType:'all'
-          })
+            predicate: (query) => query.queryKey.includes("walkins"),
+            refetchType: "all",
+          });
         }
       }
-      setFormData({_id: res.job?._id,...data});
-      setNewlyCreatedJob(res.job)
-      toast.success(`Job ${isEdit?'updated':'created'} successfully`)
-      handleCreateJobClick();
+      setFormData({_id: res.interview?._id,...data});
+      setNewlyCreatedWalkin(res.interview);
+      toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
+      handleCreateWalkinClick();
       setLoading(false);
     } catch (error) {
-      toast.error(`Error while ${isEdit?'updating':'creating'} job. Please try again`)
+      toast.error(`Error while ${isEdit ? "updating" : "creating"} Interview. Please try again.`);
       setLoading(false);
-    } finally {
     }
   };
 
@@ -208,7 +258,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           {
             isEdit ? "Edit " : "Create a "
           }
-          Job <span>(1/2)</span>
+          Walkin <span>(1/2)</span>
         </h2>
         <IoClose
           className={styles.closeButton}
@@ -220,16 +270,17 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       {loading ? (
         <div className={styles.popupContent}>
           <p className={styles.loadingContent}>
-            Your job is {isEdit?"updating":"creating"} please wait
+            Your Interview is {isEdit?"updating":"creating"} please wait
           </p>
           <div className={styles.createSpinner}></div>
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
-          <div className={`${styles.overFlowSection} scroll-box`}>
+                    <div className={`${styles.overFlowSection} scroll-box`}>
+
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
-            {/* <div className={styles.overFlowTable}> */}
+            <div className={styles.overFlowTable}>
             <Table>
               <thead>
                 <tr>
@@ -312,7 +363,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 })}
               </tbody>
             </Table>
-            {/* </div> */}
+            </div>
             {errorMessage && (
               <div>
                 <Form.Text className="error">{errorMessage}</Form.Text>
@@ -419,6 +470,112 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           </Form.Group>
 
           <Form.Group className={styles.formGroup}>
+          <Form.Label>Walkin Date & Time</Form.Label>
+          <CustomDateTimePicker
+            name="interviewDate"
+            control={control}
+            error={errors.interviewDate}
+            defaultValue={formData?.interviewDate}
+            minDate={new Date()}
+            rules={{ required: "interviewDate date is required" }}
+          />
+        </Form.Group>
+        <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>State</Form.Label>
+                {stateList && (
+                  <MultiSelect
+                    name={`state`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`state`]}
+                    customStyles={{}}
+                    options={stateList}
+                    defaultValue={formData?.state}
+                    rules={{ required: "State is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>City</Form.Label>
+                {cities && (
+                  <MultiSelect
+                    name={`interviewLocation`}
+                    control={control}
+                    // @ts-ignore
+                    error={errors[`interviewLocation`]}
+                    customStyles={{}}
+                    options={cities}
+                    defaultValue={formData?.interviewLocation}
+                    rules={{ required: "City is required" }}
+                    menuPortalTarget={
+                      document.getElementsByClassName("modal")[0] as HTMLElement
+                    }
+                    menuPosition={"fixed"}
+                  />
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Form.Group className={styles.formGroup}>
+          <Form.Label>Address</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            defaultValue={formData?.interviewAddress}
+            {...register("interviewAddress", { required: true })}
+          />
+          {errors.interviewAddress && (
+            <Form.Text className="error">{errors.interviewAddress.message}</Form.Text>
+          )}
+        </Form.Group>
+        <Row>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Latitude</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Latitude"
+                  className={styles.input}
+                  defaultValue={formData?.latitude}
+                  isInvalid={!!errors.latitude}
+                  {...register("latitude", {
+                    required: "Latitude is required",
+                  })}
+                />
+                {errors.latitude && (
+                  <Form.Text className="error">{errors.latitude.message}</Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Longitude</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Longitude"
+                  className={styles.input}
+                  defaultValue={formData?.longitude}
+                  isInvalid={!!errors.longitude}
+                  {...register("longitude", {
+                    required: "Longitude is required",
+                  })}
+                />
+                {errors.longitude && (
+                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+          <Form.Group className={styles.formGroup}>
             <Form.Label>Description (Optional)</Form.Label>
             <Form.Control
               as="textarea"
@@ -432,7 +589,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
             <Button
               type="button"
               className={`outlined action-buttons`}
-              onClick={handleBackToPostJobClick}
+              onClick={handleBackToPostWalkinClick}
             >
               Back
             </Button>
@@ -446,7 +603,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                {
             isEdit ? "Edit " : "Create a "
           }
-              Job
+              Walkin
             </Button>
           </div>
         </Form>
@@ -455,4 +612,4 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   );
 };
 
-export default SecondJobScreen;
+export default SecondWalkInScreen;

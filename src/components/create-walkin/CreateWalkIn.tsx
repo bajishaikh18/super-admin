@@ -1,22 +1,23 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./CreateJob.module.scss";
-import InitialScreen from "@/components/create-job/InitialScreen";
-import FirstJobScreen from "@/components/create-job/FirstJobScreen";
-import SecondJobScreen from "@/components/create-job/SecondJobScreen";
-import useStore, { Job } from "@/stores/usePostJobStore"; // Import Zustand store
-import PostJobScreen from "@/components/create-job/PostJobScreen";
-import usePostJobStore from "@/stores/usePostJobStore";
-export default function CreateJob({
+import styles from "./CreateWalkIn.module.scss";
+import InitialScreen from "./InitialScreen";
+import FirstWalkInScreen from "./FirstWalkInScreen";
+import SecondWalkInScreen from "./SecondWalkInScreen";
+import useStore, {Walkin} from "@/stores/usePostWalkinStore"; 
+import PostWalkInScreen from "./PostWalkIn";
+import usePostWalkinStore from "@/stores/usePostWalkinStore";
+export default function CreateWalkIn({
   handleModalClose,
-  jobDetails
+  walkinDetails
 }: {
   handleModalClose: () => void;
-  jobDetails?: Job
+  walkinDetails?: Walkin
+
 }) {
   const [screen, setScreen] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
-  const {setFormData,setFacilities} = usePostJobStore();
+  const {setFormData,setFacilities} = usePostWalkinStore();
   const {
     selectedFile,
     handleFileChange,
@@ -37,21 +38,22 @@ export default function CreateJob({
   ];
 
   useEffect(()=>{
-    if(jobDetails){
-      const [countryCode, contactNo] =  jobDetails.contactNumbers?.[0]?.split("-");
-      const [altCountryCode, altContactNo] =  jobDetails.contactNumbers?.[1] ? jobDetails.contactNumbers[1]?.split("-"):[];
+    if(walkinDetails){
+      const [countryCode, contactNo] =  walkinDetails.contactNumbers?.[0]?.split("-");
+      const [altCountryCode, altContactNo] =  walkinDetails.contactNumbers?.[1] ? walkinDetails.contactNumbers[1]?.split("-"):[];
       const payload = {
-        ...jobDetails,
+        ...walkinDetails,
         agency: {
-          value:jobDetails.agencyId._id,
-          label:jobDetails.agencyId.name
+          value:walkinDetails.agencyId._id,
+          label:walkinDetails.agencyId.name
         },
-        country: jobDetails.country,
+        country: walkinDetails.country,
         countryCode:countryCode,
+        interviewDate: new Date(walkinDetails.interviewDate) as any,
         contactNumber: contactNo,
         altContactNumber:altContactNo,
         altCountryCode:altCountryCode,
-        jobPositions: jobDetails.positions.map(position=>{
+        jobPositions: walkinDetails.positions.map(position=>{
           return {
             title:{
               value:position.jobTitleId,
@@ -64,9 +66,9 @@ export default function CreateJob({
       }
       setFormData(payload)
       setIsEdit(true);
-      setFacilities(jobDetails.amenities)
+      setFacilities(walkinDetails.amenities)
     }
-  },[jobDetails])
+  },[walkinDetails])
 
   const handleClose = () => {
     reset();
@@ -93,20 +95,20 @@ export default function CreateJob({
             />
           ),
           1: (
-            <FirstJobScreen
+            <FirstWalkInScreen
               countries={countries}
               isEdit={isEdit}
               handleContinueClick={() => setScreen(2)}
               handleClose={handleClose}
-              handleBackToPostJobClick={() => setScreen(0)}
+              handleBackToPostWalkInClick={() => setScreen(0)}
             />
           ),
           2: (
-            <SecondJobScreen
+            <SecondWalkInScreen
               isEdit={isEdit}
-              handleBackToPostJobClick={() => setScreen(1)}
+              handleBackToPostWalkinClick={() => setScreen(1)}
               handleClose={handleClose}
-              handleCreateJobClick={() => {
+              handleCreateWalkinClick={() => {
                 if(selectedFile){
                   handleClose()
                 }else{
@@ -116,14 +118,13 @@ export default function CreateJob({
             />
           ),
           3: (
-            <PostJobScreen
+            <PostWalkInScreen
               isEdit={isEdit}
-              handleBack={(isEdit?:boolean) => {
+              handleBack={(isEdit) => {
                 if(isEdit){
                   setIsEdit(isEdit);
+                  setScreen(2)
                 }
-                setScreen(2)
-
               }}
               handleClose={handleClose}
             />

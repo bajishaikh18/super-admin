@@ -11,7 +11,7 @@ type JobPosition ={
 }
 
 
-export interface Job {
+export interface Walkin {
   agencyId: {
     _id:string,
     name:string
@@ -25,6 +25,7 @@ export interface Job {
   country: string,
   description: string
   viewed: any[]
+  interviewDate: string;
   status: string
   _id: string
   __v: number
@@ -38,33 +39,39 @@ export interface Position {
 }
 
 
-export type PostJobFormData =  {
+export type PostWalkinFormData =  {
   _id?:string;
-  jobId?:string;
+  interviewId?:string;
   agency?: SelectOption;
   location?: string;
   country?: string;
   expiry?: string;
+  state?: string;
   countryCode?:string;
   contactNumber?: string;
   altContactNumber?:string;
   altCountryCode?:string;
   email?: string;
+  interviewDate?: string;
+  interviewLocation?: string;
+  interviewAddress?: string;
+  latitude?:string;
+  longitude?:string;
   description?: string;
   jobPositions?: JobPosition[];
   experienceRequired?: string;
 }
 
-interface PostJobStoreState {
+interface PostWalkinStoreState {
   selectedFile: File | null;
-  showPostJob: boolean,
+  showPostWalkin: boolean,
   selectedFacilities: string[];
-  newlyCreatedJob: Job | null;
-  formData: PostJobFormData | null;
+  newlyCreatedWalkin: Walkin | null;
+  formData: PostWalkinFormData | null;
   refreshImage: boolean;
-  setFormData: (formData: PostJobFormData | null) => void
-  setShowPostJob: (val:boolean)=>void
-  setNewlyCreatedJob: (job:Job)=>void;
+  setFormData: (formData: PostWalkinFormData | null) => void
+  setShowPostWalkin: (val:boolean)=>void
+  setNewlyCreatedWalkin: (job:Walkin)=>void;
   handleFileChange: (file:any) => void;
   resetData: ()=>void;
   handleFacilityClick: (facility: string) => void;
@@ -72,13 +79,13 @@ interface PostJobStoreState {
   setFacilities:(facilities:string[])=>void;
 }
 
-const usePostJobStore = create<PostJobStoreState>((set) => ({
+const usePostWalkinStore = create<PostWalkinStoreState>((set) => ({
   // Existing state initialization
   selectedFile: null,
-  showPostJob: false,
+  showPostWalkin: false,
   refreshImage:false,
   selectedFacilities: [],
-  newlyCreatedJob: null,
+  newlyCreatedWalkin: null,
   formData: null,
   setRefreshImage:(val:boolean)=>{
     set(() => ({ refreshImage:val}))
@@ -88,11 +95,11 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     const newData = formData || {}
     set((state) => ({ formData:{...state.formData,...newData}}))
   },
-  setNewlyCreatedJob:(job)=>set((state) => ({ ...state, newlyCreatedJob:job})),
-  setShowPostJob:(val)=>set(() => ({ showPostJob:val})),
+  setNewlyCreatedWalkin:(job)=>set(() => ({ newlyCreatedWalkin:job})),
+  setShowPostWalkin:(val)=>set(() => ({ showPostWalkin:val})),
   
   resetData:()=>{
-    set(()=>({formData:null,selectedFacilities:[],selectedFile:null,newlyCreatedJob:null}))
+    set(()=>({formData:null,selectedFacilities:[],selectedFile:null}))
   },
   
   // Existing actions
@@ -100,7 +107,6 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
     set({ selectedFile: file });
   },
   setFacilities: (facilities) => set((state) => ({
-    ...state,
     selectedFacilities: facilities
   })),
   handleFacilityClick: (facility) => set((state) => ({
@@ -110,6 +116,6 @@ const usePostJobStore = create<PostJobStoreState>((set) => ({
   }))
 }));
 
-export default usePostJobStore;
+export default usePostWalkinStore;
 
 

@@ -21,8 +21,6 @@ import { SelectOption } from "@/helpers/types";
 import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
 import CreateUserForm from "../users/CreateUsers";
 import { Button, Modal } from "react-bootstrap";
-import { IoAddCircleOutline } from "react-icons/io5";
-import { BsPlus, BsPlusLg } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa6";
 import { GetCountries, GetState } from "react-country-state-city";
 
