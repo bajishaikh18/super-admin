@@ -16,7 +16,7 @@ export const Notifications = ()=>{
       data,
       isLoading,
       error,
-    } = useQuery<Notification[]>({ queryKey: ["user-notifications"], queryFn: getUserNotifications, retry:1 });
+    } = useQuery<Notification[]>({ queryKey: ["user-notifications"], queryFn: getUserNotifications,refetchInterval:10000, retry:1 });
     const router = useRouter();
     const notificationsNew = data?.filter((notif)=>!notif.dismissed);
     const notificationsPrev = data?.filter((notif)=>notif.dismissed);
