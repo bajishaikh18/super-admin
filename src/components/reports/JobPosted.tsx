@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
 import Select, { MultiValue, ActionMeta } from 'react-select';
-import router from 'next/router';
 
 interface Option {
   value: string;
@@ -64,8 +63,6 @@ function JobPosted() {
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
-  const [duration, setDuration] = useState('');
-
 
   const handleAgencyChange = (
     selected: MultiValue<Option>,
@@ -91,18 +88,8 @@ function JobPosted() {
     setSelectedIndustries(allIndustriesOption ? industryOptions.slice(1) : selected as Option[]);
   };
 
-  const handleReportTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newReportType = event.target.value;
-    setReportType(newReportType);
-    router.push(`/reports/${newReportType}`)
-    if (newReportType !== "Job Posted Report") {
-      setSelectedAgencies([]);
-    }
-    if (newReportType !== "Job Posted Report") {
-      setDuration("");
-    }
+  const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setReportType(event.target.value);
   };
 
   const renderReportFields = () => {
