@@ -45,10 +45,10 @@ function JobApplied() {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Job Applied Report') {
+    if (newReportType !== 'Jobs Posted') {
       setSelectedJob([]);
     }
-    if (newReportType !== 'Job Applied Report') {
+    if (newReportType !== 'Jobs Posted') {
       setDuration('');
     }
   };
@@ -58,7 +58,7 @@ function JobApplied() {
   };
 
   const renderReportFields = () => {
-    if (reportType === 'Job Applied Report') {
+    if (reportType === 'Jobs Posted') {
       return (
         <Row>
           <Col>

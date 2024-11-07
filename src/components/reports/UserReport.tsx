@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
 import Select, { MultiValue, ActionMeta } from 'react-select';
+import router from 'next/router';
 
 interface Option {
   value: string;
@@ -53,11 +54,11 @@ function UserReport() {
   const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newReportType = event.target.value;
     setReportType(newReportType);
-
+    router.push(`/reports/${newReportType}`)
     if (newReportType !== 'Users Report') {
       setSelectedUsers([]);
     }
-    if (newReportType !== 'Jobs Posted') {
+    if (newReportType !== 'Users Report') {
       setSelectedIndustries([]);
     }
     if (newReportType !== 'Job Applied Report') {

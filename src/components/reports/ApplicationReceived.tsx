@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./JobPosted.module.scss";
 import { Form, Button, Row, Col, Image } from "react-bootstrap";
 import Select, { MultiValue, ActionMeta } from "react-select";
+import router from "next/router";
 
 interface Option {
   value: string;
@@ -55,14 +56,11 @@ function ApplicationReceived() {
   ) => {
     const newReportType = event.target.value;
     setReportType(newReportType);
-
+    router.push(`/reports/${newReportType}`)
     if (newReportType !== "Agency Applications Report") {
       setSelectedAgencies([]);
     }
-    if (newReportType !== "Jobs Posted") {
-      setPostID("");
-    }
-    if (newReportType !== "Job Applied Report") {
+    if (newReportType !== "Agency Applications Report") {
       setDuration("");
     }
   };
@@ -91,6 +89,7 @@ function ApplicationReceived() {
   };
 
   const renderReportFields = () => {
+    if (reportType === 'Agency Application Report') {
         return (
           <Row>
             <Col>
@@ -141,6 +140,9 @@ function ApplicationReceived() {
           </Row>
         );
   };
+  return null;
+
+};
 
   return (
     <div className={styles.outerContainer}>
