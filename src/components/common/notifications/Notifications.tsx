@@ -1,7 +1,7 @@
 import { truncateText } from "@/helpers/common";
 import styles from "./Notifications.module.scss";
-import { useQuery } from "@tanstack/react-query";
-import { getUserNotifications, updateNotification } from "@/apis/notification";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateNotification } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 import { Loader, NotFound } from "../Feedbacks";
 import { DateTime } from "luxon";
@@ -20,6 +20,7 @@ export const Notifications = ({
   isLoading: boolean;
   error: any;
 }) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const notificationsNew = notifications?.filter((notif) => !notif.dismissed);
   const notificationsPrev = notifications?.filter((notif) => notif.dismissed);
@@ -28,6 +29,12 @@ export const Notifications = ({
     async (id: string) => {
       try {
         await updateNotification(id, { dismissed: true });
+        await queryClient.invalidateQueries({
+          predicate: (query) => {
+            return query.queryKey.includes('user-notifications');
+          },
+          refetchType:'all'
+        })
       } catch {
         toast.error("Something went wrong while marking notification status");
       }
