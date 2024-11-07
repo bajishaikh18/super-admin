@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
-import { getInterviews, getInterviewSummary } from "@/apis/walkin";
+import { getInterviews,  } from "@/apis/walkin";
 import { DateTime } from "luxon";
 import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";

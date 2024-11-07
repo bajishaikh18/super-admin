@@ -1,0 +1,97 @@
+@import "../../app/variables";
+
+.modal {
+  background: rgb(255, 255, 255);
+  padding: 32px;
+  border-radius: 8px;
+  margin: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  min-width: 100%;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 9;
+  h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+
+    span {
+      color: $color-grey-1;
+      font-weight: 400;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  margin-top: 20px;
+  justify-content: right;
+  gap: 16px;
+  margin: 16px -32px -32px -32px;
+  padding: 12px 32px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 69, 230, 0.3);
+}
+.modal-backdrop.show {
+  opacity: 0.5;
+}
+
+.closeButton {
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+}
+
+
+.formGroup {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.popupContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  .loadingContent{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    color: $color-grey-2;
+  }
+}
+
+.createSpinner {
+  margin-top: 20px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+}
+
+.pending{
+  background: $color-warning;
+  color: #fff;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

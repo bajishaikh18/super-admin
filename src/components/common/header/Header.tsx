@@ -149,9 +149,14 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
             {shouldVisible([ROLE.admin, ROLE.superAdmin]) && (
-              <Link className={styles.navListItem} href="#employers">
-                Employers
-              </Link>
+              <Link
+              className={`${styles.navListItem} ${
+                pathname == "/employers" ? styles.active : ""
+              }`}
+              href="/employers"
+            >
+              Employers
+            </Link>
             )}
 
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
@@ -163,13 +168,31 @@ const Header: React.FC<HeaderProps> = () => {
                   href="#action/3.1"
                   className={styles.navListItem}
                 >
-                  Report Item
+                  Job Posted Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
                   href="#action/3.2"
                   className={styles.navListItem}
                 >
-                  Report Item
+                  Applications Received by Agency Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  href="#action/3.2"
+                  className={styles.navListItem}
+                >
+                  Job Applied Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  href="#action/3.2"
+                  className={styles.navListItem}
+                >
+                  Total Users/Candidates Report
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  href="#action/3.2"
+                  className={styles.navListItem}
+                >
+                  Employers Report
                 </NavDropdown.Item>
               </NavDropdown>
             )}
