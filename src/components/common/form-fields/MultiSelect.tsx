@@ -112,7 +112,8 @@ export const MultiSelectAsync = ({
   valueContainerStyles={},
   menuListStyles={},
   menuPortalTarget,
-  menuPosition
+  menuPosition,
+  isMulti
 }: {
   name: string;
   control: Control<any, any>;
@@ -130,7 +131,8 @@ export const MultiSelectAsync = ({
   valueContainerStyles?: any,
   menuPortalTarget?:any,
   menuPosition?:any,
-  menuListStyles?:any
+  menuListStyles?:any,
+  isMulti?:boolean
 }) => {
   console.log(defaultValue)
   return (
@@ -140,6 +142,7 @@ export const MultiSelectAsync = ({
         control={control}
         render={({ field: { onChange, value } }) => (
           <AsyncSelect
+            isMulti={isMulti}
             cacheOptions
             loadOptions={loadOptions}
             defaultOptions

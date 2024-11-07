@@ -547,9 +547,7 @@ const createWalkInMutation = useMutation({
                   className={styles.input}
                   defaultValue={formData?.latitude}
                   isInvalid={!!errors.latitude}
-                  {...register("latitude", {
-                    required: "Latitude is required",
-                  })}
+
                 />
                 {errors.latitude && (
                   <Form.Text className="error">{errors.latitude.message}</Form.Text>
@@ -565,9 +563,7 @@ const createWalkInMutation = useMutation({
                   className={styles.input}
                   defaultValue={formData?.longitude}
                   isInvalid={!!errors.longitude}
-                  {...register("longitude", {
-                    required: "Longitude is required",
-                  })}
+                
                 />
                 {errors.longitude && (
                   <Form.Text className="error">{errors.longitude.message}</Form.Text>

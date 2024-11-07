@@ -1,0 +1,136 @@
+@import "../../../app/variables";
+
+.notificationPanel {
+    position: absolute;
+    top: 40px;
+    left: -30px;
+    width: 360px;
+    background-color: #fff;
+    box-shadow: 0 8px 16px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 0.5px solid $color-border-grey;
+    z-index: 1000;
+    padding: 24px 0px 0px 0px;
+    font-size: 14px;
+    margin-top: 20px;
+    &::after{
+        position: absolute;
+        top: -10px;
+        left: 36px;
+        content: "";
+        width: 20px;
+        transform: skew(0deg, 20deg);
+        height: 20px;
+        rotate: 33deg;
+        background: #fff;
+        border: 0.5px solid $color-border-grey;
+        border-width: 0.5px 0 0 0.5px;
+    }
+}
+
+.notificationHeader {
+    display: flex;
+    padding: 0px 24px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    h3{
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 24px;
+        margin-bottom: 0px;
+        color: $color-grey-2;
+    }
+    .markAllRead {
+        color: $color-brand-1;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
+
+.yesterday {
+    position: absolute;
+    right: 0;
+    margin-left: 5px;
+}
+
+
+.notificationContentContainer{
+    overflow-y: auto;
+    max-height: 60vh;
+}
+.notificationSection {
+    h4 {
+        margin-bottom: 0px;
+        line-height: 19px;
+        font-weight: 500;
+        font-size: 16px;
+        color: $color-grey-2;
+
+    }
+    &.dismissed{
+        background: rgba($color-border-grey,0.1);
+    }
+    .notificationCreateHeader{
+        display: flex;
+        align-items: center;
+        padding:24px;
+        padding-bottom: 0px;
+        margin-bottom: 20px;
+        justify-content: space-between;
+        a{
+            color: $color-brand-1;
+            font-weight: 600;
+        }
+    }
+}
+
+
+.notificationItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba($color-border-grey,0.4);
+    padding: 24px;
+    &:first-of-type{
+        padding-top: 16px !important;
+    }    &:hover{
+        background-color: $color-brand-2;
+    }
+    .notificationContent {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        width: 100%;
+        
+        h5{
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 16px;
+            color: $color-grey-2;
+            margin-bottom: 8px;
+        }
+       
+        p,time,a{
+            color: $color-grey-1;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 15px;
+            margin: 0px;
+        }
+        a{
+            color: $color-brand-1;
+        }
+        time{
+            text-align: right;
+        }
+    }
+    
+   
+}
+
+.notificationItem:last-child {
+    border-bottom: none;
+}
