@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Navbar, Nav, NavDropdown, Modal } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Modal, Badge } from "react-bootstrap";
 import styles from "./Header.module.scss";
 import Image from "next/image";
 import { useAuthUserStore } from "@/stores/useAuthUserStore";
@@ -12,9 +12,12 @@ import usePostJobStore from "@/stores/usePostJobStore";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
-import { getTokenClaims } from "@/helpers/jwt";
+import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
 import { ROLE } from "@/helpers/constants";
 import { Notifications } from "../notifications/Notifications";
+import { useQuery } from "@tanstack/react-query";
+import { getUserNotifications } from "@/apis/notification";
+import { Notification } from "@/stores/useNotificationStore";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
@@ -26,11 +29,32 @@ const Header: React.FC<HeaderProps> = () => {
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
   const { authUser, setAuthUser, role, setRole } = useAuthUserStore();
-
+  const [notifCount,setNotifCount] = useState(0);
+  const [unReadCount,setUnReadCount] = useState(0);
+  const loggedIn = isTokenValid();
+  const {
+    data:notifications,
+    isLoading,
+    error,
+  } = useQuery<Notification[]>({ queryKey: ["user-notifications",loggedIn], queryFn: async ()=>{
+    if(loggedIn){
+      const data = await getUserNotifications()
+      return data
+    }
+    return undefined;
+  },refetchInterval:10000, retry:1 });
   const handleModalClose = () => {
     setShowPostJob(false);
     setShowCreateAgency(false);
   };
+
+  useEffect(()=>{
+    if(notifications){
+      const unread =notifications.filter(x=>!x.dismissed).length;
+      setUnReadCount(unread)
+      setNotifCount(notifications.length);
+    }
+  },[notifCount, notifications])
 
   if (!role) {
     const tokenDetails = getTokenClaims();
@@ -154,7 +178,8 @@ const Header: React.FC<HeaderProps> = () => {
           <Nav className={styles.rightNavItems}>
             <Nav.Link href="javascript:;" onClick={() => {setShowNotification(!showNotification)}} className={styles.notificationTrigger}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
-              {showNotification && <Notifications/>}
+              {!!unReadCount && <Badge className={styles.notificationBadge}>{unReadCount}</Badge>}
+              {showNotification && <Notifications notifications={notifications} isLoading={isLoading} error={error}/>}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}
