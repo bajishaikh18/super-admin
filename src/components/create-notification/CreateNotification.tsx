@@ -77,11 +77,11 @@ function CreateNotification({
       await createNotification(payload);
       setLoading(false);
       toast.success("Notification added successfully");
+      handleClose();
       await queryClient.invalidateQueries({
         queryKey:["notifications"],
         refetchType:'all'
       });     
-      handleClose();
     }catch(e){
       toast.error("Error while adding notification");
       setLoading(false);
