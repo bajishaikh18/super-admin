@@ -91,8 +91,6 @@ function ApplicationReceived() {
   };
 
   const renderReportFields = () => {
-    switch (reportType) {
-      case "Agency Applications Report":
         return (
           <Row>
             <Col>
@@ -142,10 +140,6 @@ function ApplicationReceived() {
             </Col>
           </Row>
         );
-
-      default:
-        return null;
-    }
   };
 
   return (

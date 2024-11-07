@@ -137,7 +137,7 @@ const Header: React.FC<HeaderProps> = () => {
                   className={`${styles.navListItem} ${
                     pathname == "/job-posted" ? styles.active : ""
                   }`}
-                  href="/job-posted"
+                  href="/reports/job-posted"
                 >
                 Job Posted Report
                 </NavDropdown.Item>
@@ -145,7 +145,7 @@ const Header: React.FC<HeaderProps> = () => {
                    className={`${styles.navListItem} ${
                     pathname == "/application-received" ? styles.active : ""
                   }`}
-                  href="/application-received"
+                  href="/reports/application-received"
                 >
                 Applications Received by Agency Report
                 </NavDropdown.Item>
@@ -153,7 +153,7 @@ const Header: React.FC<HeaderProps> = () => {
                   className={`${styles.navListItem} ${
                     pathname == "/job-applied" ? styles.active : ""
                   }`}
-                  href="/job-applied"
+                  href="/reports/job-applied"
                 >
                   Job Applied Report
                 </NavDropdown.Item>
@@ -161,7 +161,7 @@ const Header: React.FC<HeaderProps> = () => {
                   className={`${styles.navListItem} ${
                     pathname == "/user-report" ? styles.active : ""
                   }`}
-                  href="/user-report"
+                  href="/reports/user-report"
                 >
                   Total Users/Candidates Report
                 </NavDropdown.Item>
@@ -169,7 +169,7 @@ const Header: React.FC<HeaderProps> = () => {
                   className={`${styles.navListItem} ${
                     pathname == "/employer-report" ? styles.active : ""
                   }`}
-                  href="/employer-report"
+                  href="/reports/employer-report"
                 >
                   Employers Report
                 </NavDropdown.Item>
