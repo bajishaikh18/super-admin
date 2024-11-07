@@ -12,6 +12,7 @@ import { SelectOption } from "@/helpers/types";
 import CreateEmployerForm from "./CreateEmployer";
 import { FaPlus } from "react-icons/fa6";
 import { toast } from "react-hot-toast";
+import styles from "./EmployerList.module.scss"
 
 
 type TabType = "Active" | "Pending";
@@ -52,7 +53,7 @@ const EmployersList: React.FC = () => {
     value: "adminUserId",
     label: "Employer Id",
   } as SelectOption);
-
+  const queryClient = useQueryClient();
   const debouncedSearchActive = useDebounce(searchActive, 300);
   const debouncedSearchPending = useDebounce(searchPending, 300);
 
@@ -124,6 +125,9 @@ const EmployersList: React.FC = () => {
   const columns = [
     columnHelper.accessor("adminUserId", {
       header: "Employer ID",
+      meta: {
+        classes: "f-5",
+      },
       cell: (info) => {
         const value = info.getValue() || "N/A";
         return (
@@ -137,6 +141,9 @@ const EmployersList: React.FC = () => {
       header: "First Name",
       cell: (info) => info.renderValue() || "N/A",
       enableColumnFilter: true,
+      meta: {
+        classes: "f-5",
+      },
     }),
     columnHelper.accessor("lastName", {
       header: "Last Name",
@@ -166,21 +173,19 @@ const EmployersList: React.FC = () => {
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
-      meta: { filterType: "date" },
+          
+      meta: { filterType: "date",            classes: "f-5",
+      },
     }),
     columnHelper.accessor("status", {
       header: "Status",
       meta: {
-        classes: "capitalize",
-        filterType: "select",
-        selectOptions: [
-          { value: "active", label: "Active" },
-          { value: "inactive", label: "InActive" },
-        ],
+        classes: "capitalize f-5",
+        filter:false
       },
       cell: (info) => {
         return (
-          <div className="status-cont">{info.renderValue() || "N/A"}</div>
+          <div className={`status-cont ${info.getValue() === "pending" ? styles.pending : ""}`}>{info.renderValue() || "N/A"}</div>
         );
       },
     }),
@@ -190,10 +195,15 @@ const EmployersList: React.FC = () => {
     ...columns,
     columnHelper.accessor("action", {
       header: "Action",
+      meta:{
+        classes:"f-7",
+        filter:false
+      
+      },
       cell: (info) => (
-        <div style={{ display: "flex", gap: "20px", cursor: "pointer" }}>
-          <span onClick={() => handleApprove(info.row.original)} style={{ color: "blue" }}>Approve</span>
-          <span onClick={() => handleReject(info.row.original)} style={{ color: "red" }}>Reject</span>
+        <div style={{ display: "flex", gap: "32px", fontSize:"14px",fontWeight:600, cursor: "pointer" }}>
+          <span onClick={() => handleApprove(info.row.original)} className="color-brand-1">Approve</span>
+          <span onClick={() => handleReject(info.row.original)} className="error">Reject</span>
         </div>
       ),
     }),
@@ -202,6 +212,12 @@ const EmployersList: React.FC = () => {
   const handleApprove = async (employer: JobType) => {
     try {
       await updateEmployers(employer._id, "approve");
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          return query.queryKey.includes('employers');
+        },
+        refetchType:'all'
+      })
       toast.success("Employer approved successfully!");
     } catch (error) {
       toast.error("Failed to approve employer.");
@@ -212,6 +228,12 @@ const EmployersList: React.FC = () => {
     try {
       await updateEmployers(employer._id, "reject");
       toast.success("Employer rejected successfully!");
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          return query.queryKey.includes('employers');
+        },
+        refetchType:'all'
+      })
     } catch (error) {
       toast.error("Failed to reject employer.");
     }

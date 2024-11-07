@@ -85,6 +85,11 @@
   animation: spin 1s linear infinite;
 }
 
+.pending{
+  background: $color-warning;
+  color: #fff;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

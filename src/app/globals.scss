@@ -154,6 +154,10 @@ a {
 .error{
   color: $color-danger !important;
 }
+.color-brand-1{
+  color: $color-brand-1  !important;
+}
+
 
 .card{
   border-radius: 8px !important;
@@ -495,7 +499,7 @@ a {
     padding-left: 10px !important;
     padding-right: 10px !important;
   }
-
+  
   .capitalize{
     text-transform: capitalize;
   }
