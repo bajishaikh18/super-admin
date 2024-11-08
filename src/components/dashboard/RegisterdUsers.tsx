@@ -263,6 +263,14 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
             : "N/A",
         meta: { filterType: "date",classes:"f-7" },
       }),
+      columnHelper.accessor("lastLoginDate", {
+        header: "Last access",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+        meta: { filterType: "date",classes:"f-7" },
+      }),
       columnHelper.accessor("status", {
         header: "Status",
         meta: {
