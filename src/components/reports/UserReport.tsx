@@ -3,6 +3,7 @@ import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
 import Select, { MultiValue, ActionMeta } from 'react-select';
 import { useRouter } from 'next/navigation';
+import ReportTable from './JobPostedTable';
 
 interface Option {
   value: string;
@@ -51,6 +52,7 @@ function UserReport() {
   const [duration, setDuration] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
+  const [reportData, setReportData] = useState<any[]>([]);
 
   const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newReportType = event.target.value;
@@ -82,6 +84,13 @@ function UserReport() {
         setSelectedIndustries([]);
       }
     }
+  };
+  const handleSubmit = () => {
+    const exampleData = [
+      { employerId: 'EMP1', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-10-01', status: 'Active' },
+      { employerId: 'EMP2', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-09-15', status: 'Active' },
+    ];
+    setReportData(exampleData);
   };
 
   const renderReportFields = () => {
@@ -124,7 +133,7 @@ function UserReport() {
             </Form.Group>
           </Col>
           <Col>
-            <Button type="submit" className={styles.submitButton}>
+          <Button onClick={handleSubmit} className={styles.submitButton}>
               Submit
             </Button>
           </Col>
@@ -151,11 +160,19 @@ function UserReport() {
         {renderReportFields()}
       </div>
 
-      <div className={styles.generateReportImage}>
-        <Image src="/generate-report.png" alt="Generate Report" width={100} height={100} />
-      </div>
-      <h3>Generate Report</h3>
-      <p>Please select report details you are looking for</p>
+      {reportData.length === 0 && (
+        <div className={styles.generateReportSection}>
+          <div className={styles.generateReportImage}>
+            <Image src={'/generate-report.png'} alt="Generate Report" width={100} height={100} />
+          </div>
+          <h3>Generate Report</h3>
+          <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
+        </div>
+      )}
+
+      {reportData.length > 0 && (
+        <ReportTable data={reportData} />
+      )}
     </div>
   );
 }
