@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
 import Select, { MultiValue, ActionMeta } from 'react-select';
+import { useRouter } from 'next/navigation';
 
 interface Option {
   value: string;
@@ -59,7 +60,9 @@ const CustomOption = (props: {
 };
 
 function JobPosted() {
-  const [reportType, setReportType] = useState('Jobs Posted');
+  const router = useRouter();
+  const [duration, setDuration] = useState('');
+  const [reportType, setReportType] = useState('Job Posted');
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
@@ -88,12 +91,21 @@ function JobPosted() {
     setSelectedIndustries(allIndustriesOption ? industryOptions.slice(1) : selected as Option[]);
   };
 
-  const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setReportType(event.target.value);
+  const handleReportTypeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const newReportType = event.target.value;
+    setReportType(newReportType);
+    router.push(`/reports/${newReportType}`)
+    if (newReportType !== 'Jobs Posted') {
+      setSelectedAgencies([]);
+    }
+    if (newReportType !== 'Jobs Posted') {
+      setDuration("");
+    }
   };
 
   const renderReportFields = () => {
-    if (reportType === "Jobs Posted") {
       return (
         <Row>
           <Col>
@@ -171,8 +183,6 @@ function JobPosted() {
           </Col>
         </Row>
       );
-    }
-    return null;
   };
 
   return (
@@ -182,11 +192,11 @@ function JobPosted() {
           <Form.Label>Report Type</Form.Label>
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
-              <option>Jobs Posted</option>
-              <option>Agency Applications Report</option>
-              <option>Job Applied Report</option>
-              <option>Users Report</option>
-              <option>Employers Applications Report</option>
+                <option value={"job-posted"}>Jobs Posted</option>
+                <option value={"application-received"}>Agency Applications Report</option>
+                <option value={"job-applied"}>Job Applied Report</option>
+                <option value={"user-report"}>Users Report</option>
+                <option value={"employer-report"}>Employers Applications Report</option>
             </Form.Select>
           </Col>
         </Form.Group>

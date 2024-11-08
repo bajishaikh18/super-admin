@@ -37,7 +37,7 @@ const CustomOption = (props: {
 
 function JobApplied() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('Jobs Posted');
+  const [reportType, setReportType] = useState('Job Applied Report');
   const [duration, setDuration] = useState('');
   const [selectedJob, setSelectedJob] = useState<Option[]>([]);
 
@@ -58,7 +58,6 @@ function JobApplied() {
   };
 
   const renderReportFields = () => {
-    if (reportType === 'Job Applied Report') {
       return (
         <Row>
           <Col>
@@ -88,8 +87,6 @@ function JobApplied() {
           </Col>
         </Row>
       );
-    }
-    return null;
   };
 
   return (
@@ -101,9 +98,9 @@ function JobApplied() {
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
               <option value={"job-posted"}>Jobs Posted</option>
               <option value={"application-received"}>Agency Applications Report</option>
-              <option>Job Applied Report</option>
-              <option>Users Report</option>
-              <option>Employers Applications Report</option>
+              <option value={"job-applied"}>Job Applied Report</option>
+              <option value={"user-report"}>Users Report</option>
+              <option value={"employer-report"}>Employers Applications Report</option>
             </Form.Select>
           </Col>
         </Form.Group>
