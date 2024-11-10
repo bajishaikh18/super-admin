@@ -117,9 +117,8 @@ export function DataTable({
   }
   
   if(data.length === 0){
-    return <div style={{minHeight:'20vh'}}><NotFound text="No data found"/></div>
+    return <div style={{minHeight:'50vh'}}><NotFound text="No data found"/></div>
   }
-
   return (
     <div className="app">
       <div
