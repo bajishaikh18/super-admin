@@ -193,7 +193,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       height={18}
                       alt="applie"
                     />
-                    Applied by <Link href={""}>{numberofApplications || 0} Candidates</Link>
+                    Applied by <Link href={`/users/applied/${jobId}?type=job`}>{numberofApplications || 0} Candidates</Link>
                   </li>
                 </ul>
                 <ul className={styles.footerInfo}>

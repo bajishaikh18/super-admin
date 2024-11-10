@@ -41,6 +41,7 @@ export const TableFilter = ({
     if (menuIsOpen) selectEl.blur();
     else selectEl.focus();
   };
+  
   const options: any = columnsHeaders.filter(x=>!x.meta || x.meta?.filter != false).map((x) => {
     return {
       label: x.header,
@@ -231,7 +232,7 @@ export const TableFilter = ({
 
       <div>
         <div className="filter-icon" onClick={openFilter}>
-          <Image src="./filter.svg" alt="filter" width={12} height={12} />
+          <Image src="/filter.svg" alt="filter" width={12} height={12} />
         </div>
       </div>
       <div className="select-container">
