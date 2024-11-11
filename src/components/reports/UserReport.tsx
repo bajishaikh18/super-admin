@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState,useCallback } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
-import Select, { MultiValue, ActionMeta } from 'react-select';
+import { MultiValue, ActionMeta } from 'react-select';
+import { MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { useRouter } from 'next/navigation';
 import ReportTable from './JobPostedTable';
-
+import { debounce } from "lodash";
+import { FieldError, useForm } from "react-hook-form";
+import { getFormattedAgencies } from "@/helpers/asyncOptions";
+import { SelectOption } from "@/helpers/types";
+interface FormValues {
+  industry: SelectOption;
+}
 interface Option {
   value: string;
   label: string;
@@ -48,17 +55,28 @@ const CustomOption = (props: {
 
 function UserReport() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('Users Report');
+  const [reportType, setReportType] = useState('user-report');
   const [duration, setDuration] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+      getFormattedAgencies(inputValue).then(options => callback(options));
+    }, 500),
+    []
+  );
+
+  const {
+    control,
+    formState: { errors, isValid },
+  } = useForm<FormValues>();
 
   const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Users Report') {
+    if (newReportType !== 'user-report') {
       setSelectedUsers([]);
     }
     if (newReportType !== 'Users Report') {
@@ -105,19 +123,18 @@ function UserReport() {
             </Form.Group>
           </Col>
           <Col>
-            <Form.Group className={styles.selectField}>
-              <Form.Label>Industry</Form.Label>
-              <Select
-                options={industryOptions}
-                isMulti
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                components={{ Option: CustomOption }} 
-                onChange={handleIndustryChange}
-                placeholder="Select Industry"
-                value={selectedIndustries}
-                className={styles.customSelect}
-              />
+          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+            <Form.Label>Industry</Form.Label>
+              <MultiSelectAsync
+            name="industry"
+            control={control}
+            error={errors.industry as FieldError}
+            loadOptions={loadOptionsDebounced}
+            rules={{ required: "Industry is required" }}
+            customStyles={{}}
+            menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
+            menuPosition={"fixed"}
+          />
             </Form.Group>
           </Col>
           <Col>

@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useState,useCallback} from "react";
 import styles from "./JobPosted.module.scss";
 import { Form, Button, Row, Col, Image } from "react-bootstrap";
 import Select, { MultiValue, ActionMeta } from "react-select";
 import ReportTable from './JobPostedTable';
 import { useRouter } from "next/navigation";
+import { MultiSelectAsync } from "../common/form-fields/MultiSelect";
+import { debounce } from "lodash";
+import { FieldError, useForm } from "react-hook-form";
+import { getFormattedAgencies } from "@/helpers/asyncOptions";
+import { SelectOption } from "@/helpers/types";
+
+interface FormValues {
+  agency: SelectOption;
+}
 
 interface Option {
   value: string;
@@ -48,20 +57,29 @@ const CustomOption = (props: {
 
 function ApplicationReceived() {
   const router = useRouter();
-  const [reportType, setReportType] = useState("Agency Applications Report");
+  const [reportType, setReportType] = useState("application-received");
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [postID, setPostID] = useState("");
   const [duration, setDuration] = useState("");
   const [reportData, setReportData] = useState<any[]>([]);
 
-
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+      getFormattedAgencies(inputValue).then(options => callback(options));
+    }, 500),
+    []
+  );
+  const {
+    control,
+    formState: { errors, isValid },
+  } = useForm<FormValues>();
   const handleReportTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newReportType = event.target.value;
     setReportType(newReportType);
-    router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Agency Applications Report') {
+    router.push(`/reports/${newReportType}`);
+    if (newReportType !== 'application-received') {
       setSelectedAgencies([]);
     }
     if (newReportType !== 'Agency Applications Report') {
@@ -94,6 +112,7 @@ function ApplicationReceived() {
   ) => {
     setDuration(event.target.value);
   };
+  
   const handleSubmit = () => {
     const exampleData = [
       { employerId: 'EMP1', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-10-01', status: 'Active' },
@@ -102,58 +121,60 @@ function ApplicationReceived() {
     setReportData(exampleData);
   };
 
-
   const renderReportFields = () => {
-        return (
-          <Row>
-            <Col>
-              <Form.Group className={styles.selectField}>
-                <Form.Label>Agency</Form.Label>
-                <Select
-                  options={agencyOptions}
-                  isMulti
-                  closeMenuOnSelect={false}
-                  hideSelectedOptions={false}
-                  components={{ Option: CustomOption }}
-                  onChange={handleAgencyChange}
-                  placeholder="Select Agency"
-                  value={selectedAgencies}
-                  className={styles.customSelect}
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group className={styles.selectField}>
-                <Form.Label>Post ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Post ID"
-                  className={styles.input}
-                  value={postID}
-                  onChange={(e) => setPostID(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group className={styles.selectField}>
-                <Form.Label>Duration</Form.Label>
-                <Form.Select value={duration} onChange={handleDurationChange}>
-                  <option>This Month</option>
-                  <option>Last Month</option>
-                  <option>Last 3 Months</option>
-                  <option>Last 6 Months</option>
-                  <option>Date Range</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col>
-            <Button onClick={handleSubmit} className={styles.submitButton}>
-              Submit
-            </Button>
-            </Col>
-          </Row>
-        );
-      
+    return (
+      <Row>
+        <Col>
+          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+            <Form.Label>Agency</Form.Label>
+            <MultiSelectAsync
+              name="agency"
+              control={control}
+              error={errors.agency as FieldError}
+              loadOptions={loadOptionsDebounced}
+              rules={{ required: "Agency is required" }}
+              customStyles={{}}
+              menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
+              menuPosition={"fixed"}
+            />
+            {errors.agency && (
+              <Form.Control.Feedback type="invalid">
+                {errors.agency.message}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group className={styles.selectField}>
+            <Form.Label>Post ID</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter Post ID"
+              className={styles.input}
+              value={postID}
+              onChange={(e) => setPostID(e.target.value)}
+            />
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group className={styles.selectField}>
+            <Form.Label>Duration</Form.Label>
+            <Form.Select value={duration} onChange={handleDurationChange}>
+              <option>This Month</option>
+              <option>Last Month</option>
+              <option>Last 3 Months</option>
+              <option>Last 6 Months</option>
+              <option>Date Range</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col>
+          <Button onClick={handleSubmit} className={styles.submitButton}>
+            Submit
+          </Button>
+        </Col>
+      </Row>
+    );
   };
 
   return (

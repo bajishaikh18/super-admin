@@ -38,7 +38,7 @@ const CustomOption = (props: {
 
 function JobApplied() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('Job Applied Report');
+  const [reportType, setReportType] = useState('job-applied');
   const [duration, setDuration] = useState('');
   const [selectedJob, setSelectedJob] = useState<Option[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
@@ -48,7 +48,7 @@ function JobApplied() {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Job Applied Report') {
+    if (newReportType !== 'job-applied') {
       setSelectedJob([]);
     }
     if (newReportType !== 'Job Applied Report') {

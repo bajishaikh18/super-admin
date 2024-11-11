@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
-import Select, { MultiValue, ActionMeta } from 'react-select';
 import ReportTable from './JobPostedTable';
 import { useRouter } from 'next/navigation';
 
@@ -39,7 +38,7 @@ const CustomOption = (props: {
 
 function EmployersReport() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('Employers Applications Report');
+  const [reportType, setReportType] = useState('employer-report');
   const [reportData, setReportData] = useState<any[]>([]);
   const [selectedEmployers, setSelectedEmployers] = useState<Option[]>([]);
   const [duration, setDuration] = useState('');
@@ -48,7 +47,7 @@ function EmployersReport() {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Employers Applications Report') {
+    if (newReportType !== 'employer-report') {
       setSelectedEmployers([]);
     }
     if (newReportType !== 'Employers Applications Report') {

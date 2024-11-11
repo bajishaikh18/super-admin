@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback} from 'react';
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
-import Select, { MultiValue, ActionMeta } from 'react-select';
+import { MultiValue, ActionMeta } from 'react-select';
+import { MultiSelectAsync } from "../common/form-fields/MultiSelect";
+import { debounce } from "lodash";
+import { FieldError, useForm } from "react-hook-form";
+import { getFormattedAgencies } from "@/helpers/asyncOptions";
+import { SelectOption } from "@/helpers/types";
 import styles from './JobPosted.module.scss';
 import ReportTable from './JobPostedTable';
 import { useRouter } from 'next/navigation';
 
-
+interface FormValues {
+  agency: SelectOption;
+  country: SelectOption;
+  industry: SelectOption;
+}
 interface Option {
   value: string;
   label: string;
@@ -69,6 +78,17 @@ function JobPosted() {
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+      getFormattedAgencies(inputValue).then(options => callback(options));
+    }, 500),
+    []
+  );
+
+  const {
+    control,
+    formState: { errors, isValid },
+  } = useForm<FormValues>();
 
   const handleAgencyChange = (
     selected: MultiValue<Option>,
@@ -108,7 +128,7 @@ function JobPosted() {
   ) => {
     const newReportType = event.target.value;
     setReportType(newReportType);
-    router.push(`/reports/${newReportType}`)
+    router.push(`/reports/${newReportType}`);
     if (newReportType !== 'Jobs Posted') {
       setSelectedAgencies([]);
     }
@@ -122,50 +142,47 @@ function JobPosted() {
         <Row>
           <Col>
             <Form.Group className={styles.selectField}>
-              <Form.Label>Agency</Form.Label>
-              <Select
-                options={agencyOptions}
-                isMulti
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                components={{ Option: CustomOption }}
-                onChange={handleAgencyChange}
-                placeholder="Select Agency"
-                value={selectedAgencies}
-                className={styles.customSelect}
-              />
+            <Form.Label>Agency</Form.Label>
+            <MultiSelectAsync
+            name="agency"
+            control={control}
+            error={errors.agency as FieldError}
+            loadOptions={loadOptionsDebounced}
+            rules={{ required: "Agency is required" }}
+            customStyles={{}}
+            menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
+            menuPosition={"fixed"}
+          />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group className={styles.selectField}>
               <Form.Label>Country</Form.Label>
-              <Select
-                options={countryOptions}
-                isMulti
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                components={{ Option: CustomOption }}
-                onChange={handleCountryChange}
-                placeholder="Select Country"
-                value={selectedCountries}
-                className={styles.customSelect}
-              />
+              <MultiSelectAsync
+            name="country"
+            control={control}
+            error={errors.country as FieldError}
+            loadOptions={loadOptionsDebounced}
+            rules={{ required: "Country is required" }}
+            customStyles={{}}
+            menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
+            menuPosition={"fixed"}
+          />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group className={styles.selectField}>
               <Form.Label>Industry</Form.Label>
-              <Select
-                options={industryOptions}
-                isMulti
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                components={{ Option: CustomOption }}
-                onChange={handleIndustryChange}
-                placeholder="Select Industry"
-                value={selectedIndustries}
-                className={styles.customSelect}
-              />
+              <MultiSelectAsync
+            name="industry"
+            control={control}
+            error={errors.industry as FieldError}
+            loadOptions={loadOptionsDebounced}
+            rules={{ required: "Industry is required" }}
+            customStyles={{}}
+            menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
+            menuPosition={"fixed"}
+          />
             </Form.Group>
           </Col>
           <Col>
