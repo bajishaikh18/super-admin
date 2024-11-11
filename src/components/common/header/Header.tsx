@@ -22,6 +22,7 @@ import { Notification } from "@/stores/useNotificationStore";
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
 
+
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -108,7 +109,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/posted-jobs" ? styles.active : ""
+                  pathname.includes("posted-jobs") ? styles.active : ""
                 }`}
                 href="/posted-jobs"
               >
@@ -119,7 +120,7 @@ const Header: React.FC<HeaderProps> = () => {
               {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/walk-in" ? styles.active : ""
+                  pathname.includes("walk-in") ? styles.active : ""
                 }`}
                 href="/walk-in"
               >
@@ -130,7 +131,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/agency" ? styles.active : ""
+                  pathname.includes("/agency") ? styles.active : ""
                 }`}
                 href="/agency"
               >
@@ -141,7 +142,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/users" ? styles.active : ""
+                  pathname.includes("/users") ? styles.active : ""
                 }`}
                 href="/users"
               >
