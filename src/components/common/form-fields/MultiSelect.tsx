@@ -12,12 +12,13 @@ export const MultiSelect = ({
   error,
   rules,
   defaultValue,
+  onChange,
   customStyles,
   valueContainerStyles={},
   menuListStyles={},
   filterFn,
   menuPortalTarget,
-  menuPosition
+  menuPosition,
 }: {
   name: string;
   control: Control<any, any>;
@@ -34,6 +35,7 @@ export const MultiSelect = ({
   menuPosition?:any,
   menuListStyles?:any
   filterFn?:any
+  onChange: (selected: any, actionMeta: any) => void;
 }) => {
   return (
     <div>

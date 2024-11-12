@@ -1,13 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Image, InputGroup } from "react-bootstrap";
 import { MultiValue, ActionMeta } from "react-select";
-import {
-  MultiSelect,
-  MultiSelectAsync,
-} from "../common/form-fields/MultiSelect";
-import { debounce } from "lodash";
+import { MultiSelect } from "../common/form-fields/MultiSelect";  // Assuming MultiSelect is a custom component
 import { FieldError, useForm } from "react-hook-form";
-import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
 import ReportTable from "./JobPostedTable";
@@ -15,12 +10,14 @@ import { useRouter } from "next/navigation";
 import { COUNTRIES } from "@/helpers/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GetCountries } from "react-country-state-city";
+import { getReports } from "@/apis/dashboard";
 
 interface FormValues {
   agency: SelectOption;
   country: SelectOption;
   industry: SelectOption;
 }
+
 interface Option {
   value: string;
   label: string;
@@ -34,7 +31,6 @@ const agencyOptions: Option[] = [
   { value: "cerner", label: "Cerner HR Consulting" },
   { value: "continental", label: "Continental Holdings INC." },
 ];
-
 const countryOptions: Option[] = [
   { value: "all", label: "All" },
   { value: "dubai", label: "Dubai" },
@@ -53,33 +49,6 @@ const industryOptions: Option[] = [
   { value: "agriculture", label: "Agriculture" },
 ];
 
-const CustomOption = (props: {
-  data: Option;
-  innerRef: React.Ref<HTMLDivElement>;
-  innerProps: any;
-  isSelected: boolean;
-}) => {
-  const { data, innerRef, innerProps, isSelected } = props;
-
-  return (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{ display: "flex", alignItems: "center", padding: "2px" }}
-    >
-      {data.value !== "all" && (
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => null}
-          style={{ marginRight: "4px" }}
-        />
-      )}
-      {data.label}
-    </div>
-  );
-};
-
 function JobPosted() {
   const router = useRouter();
   const [duration, setDuration] = useState("");
@@ -90,26 +59,14 @@ function JobPosted() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [countriesList, setCountriesList] = useState([]);
 
-  const loadOptionsDebounced = useCallback(
-    debounce((inputValue: string, callback: (options: any) => void) => {
-      getFormattedAgencies(inputValue).then((options) => callback(options));
-    }, 500),
-    []
-  );
-
-  const {
-    control,
-    formState: { errors, isValid },
-  } = useForm<FormValues>();
+  const { control, formState: { errors, isValid } } = useForm<FormValues>();
 
   const handleAgencyChange = (
     selected: MultiValue<Option>,
     actionMeta: ActionMeta<Option>
   ) => {
     const allAgenciesOption = selected.find((option) => option.value === "all");
-    setSelectedAgencies(
-      allAgenciesOption ? agencyOptions.slice(1) : (selected as Option[])
-    );
+    setSelectedAgencies(allAgenciesOption ? agencyOptions.slice(1) : (selected as Option[]));
   };
 
   const handleCountryChange = (
@@ -124,6 +81,7 @@ function JobPosted() {
     );
   };
 
+
   const handleIndustryChange = (
     selected: MultiValue<Option>,
     actionMeta: ActionMeta<Option>
@@ -131,37 +89,22 @@ function JobPosted() {
     const allIndustriesOption = selected.find(
       (option) => option.value === "all"
     );
-    setSelectedIndustries(
-      allIndustriesOption ? industryOptions.slice(1) : (selected as Option[])
-    );
+    setSelectedIndustries(allIndustriesOption ? industryOptions.slice(1) : (selected as Option[]));
   };
 
-  const handleSubmit = () => {
-    const exampleData = [
-      {
-        employerId: "EMP1",
-        companyName: "N/A",
-        firstName: "N/A",
-        lastName: "N/A",
-        mobile: "N/A",
-        landline: "N/A",
-        email: "N/A",
-        regDate: "2023-10-01",
-        status: "Active",
-      },
-      {
-        employerId: "EMP2",
-        companyName: "N/A",
-        firstName: "N/A",
-        lastName: "N/A",
-        mobile: "N/A",
-        landline: "N/A",
-        email: "N/A",
-        regDate: "2023-09-15",
-        status: "Active",
-      },
-    ];
-    setReportData(exampleData);
+  const handleSubmit = async () => {
+    try {
+      const reports = await getReports(
+        reportType,
+        selectedAgencies.map((agency) => agency.value).join(','),
+        selectedCountries.map((country) => country.value).join(','),
+        selectedIndustries.map((industry) => industry.value).join(','),
+        duration
+      );
+      setReportData(reports);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+    }
   };
 
   const handleReportTypeChange = (
@@ -209,17 +152,14 @@ function JobPosted() {
         <Col>
           <Form.Group className={styles.selectField}>
             <Form.Label>Agency</Form.Label>
-            <MultiSelectAsync
+            <MultiSelect
               name="agency"
               control={control}
               error={errors.agency as FieldError}
-              loadOptions={loadOptionsDebounced}
-              rules={{ required: "Agency is required" }}
+              options={agencyOptions}
+              onChange={handleAgencyChange}
               customStyles={{}}
-              menuPortalTarget={
-                document.getElementsByClassName("modal")[0] as HTMLElement
-              }
-              menuPosition={"fixed"}
+              rules={{ required: "Agency is required" }}
             />
           </Form.Group>
         </Col>
@@ -245,17 +185,14 @@ function JobPosted() {
         <Col>
           <Form.Group className={styles.selectField}>
             <Form.Label>Industry</Form.Label>
-            <MultiSelectAsync
+            <MultiSelect
               name="industry"
               control={control}
               error={errors.industry as FieldError}
-              loadOptions={loadOptionsDebounced}
-              rules={{ required: "Industry is required" }}
+              options={industryOptions}
+              onChange={handleIndustryChange}
               customStyles={{}}
-              menuPortalTarget={
-                document.getElementsByClassName("modal")[0] as HTMLElement
-              }
-              menuPosition={"fixed"}
+              rules={{ required: "Industry is required" }}
             />
           </Form.Group>
         </Col>
@@ -296,14 +233,10 @@ function JobPosted() {
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
               <option value={"job-posted"}>Jobs Posted</option>
-              <option value={"application-received"}>
-                Agency Applications Report
-              </option>
+              <option value={"application-received"}>Agency Applications Report</option>
               <option value={"job-applied"}>Job Applied Report</option>
               <option value={"user-report"}>Users Report</option>
-              <option value={"employer-report"}>
-                Employers Applications Report
-              </option>
+              <option value={"employer-report"}>Employers Applications Report</option>
             </Form.Select>
           </Col>
         </Form.Group>
@@ -313,18 +246,10 @@ function JobPosted() {
       {reportData.length === 0 && (
         <div className={styles.generateReportSection}>
           <div className={styles.generateReportImage}>
-            <Image
-              src={"/generate-report.png"}
-              alt="Generate Report"
-              width={100}
-              height={100}
-            />
+            <Image src={"/generate-report.png"} alt="Generate Report" width={100} height={100} />
           </div>
           <h3>Generate Report</h3>
-          <p>
-            Generate the report by selecting the appropriate filters above and
-            clicking Submit
-          </p>
+          <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
         </div>
       )}
 

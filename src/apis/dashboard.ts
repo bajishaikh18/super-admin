@@ -53,3 +53,34 @@ export const getUsers = async (type:string,start: number,size:number,filter:stri
     throw error;
   }
 };
+
+export const getReports = async (
+  type: string,
+  agency?: string,
+  country?: string,
+  industry?: string,
+  category?: string,
+  duration?: string,
+  postId?: string,
+  jobTitle?: string,
+  employer?: string
+) => {
+  try {
+    const response = await apiClient.get(`/dashboard/reports`,{
+      params: {
+        type: type,
+        agency,
+        country,
+        industry,
+        category,
+        duration,
+        postId,
+        jobTitle,
+        employer
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

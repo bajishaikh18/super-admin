@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 import { useDebounce } from "@uidotdev/usehooks";
 import styles from "./JobPosted.module.scss";
 import Link from "next/link";
+import * as XLSX from "xlsx";
 
 
 type ReportData = {
@@ -99,8 +100,13 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   );
 
   const totalCount = data.length;
-  const handleSelectFormat = (format: string) => {
-    setSelectedFormat(format); 
+
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data); // Convert JSON data to worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "JobPostedReport");
+
+    XLSX.writeFile(workbook, "JobPostedReport.xlsx");
   };
 
   return (
@@ -115,7 +121,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item href="/pdf">PDF</Dropdown.Item>
+              <Dropdown.Item onClick={downloadExcel}>Excel</Dropdown.Item>
                 <Dropdown.Item href="/csv">CSV</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
