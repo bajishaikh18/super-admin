@@ -1,6 +1,6 @@
 import { SelectOption } from "@/helpers/types";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Dropdown, Form, InputGroup } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import { BsCalendar2, BsFilter, BsSearch } from "react-icons/bs";
@@ -41,6 +41,27 @@ export const TableFilter = ({
     if (menuIsOpen) selectEl.blur();
     else selectEl.focus();
   };
+
+  const outsideClose = (e: any) => {
+    let filterDiv = document.getElementById("filter-sec");
+    if (
+      filterDiv &&
+      !filterDiv?.contains(e.target) &&
+      ref?.current !== undefined
+    ) {
+      setMenuIsOpen(false)
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", (e: any) => outsideClose(e));
+    return () => {
+       document.removeEventListener("mousedown", (e: any) =>
+        outsideClose(e)
+       );
+     };
+  }, []);
+
   const options: any = columnsHeaders.filter(x=>!x.meta || x.meta?.filter != false).map((x) => {
     return {
       label: x.header,
@@ -49,6 +70,8 @@ export const TableFilter = ({
       selectOptions: x.meta?.selectOptions
     };
   });
+  console.log(search)
+
   return (
     <div className="filter-section ms-auto">
       {
@@ -90,6 +113,7 @@ export const TableFilter = ({
                 <BsSearch fontSize={12} />
               </InputGroup.Text>
               <Select
+                key={field.value}
                 options={dropDownOptions}
                 isMulti={false}
                 placeholder={`Select ${field.label}`}
@@ -228,7 +252,7 @@ export const TableFilter = ({
           ),
         }[type]
       }
-
+      <div id="filter-sec">
       <div>
         <div className="filter-icon" onClick={openFilter}>
           <Image src="./filter.svg" alt="filter" width={12} height={12} />
@@ -279,6 +303,7 @@ export const TableFilter = ({
           value={field}
           closeMenuOnSelect={true}
         />
+      </div>
       </div>
     </div>
   );

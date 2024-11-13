@@ -225,7 +225,7 @@ const WalkInPostingImage = ({
                 >
                   {typeof formData?.interviewDate === "string" ? DateTime.fromISO(formData.interviewDate).toFormat(
                     "dd MMM yyyy hh:mm a"
-                  ) : DateTime.fromObject(formData?.interviewDate as any).toFormat(
+                  ) : DateTime.fromJSDate(formData?.interviewDate as any).toFormat(
                     "dd MMM yyyy hh:mm a"
                   )}
                 </p>

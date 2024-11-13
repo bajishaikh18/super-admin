@@ -177,7 +177,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
         header: "Industry",
         cell: (info) => info.renderValue() || "N/A",
         meta: {
-          classes: "capitalize",
+          classes: "capitalize f-9",
           filterType: "select",
           selectOptions: Object.entries(INDUSTRIES).map(([value, label]) => ({
             value: value,
@@ -228,11 +228,11 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
             "N/A"
           );
         },
-        meta: { filter: false },
+        meta: { filter: false,classes:'f-8' },
         header: "CV Availability",
       }),
       columnHelper.accessor("workVideo", {
-        meta: { filter: false },
+        meta: { filter: false,classes:'f-7' },
         cell: (info) => {
           return info.getValue()?.keyName ? (
             <Link
@@ -257,6 +257,14 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
       }),
       columnHelper.accessor("createdAt", {
         header: "Regd. date",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+        meta: { filterType: "date",classes:"f-7" },
+      }),
+      columnHelper.accessor("lastLoginDate", {
+        header: "Last access",
         cell: (info) =>
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")

@@ -39,7 +39,7 @@ const PostedJobs = () => {
       label: "Agencies",
       value: summaryData?.agenciesCount || "0",
       image: "/employers.png",
-      link: '/posted-jobs'
+      link: '/agency'
     },
   ];
 

@@ -62,6 +62,7 @@ const JobCard = ({
 
   return (
     <>
+              <div className={`${agencyStyles.overFlowSection} scroll-box`}>
       {data.jobs.map((job: JobType) => {
         return (
           <>
@@ -127,6 +128,7 @@ const JobCard = ({
           </>
         );
       })}
+      </div>
     </>
   );
 };

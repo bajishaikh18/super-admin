@@ -165,6 +165,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         })
       }else{
         res = await createJobMutation.mutateAsync(jobData);
+        if(!selectedFile)
         await queryClient.invalidateQueries({
           predicate: (query) => {
             console.log(query.queryKey ,query.queryKey.includes('jobs'))
@@ -179,11 +180,18 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           await uploadFile(resp.uploadurl, selectedFile!);
           await updateJob(res.job._id! || formData?._id!, { imageUrl: resp.keyName });
           setRefreshImage(true)
+          await queryClient.invalidateQueries({
+            predicate: (query) => {
+              console.log(query.queryKey ,query.queryKey.includes('jobs'))
+              return query.queryKey.includes('jobs');
+            },
+            refetchType:'all'
+          })
         }
       }
       setFormData({_id: res.job?._id,...data});
       setNewlyCreatedJob(res.job)
-      toast.success(`Job ${isEdit?'created':'updated'} successfully`)
+      toast.success(`Job ${isEdit?'updated':'created'} successfully`)
       handleCreateJobClick();
       setLoading(false);
     } catch (error) {

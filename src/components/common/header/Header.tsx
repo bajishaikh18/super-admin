@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Navbar, Nav, NavDropdown, Modal } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Modal, Badge } from "react-bootstrap";
 import styles from "./Header.module.scss";
 import Image from "next/image";
 import { useAuthUserStore } from "@/stores/useAuthUserStore";
@@ -12,23 +12,50 @@ import usePostJobStore from "@/stores/usePostJobStore";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
-import { getTokenClaims } from "@/helpers/jwt";
+import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
 import { ROLE } from "@/helpers/constants";
+import { Notifications } from "../notifications/Notifications";
+import { useQuery } from "@tanstack/react-query";
+import { getUserNotifications } from "@/apis/notification";
+import { Notification } from "@/stores/useNotificationStore";
 
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
 
+
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [showNotification, setShowNotification] = useState(false);
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
   const { authUser, setAuthUser, role, setRole } = useAuthUserStore();
-
+  const [notifCount,setNotifCount] = useState(0);
+  const [unReadCount,setUnReadCount] = useState(0);
+  const loggedIn = isTokenValid();
+  const {
+    data:notifications,
+    isLoading,
+    error,
+  } = useQuery<Notification[]>({ queryKey: ["user-notifications",loggedIn], queryFn: async ()=>{
+    if(loggedIn){
+      const data = await getUserNotifications()
+      return data
+    }
+    return undefined;
+  },refetchInterval:10000, retry:1 });
   const handleModalClose = () => {
     setShowPostJob(false);
     setShowCreateAgency(false);
   };
+
+  useEffect(()=>{
+    if(notifications){
+      const unread =notifications.filter(x=>!x.dismissed).length;
+      setUnReadCount(unread)
+      setNotifCount(notifications.length);
+    }
+  },[notifCount, notifications])
 
   if (!role) {
     const tokenDetails = getTokenClaims();
@@ -82,7 +109,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/posted-jobs" ? styles.active : ""
+                  pathname.includes("posted-jobs") ? styles.active : ""
                 }`}
                 href="/posted-jobs"
               >
@@ -93,7 +120,7 @@ const Header: React.FC<HeaderProps> = () => {
               {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/walk-in" ? styles.active : ""
+                  pathname.includes("walk-in") ? styles.active : ""
                 }`}
                 href="/walk-in"
               >
@@ -104,7 +131,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/agency" ? styles.active : ""
+                  pathname.includes("/agency") ? styles.active : ""
                 }`}
                 href="/agency"
               >
@@ -115,7 +142,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/users" ? styles.active : ""
+                  pathname.includes("/users") ? styles.active : ""
                 }`}
                 href="/users"
               >
@@ -123,9 +150,14 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
             {shouldVisible([ROLE.admin, ROLE.superAdmin]) && (
-              <Link className={styles.navListItem} href="#employers">
-                Employers
-              </Link>
+              <Link
+              className={`${styles.navListItem} ${
+                pathname == "/employers" ? styles.active : ""
+              }`}
+              href="/employers"
+            >
+              Employers
+            </Link>
             )}
 
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
@@ -179,8 +211,10 @@ const Header: React.FC<HeaderProps> = () => {
 
 
           <Nav className={styles.rightNavItems}>
-            <Nav.Link onClick={() => {}} className={styles.faBell}>
+            <Nav.Link href="javascript:;" onClick={() => {setShowNotification(!showNotification)}} className={styles.notificationTrigger}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
+              {!!unReadCount && <Badge className={styles.notificationBadge}>{unReadCount}</Badge>}
+              {showNotification && <Notifications notifications={notifications} isLoading={isLoading} error={error}/>}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}
@@ -265,6 +299,7 @@ const Header: React.FC<HeaderProps> = () => {
           <CreateAgency handleModalClose={handleModalClose} />
         )}
       </Modal>
+   
     </>
   );
 };

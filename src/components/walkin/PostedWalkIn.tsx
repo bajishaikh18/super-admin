@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
-import { getInterviews, getInterviewSummary } from "@/apis/walkin";
+import { getInterviews,  } from "@/apis/walkin";
 import { DateTime } from "luxon";
 import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -233,7 +233,7 @@ const PostedWakInTable: React.FC = () => {
     }),
     columnHelper.accessor("interviewDate", {
       header: "Interview Date & Time",
-      cell: (info) => DateTime.fromISO(info.getValue()).toFormat("dd MMM yyyy hh:ss a"),
+      cell: (info) => DateTime.fromISO(info.getValue()).toFormat("dd MMM yyyy hh:mm a"),
       meta: { filterType: "dateTime" },
     }),
     columnHelper.accessor("imageUrl", {

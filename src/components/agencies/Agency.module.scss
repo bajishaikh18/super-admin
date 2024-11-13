@@ -23,6 +23,13 @@
     align-items: center;
     gap: 8px;
 }
+.overFlowSection{
+    max-height: 75vh;
+    padding-right: 32px;
+    overflow-y: auto;
+    margin-right: -32px;
+  }
+  
 .agencyInfoList{
     border-bottom: 1px solid $color-border-grey;
     padding-bottom: 32px;

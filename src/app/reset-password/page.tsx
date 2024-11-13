@@ -36,7 +36,7 @@ function Reset() {
       setCode(codeParam);
       setEmail(emailFromParams);  
     }
-  }, []);
+  }, [codeParam,emailFromParams]);
 
   const onResetPasswordSubmit = async (data: FormValues) => {
     if (data.password !== data.confirmPassword) {
