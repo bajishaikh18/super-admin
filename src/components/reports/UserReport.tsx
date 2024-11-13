@@ -1,8 +1,8 @@
 import React, { useState,useCallback } from 'react';
-import styles from './JobPosted.module.scss';
+import styles from "./JobPosted.module.scss";
 import { Form, Button, Row, Col, Image } from 'react-bootstrap';
 import { MultiValue, ActionMeta } from 'react-select';
-import { MultiSelectAsync } from "../common/form-fields/MultiSelect";
+import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { useRouter } from 'next/navigation';
 import ReportTable from './JobPostedTable';
 import { debounce } from "lodash";
@@ -123,20 +123,19 @@ function UserReport() {
             </Form.Group>
           </Col>
           <Col>
-          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+          <Form.Group className={styles.selectField}>
             <Form.Label>Industry</Form.Label>
-              <MultiSelectAsync
-            name="industry"
-            control={control}
-            error={errors.industry as FieldError}
-            loadOptions={loadOptionsDebounced}
-            rules={{ required: "Industry is required" }}
-            customStyles={{}}
-            menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
-            menuPosition={"fixed"}
-          />
-            </Form.Group>
-          </Col>
+            <MultiSelect
+              name="industry"
+              control={control}
+              error={errors.industry as FieldError}
+              options={industryOptions}
+              onChange={handleIndustryChange}
+              customStyles={{}}
+              rules={{ required: "Industry is required" }}
+            />
+          </Form.Group>
+        </Col>
           <Col>
             <Form.Group className={styles.selectField}>
               <Form.Label>Duration</Form.Label>

@@ -4,7 +4,7 @@ import { Form, Button, Row, Col, Image } from "react-bootstrap";
 import Select, { MultiValue, ActionMeta } from "react-select";
 import ReportTable from './JobPostedTable';
 import { useRouter } from "next/navigation";
-import { MultiSelectAsync } from "../common/form-fields/MultiSelect";
+import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
 import { debounce } from "lodash";
 import { FieldError, useForm } from "react-hook-form";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
@@ -125,23 +125,17 @@ function ApplicationReceived() {
     return (
       <Row>
         <Col>
-          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+          <Form.Group className={styles.selectField}>
             <Form.Label>Agency</Form.Label>
-            <MultiSelectAsync
+            <MultiSelect
               name="agency"
               control={control}
               error={errors.agency as FieldError}
-              loadOptions={loadOptionsDebounced}
-              rules={{ required: "Agency is required" }}
+              options={agencyOptions}
+              onChange={handleAgencyChange}
               customStyles={{}}
-              menuPortalTarget={document.getElementsByClassName("modal")[0] as HTMLElement}
-              menuPosition={"fixed"}
+              rules={{ required: "Agency is required" }}
             />
-            {errors.agency && (
-              <Form.Control.Feedback type="invalid">
-                {errors.agency.message}
-              </Form.Control.Feedback>
-            )}
           </Form.Group>
         </Col>
         <Col>
