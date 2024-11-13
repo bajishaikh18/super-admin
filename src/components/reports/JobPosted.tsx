@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Button, Row, Col, Image, InputGroup } from "react-bootstrap";
 import { MultiValue, ActionMeta } from "react-select";
-import { MultiSelect } from "../common/form-fields/MultiSelect"; 
+import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect"; 
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
@@ -9,6 +9,8 @@ import ReportTable from "./JobPostedTable";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getReports } from "@/apis/dashboard";
+import { debounce } from "lodash";
+import { getFormattedAgencies, getFormattedJobTitles } from "@/helpers/asyncOptions";
 
 interface FormValues {
   agency: SelectOption;
@@ -21,14 +23,7 @@ interface Option {
   label: string;
 }
 
-const agencyOptions: Option[] = [
-  { value: "all", label: "All Agencies" },
-  { value: "muthu", label: "Muthu International" },
-  { value: "aldhia", label: "Aldhia HR Consultants" },
-  { value: "falcon", label: "Falcon Human Resources" },
-  { value: "cerner", label: "Cerner HR Consulting" },
-  { value: "continental", label: "Continental Holdings INC." },
-];
+
 const countryOptions: Option[] = [
   { value: "all", label: "All" },
   { value: "dubai", label: "Dubai" },
@@ -64,7 +59,6 @@ function JobPosted() {
     actionMeta: ActionMeta<Option>
   ) => {
     const allAgenciesOption = selected.find((option) => option.value === "all");
-    setSelectedAgencies(allAgenciesOption ? agencyOptions.slice(1) : (selected as Option[]));
   };
 
   const handleCountryChange = (
@@ -94,7 +88,7 @@ function JobPosted() {
     try {
       const reports = await getReports(
         reportType,
-        selectedAgencies.map((agency) => agency.value).join(','),
+        "",
         selectedCountries.map((country) => country.value).join(','),
         selectedIndustries.map((industry) => industry.value).join(','),
         duration
@@ -125,6 +119,13 @@ function JobPosted() {
     },
   });
 
+
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+        getFormattedAgencies(inputValue).then(options => callback(options))
+    }, 500),
+    []
+  );
   const country: any = watch("country");
 
 
@@ -134,15 +135,16 @@ function JobPosted() {
         <Col>
           <Form.Group className={styles.selectField}>
             <Form.Label>Agency</Form.Label>
-            <MultiSelect
-              name="agency"
-              control={control}
-              error={errors.agency as FieldError}
-              options={agencyOptions}
-              onChange={handleAgencyChange}
-              customStyles={{}}
-              rules={{ required: "Agency is required" }}
-            />
+            <MultiSelectAsync
+                name="agency"
+                control={control}
+                error={errors.agency as FieldError}
+                loadOptions={loadOptionsDebounced}
+                rules={{ required: "Agency is required" }}
+                customStyles={{}}
+                menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                menuPosition={"fixed"}
+                />
           </Form.Group>
         </Col>
         <Col>
