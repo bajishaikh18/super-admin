@@ -135,9 +135,9 @@ const Header: React.FC<HeaderProps> = () => {
               >
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
-                    pathname == "/job-posted" ? styles.active : ""
+                    pathname == "/jobs-posted" ? styles.active : ""
                   }`}
-                  href="/reports/job-posted"
+                  href="/reports/jobs-posted"
                 >
                 Job Posted Report
                 </NavDropdown.Item>

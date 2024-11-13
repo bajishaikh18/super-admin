@@ -42,7 +42,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
       columnHelper.accessor("employerId", {
         header: "Employer Id",
         cell: (info) => (
-          <Link href={`/job-posted/${info.getValue()}`}>{info.getValue()}</Link>
+          <Link href={`/jobs-posted/${info.getValue()}`}>{info.getValue()}</Link>
         ), 
         meta: {
           classes: "f-3",

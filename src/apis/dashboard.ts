@@ -79,6 +79,7 @@ export const getReports = async (
         employer
       }
     });
+    console.log("API Response:", response.data);
     return response.data;
   } catch (error) {
     throw error;

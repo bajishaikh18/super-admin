@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Row, Col, Image, InputGroup } from "react-bootstrap";
 import { MultiValue, ActionMeta } from "react-select";
-import { MultiSelect } from "../common/form-fields/MultiSelect";  // Assuming MultiSelect is a custom component
+import { MultiSelect } from "../common/form-fields/MultiSelect"; 
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
 import ReportTable from "./JobPostedTable";
 import { useRouter } from "next/navigation";
-import { COUNTRIES } from "@/helpers/constants";
 import { useQuery } from "@tanstack/react-query";
-import { GetCountries } from "react-country-state-city";
 import { getReports } from "@/apis/dashboard";
 
 interface FormValues {
@@ -52,7 +50,7 @@ const industryOptions: Option[] = [
 function JobPosted() {
   const router = useRouter();
   const [duration, setDuration] = useState("");
-  const [reportType, setReportType] = useState("Job Posted");
+  const [reportType, setReportType] = useState("Jobs Posted");
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
@@ -129,22 +127,6 @@ function JobPosted() {
 
   const country: any = watch("country");
 
-  const { data: countries } = useQuery({
-    queryKey: ["countries"],
-    queryFn: async () => {
-      const countriesList = await GetCountries();
-      const neededCountries = countriesList.filter(
-        (x: any) => COUNTRIES[x.iso2.toLowerCase() as "bh"]
-      );
-      const countryList = neededCountries.map((x: any) => ({
-        value: x.iso2,
-        label: x.name,
-      }));
-      setCountriesList(countryList);
-      return neededCountries;
-    },
-    retry: 3,
-  });
 
   const renderReportFields = () => {
     return (
@@ -167,18 +149,13 @@ function JobPosted() {
           <Form.Group className={styles.selectField}>
             <Form.Label>Country</Form.Label>
             <MultiSelect
-              name={`country`}
+              name="country"
               control={control}
-              // @ts-ignore
-              error={errors[`country`]}
-              options={countriesList}
-              defaultValue={""}
+              error={errors.country as FieldError}
+              options={countryOptions}
+              onChange={handleCountryChange}
               customStyles={{}}
               rules={{ required: "Country is required" }}
-              menuPortalTarget={
-                document.getElementsByClassName("modal")[0] as HTMLElement
-              }
-              menuPosition={"fixed"}
             />
           </Form.Group>
         </Col>
@@ -232,7 +209,7 @@ function JobPosted() {
           <Form.Label>Report Type</Form.Label>
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
-              <option value={"job-posted"}>Jobs Posted</option>
+              <option value={"jobs-posted"}>Jobs Posted</option>
               <option value={"application-received"}>Agency Applications Report</option>
               <option value={"job-applied"}>Job Applied Report</option>
               <option value={"user-report"}>Users Report</option>

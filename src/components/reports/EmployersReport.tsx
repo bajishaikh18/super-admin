@@ -114,7 +114,7 @@ function EmployersReport() {
           <Form.Label>Report Type</Form.Label>
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
-                <option value={"job-posted"}>Jobs Posted</option>
+                <option value={"jobs-posted"}>Jobs Posted</option>
                 <option value={"application-received"}>Agency Applications Report</option>
                 <option value={"job-applied"}>Job Applied Report</option>
                 <option value={"user-report"}>Users Report</option>
