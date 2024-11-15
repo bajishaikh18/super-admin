@@ -11,14 +11,14 @@ import * as XLSX from "xlsx";
 
 
 type ReportData = {
-  employerId: string;
+  agencyId: string;
   companyName: string;
   firstName: string;
   lastName: string;
-  mobile: string;
+  contactNumbers: string;
   landline: string;
   email: string;
-  regDate: string;
+  createdAt: string;
   status: string;
 };
 
@@ -39,7 +39,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   const columnHelper = createColumnHelper<ReportData>();
   const columns = useMemo(
     () => [
-      columnHelper.accessor("employerId", {
+      columnHelper.accessor("agencyId", {
         header: "Employer Id",
         cell: (info) => (
           <Link href={`/jobs-posted/${info.getValue()}`}>{info.getValue()}</Link>
@@ -60,7 +60,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
         header: "Last Name",
         cell: (info) => info.renderValue(),
       }),
-      columnHelper.accessor("mobile", {
+      columnHelper.accessor("contactNumbers", {
         header: "Mobile No.",
         cell: (info) => info.renderValue(),
       }),
@@ -72,7 +72,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
         header: "Company Email ID",
         cell: (info) => info.renderValue(),
       }),
-      columnHelper.accessor("regDate", {
+      columnHelper.accessor("createdAt", {
         header: "Regd. Date",
         cell: (info) =>
           info.renderValue()

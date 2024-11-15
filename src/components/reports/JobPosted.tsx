@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Form, Button, Row, Col, Image, InputGroup } from "react-bootstrap";
+import React, { useState, useCallback } from "react";
+import { Form, Button, Row, Col, Image, Spinner} from "react-bootstrap";
 import { MultiValue, ActionMeta } from "react-select";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect"; 
-import { FieldError, useForm } from "react-hook-form";
+import { FieldError, useForm, } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
 import ReportTable from "./JobPostedTable";
@@ -11,18 +11,29 @@ import { useQuery } from "@tanstack/react-query";
 import { getReports } from "@/apis/dashboard";
 import { debounce } from "lodash";
 import { getFormattedAgencies, getFormattedJobTitles } from "@/helpers/asyncOptions";
+import { COUNTRIES } from "@/helpers/constants";
+
 
 interface FormValues {
+  reporttype: SelectOption;
   agency: SelectOption;
   country: SelectOption;
   industry: SelectOption;
+  category: SelectOption;
+  duration: SelectOption;
 }
 
 interface Option {
   value: string;
   label: string;
 }
-
+const reportTypeOptions: Option[] = [
+  { value: "jobs-posted", label: "Jobs Posted" },
+  { value: "application-received", label: "Agency Applications Report" },
+  { value: "job-applied", label: "Job Applied Report" },
+  { value: "user-report", label: "Users Report" },
+  { value: "employer-report", label: "Employers Applications Report" },
+];
 
 const countryOptions: Option[] = [
   { value: "all", label: "All" },
@@ -41,18 +52,31 @@ const industryOptions: Option[] = [
   { value: "mining", label: "Mining" },
   { value: "agriculture", label: "Agriculture" },
 ];
+const categoryOptions: Option[] = [
+  { value: "all", label: "All" },
+  
+];
+const durationOptions: Option[] = [
+  { value: "this month", label: "This Month" },
+  { value: "last month", label: "Last Month" },
+  { value: "last 3 months", label: "Last 3 months" },
+  { value: "last 6 months", label: "Last 6 months" },
+  { value: "data range", label: "Data Range" },
+];
 
 function JobPosted() {
   const router = useRouter();
-  const [duration, setDuration] = useState("");
+  const [loading, setLoading] = useState(false); 
   const [reportType, setReportType] = useState("Jobs Posted");
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<Option[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Option[]>([]);
+  const [selectedDuration, setSelectedDuration] = useState<Option[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
-  const [countriesList, setCountriesList] = useState([]);
 
   const { control, formState: { errors, isValid } } = useForm<FormValues>();
+  
 
   const handleAgencyChange = (
     selected: MultiValue<Option>,
@@ -83,19 +107,44 @@ function JobPosted() {
     );
     setSelectedIndustries(allIndustriesOption ? industryOptions.slice(1) : (selected as Option[]));
   };
+  const handleCategoryChange = (
+    selected: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    const allCategoriesOption = selected.find(
+      (option) => option.value === "all"
+    );
+    setSelectedCategories(allCategoriesOption ? categoryOptions.slice(1) : (selected as Option[]));
+  };
+  const handleDurationChange = (
+    selected: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    const allDurationOption = selected.find(
+      (option) => option.value === "all"
+    );
+    setSelectedDuration(allDurationOption ? durationOptions.slice(1) : (selected as Option[]));
+  };
+
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
-      const reports = await getReports(
+      const response = await getReports(
         reportType,
-        "",
+        selectedAgencies.map((agency) => agency.value).join(','),
         selectedCountries.map((country) => country.value).join(','),
         selectedIndustries.map((industry) => industry.value).join(','),
-        duration
+        selectedCategories.map((category) => category.value).join(','),
+        selectedDuration.map((duration) => duration.value).join(',')
       );
-      setReportData(reports);
+  
+      console.log("Fetched report data:", response);
+      setReportData(response.Reportdata); 
     } catch (error) {
       console.error("Error fetching report data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,7 +162,7 @@ function JobPosted() {
     }
   };
 
-  const { register, trigger, watch } = useForm({
+  const { register, trigger, watch } = useForm({   
     defaultValues: {
       country: "",
     },
@@ -126,6 +175,12 @@ function JobPosted() {
     }, 500),
     []
   );
+  const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
+    return {
+      label: val.label,
+      value: key,
+    };
+  });
   const country: any = watch("country");
 
 
@@ -151,14 +206,13 @@ function JobPosted() {
           <Form.Group className={styles.selectField}>
             <Form.Label>Country</Form.Label>
             <MultiSelect
-              name="country"
-              control={control}
-              error={errors.country as FieldError}
-              options={countryOptions}
-              onChange={handleCountryChange}
-              customStyles={{}}
-              rules={{ required: "Country is required" }}
-            />
+            name="country"
+            control={control}
+            error={errors.country}
+            options={workLocations}
+            rules={{ required: "Location is required" }}
+            customStyles={{}}
+          />
           </Form.Group>
         </Col>
         <Col>
@@ -178,27 +232,35 @@ function JobPosted() {
         <Col>
           <Form.Group className={styles.selectField}>
             <Form.Label>Category</Form.Label>
-            <Form.Select>
-              <option>All</option>
-            </Form.Select>
+            <MultiSelect
+              name="category"
+              control={control}
+              error={errors.category as FieldError}
+              options={categoryOptions}
+              onChange={handleCategoryChange}
+              customStyles={{}}
+              rules={{ required: "Category is required" }}
+            />
           </Form.Group>
         </Col>
         <Col>
           <Form.Group className={styles.selectField}>
             <Form.Label>Duration</Form.Label>
-            <Form.Select>
-              <option>This Month</option>
-              <option>Last Month</option>
-              <option>Last 3 Months</option>
-              <option>Last 6 Months</option>
-              <option>Date Range</option>
-            </Form.Select>
+            <MultiSelect
+              name="duration"
+              control={control}
+              error={errors.duration as FieldError}
+              options={durationOptions}
+              onChange={handleDurationChange}
+              customStyles={{}}
+              rules={{ required: "Duration is required" }}
+            />
           </Form.Group>
         </Col>
         <Col>
-          <Button onClick={handleSubmit} className={styles.submitButton}>
-            Submit
-          </Button>
+        <Button onClick={handleSubmit} className={styles.submitButton} disabled={loading}>
+          {loading ? <Spinner size="sm" /> : "Submit"}
+        </Button>
         </Col>
       </Row>
     );
@@ -210,7 +272,7 @@ function JobPosted() {
         <Form.Group className={styles.reportTypeField}>
           <Form.Label>Report Type</Form.Label>
           <Col>
-            <Form.Select onChange={handleReportTypeChange} value={reportType}>
+          <Form.Select onChange={handleReportTypeChange} value={reportType}>
               <option value={"jobs-posted"}>Jobs Posted</option>
               <option value={"application-received"}>Agency Applications Report</option>
               <option value={"job-applied"}>Job Applied Report</option>
@@ -237,4 +299,4 @@ function JobPosted() {
   );
 }
 
-export default JobPosted;
+export default JobPosted; 

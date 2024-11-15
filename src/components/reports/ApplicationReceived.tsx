@@ -1,6 +1,6 @@
 import React, { useState,useCallback} from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col, Image } from "react-bootstrap";
+import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
 import Select, { MultiValue, ActionMeta } from "react-select";
 import ReportTable from './JobPostedTable';
 import { useRouter } from "next/navigation";
@@ -9,9 +9,11 @@ import { debounce } from "lodash";
 import { FieldError, useForm } from "react-hook-form";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
+import { getReports } from "@/apis/dashboard";
 
 interface FormValues {
   agency: SelectOption;
+  duration: SelectOption;
 }
 
 interface Option {
@@ -19,13 +21,12 @@ interface Option {
   label: string;
 }
 
-const agencyOptions: Option[] = [
-  { value: "all", label: "All Agencies" },
-  { value: "muthu", label: "Muthu International" },
-  { value: "aldhia", label: "Aldhia HR Consultants" },
-  { value: "falcon", label: "Falcon Human Resources" },
-  { value: "cerner", label: "Cerner HR Consulting" },
-  { value: "continental", label: "Continental Holdings INC." },
+const durationOptions: Option[] = [
+  { value: "this month", label: "This Month" },
+  { value: "last month", label: "Last Month" },
+  { value: "last 3 months", label: "Last 3 months" },
+  { value: "last 6 months", label: "Last 6 months" },
+  { value: "data range", label: "Data Range" },
 ];
 
 const CustomOption = (props: {
@@ -62,6 +63,7 @@ function ApplicationReceived() {
   const [postID, setPostID] = useState("");
   const [duration, setDuration] = useState("");
   const [reportData, setReportData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false); 
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
@@ -90,22 +92,7 @@ function ApplicationReceived() {
     }
   };
 
-  const handleAgencyChange = (
-    selected: MultiValue<Option>,
-    actionMeta: ActionMeta<Option>
-  ) => {
-    const allAgenciesOption = selected.find((option) => option.value === "all");
-
-    if (allAgenciesOption) {
-      setSelectedAgencies(agencyOptions.slice(1));
-    } else {
-      setSelectedAgencies(selected as Option[]);
-
-      if (selected.length === 0) {
-        setSelectedAgencies([]);
-      }
-    }
-  };
+ 
 
   const handleDurationChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -113,13 +100,24 @@ function ApplicationReceived() {
     setDuration(event.target.value);
   };
   
-  const handleSubmit = () => {
-    const exampleData = [
-      { employerId: 'EMP1', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-10-01', status: 'Active' },
-      { employerId: 'EMP2', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-09-15', status: 'Active' },
-    ];
-    setReportData(exampleData);
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const reports = await getReports(
+        reportType, 
+        selectedAgencies.map((agency) => agency.value).join(','),
+        postID,
+        duration
+      );
+      setReportData(reports);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+
 
   const renderReportFields = () => {
     return (
@@ -127,14 +125,15 @@ function ApplicationReceived() {
         <Col>
         <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
             <Form.Label>Agency</Form.Label>
-            <MultiSelect
+            <MultiSelectAsync
               name="agency"
               control={control}
               error={errors.agency as FieldError}
-              options={agencyOptions}
-              onChange={handleAgencyChange}
-              customStyles={{}}
+              loadOptions={loadOptionsDebounced}
               rules={{ required: "Agency is required" }}
+              customStyles={{}}
+              menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+              menuPosition={"fixed"}
             />
           </Form.Group>
         </Col>
@@ -151,21 +150,23 @@ function ApplicationReceived() {
           </Form.Group>
         </Col>
         <Col>
-          <Form.Group className={styles.selectField}>
+          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
             <Form.Label>Duration</Form.Label>
-            <Form.Select value={duration} onChange={handleDurationChange}>
-              <option>This Month</option>
-              <option>Last Month</option>
-              <option>Last 3 Months</option>
-              <option>Last 6 Months</option>
-              <option>Date Range</option>
-            </Form.Select>
+            <MultiSelect
+              name="duration"
+              control={control}
+              error={errors.duration as FieldError}
+              options={durationOptions}
+              onChange={handleDurationChange}
+              customStyles={{}}
+              rules={{ required: "Duration is required" }}
+            />
           </Form.Group>
         </Col>
         <Col>
-          <Button onClick={handleSubmit} className={styles.submitButton}>
-            Submit
-          </Button>
+        <Button onClick={handleSubmit} className={styles.submitButton} disabled={loading}>
+          {loading ? <Spinner size="sm" /> : "Submit"}
+        </Button>
         </Col>
       </Row>
     );

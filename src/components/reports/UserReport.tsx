@@ -10,13 +10,18 @@ import { FieldError, useForm } from "react-hook-form";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
 interface FormValues {
+  jobtitle: SelectOption;
   industry: SelectOption;
+  duration: SelectOption;
+
 }
 interface Option {
   value: string;
   label: string;
 }
-
+const jobtitleOptions: Option[] = [
+  { value: "all", label: "All" },
+];
 const industryOptions: Option[] = [
   { value: 'all', label: 'All' },
   { value: 'construction', label: 'Construction' },
@@ -25,7 +30,13 @@ const industryOptions: Option[] = [
   { value: 'mining', label: 'Mining' },
   { value: 'agriculture', label: 'Agriculture' },
 ];
-
+const durationOptions: Option[] = [
+  { value: "this month", label: "This Month" },
+  { value: "last month", label: "Last Month" },
+  { value: "last 3 months", label: "Last 3 months" },
+  { value: "last 6 months", label: "Last 6 months" },
+  { value: "data range", label: "Data Range" },
+];
 const CustomOption = (props: {
   data: Option;
   innerRef: React.Ref<HTMLDivElement>;
@@ -86,6 +97,9 @@ function UserReport() {
       setDuration('');
     }
   };
+  const handleJobTitleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setDuration(event.target.value);
+  };
 
   const handleIndustryChange = (
     selected: MultiValue<Option>,
@@ -103,6 +117,9 @@ function UserReport() {
       }
     }
   };
+  const handleDurationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setDuration(event.target.value);
+  };
   const handleSubmit = () => {
     const exampleData = [
       { employerId: 'EMP1', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-10-01', status: 'Active' },
@@ -115,11 +132,17 @@ function UserReport() {
       return (
         <Row>
           <Col>
-            <Form.Group className={styles.selectField}>
-              <Form.Label>Job Title</Form.Label>
-              <Form.Select>
-                <option>All</option>
-              </Form.Select>
+          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+            <Form.Label>Job Title</Form.Label>
+            <MultiSelect
+              name="jobtitle"
+              control={control}
+              error={errors.jobtitle as FieldError}
+              options={jobtitleOptions}
+              onChange={handleJobTitleChange}
+              customStyles={{}}
+              rules={{ required: "Job Title is required" }}
+            />
             </Form.Group>
           </Col>
           <Col>
@@ -137,16 +160,18 @@ function UserReport() {
           </Form.Group>
         </Col>
           <Col>
-            <Form.Group className={styles.selectField}>
-              <Form.Label>Duration</Form.Label>
-              <Form.Select value={duration} onChange={(e) => setDuration(e.target.value)}>
-                <option>This Month</option>
-                <option>Last Month</option>
-                <option>Last 3 Months</option>
-                <option>Last 6 Months</option>
-                <option>Date Range</option>
-              </Form.Select>
-            </Form.Group>
+          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+            <Form.Label>Duration</Form.Label>
+            <MultiSelect
+              name="duration"
+              control={control}
+              error={errors.duration as FieldError}
+              options={durationOptions}
+              onChange={handleDurationChange}
+              customStyles={{}}
+              rules={{ required: "Duration is required" }}
+            />
+          </Form.Group>
           </Col>
           <Col>
           <Button onClick={handleSubmit} className={styles.submitButton}>

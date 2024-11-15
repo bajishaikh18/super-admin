@@ -66,7 +66,7 @@ export const getReports = async (
   employer?: string
 ) => {
   try {
-    const response:any = await apiClient.get(`/dashboard/reports`,{
+    const response:any = await apiClient.get(`${pathUrl}/reports`,{
       params: {
         type: type,
         agency,
@@ -78,6 +78,7 @@ export const getReports = async (
         jobTitle,
         employer
       }});
+      console.log("API Response:", response.data);
       return response.data;
     }catch (error) {
       console.error("Failed to fetch employers:", error);
