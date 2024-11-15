@@ -97,8 +97,10 @@ export const getAgenciesList = async (agencyName:string) => {
       params:{
         page: 1,
         limit: 100,
-        status:'active',
-        agencyName: agencyName
+        filters:{
+          status:'active',
+          name: agencyName
+        }
       }
     });
     return response.data.agencies;
