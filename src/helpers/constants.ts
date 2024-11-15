@@ -12,8 +12,8 @@ export const COUNTRIES = {
 };
 
 export const IMAGE_BASE_URL =
-  "https://wonderlybackendpublic.s3.ap-south-1.amazonaws.com";
-
+  "https://boon-backend-public-dev.s3.ap-south-1.amazonaws.com";
+  
 export const FACILITIES_IMAGES = {
   Food: "/food.png",
   Transportation: "/transport.png",
