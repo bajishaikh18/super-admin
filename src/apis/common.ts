@@ -95,6 +95,8 @@ export const getAgenciesList = async (agencyName:string) => {
   try {
     const response = await axios.get(`${BASE_URL}/agency/agencies`,{
       params:{
+        page: 1,
+        limit: 100,
         status:'active',
         agencyName: agencyName
       }
