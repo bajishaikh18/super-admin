@@ -19,6 +19,7 @@ import {
   GetCity,
   GetState,
 } from "react-country-state-city";
+import { CITIES } from "@/helpers/stateList";
 interface JobPosition {
   title: {
     value:string,
@@ -167,10 +168,10 @@ const createWalkInMutation = useMutation({
         const selectedState:any = states?.find(
           (cty: any) => cty.state_code === state
         );
-        const cityList = await GetCity(101,selectedState?.id);
+        const cityList = CITIES[selectedState?.state_code as "KL"];
         return cityList.map((city: any) => ({
-          value: city.name,
-          label: city.name,
+          value: city,
+          label: city,
         }));
       }
       return [];

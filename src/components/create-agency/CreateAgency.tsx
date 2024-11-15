@@ -5,11 +5,7 @@ import styles from "./CreateAgency.module.scss";
 import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
 import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
 import CreateAgencyScreen from "./CreateAgencyScreen";
-import { useQuery } from "@tanstack/react-query";
-import {
-  GetCities,
-  GetState,
-} from "react-country-state-city";
+
 
 function CreateAgency({
   handleModalClose,
