@@ -98,8 +98,7 @@ export const GenerateReportText = ()=>{
     </div>
     <h3>Generate Report</h3>
     <p>
-      Generate the report by selecting the appropriate filters above and
-      clicking Submit
+      Please select report details you're looking for
     </p>
   </div>
   )
