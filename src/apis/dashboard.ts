@@ -68,6 +68,7 @@ export const getReports = async ({
   duration,
   postId,
   jobTitle,
+  status,
   employer,
 }: {
   type: string;
@@ -79,6 +80,7 @@ export const getReports = async ({
   postId?: string;
   jobTitle?: string;
   employer?: string;
+  status?:string
 }) => {
   try {
     const response: any = await apiClient.get(`${pathUrl}/reports`, {
@@ -91,6 +93,7 @@ export const getReports = async ({
         duration,
         postId,
         jobTitle,
+        status,
         employer,
       },
     });

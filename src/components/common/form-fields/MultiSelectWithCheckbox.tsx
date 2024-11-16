@@ -1,15 +1,33 @@
 import { IMAGE_BASE_URL } from "@/helpers/constants";
 import { SelectOption } from "@/helpers/types";
 import Image from "next/image";
+import React from "react";
+import { useState } from "react";
 import { Form } from "react-bootstrap";
-import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
+import { Control, Controller, FieldError, RegisterOptions, UseFormSetValue } from "react-hook-form";
 import Select, { components } from "react-select";
 import AsyncSelect from 'react-select/async';
 
 
+const ValueContainer = (props:any) => {
+    let length = props.getValue().length;
+  
+    return (
+      <components.ValueContainer {...props} className="value-container">
+        {length > 2 ? (
+          <>
+            {props.children[0][0]}
+            <h6>+ {length - 1} More</h6>
+            {React.cloneElement(props.children[1])}
+          </>
+        ) : (
+          <>{props.children}</>
+        )}
+      </components.ValueContainer>
+    );
+  };
 
 const Option = (props: any) => {
-    console.log(props);
     return (
         <div>
         {props.value == 'all' ? <components.Option {...props} className="multiselect-checkbox-container">
@@ -45,6 +63,7 @@ export const MultiSelectWithCheckbox = ({
   menuListStyles={},
   filterFn,
   menuPortalTarget,
+  setValue,
   menuPosition,
 }: {
   name: string;
@@ -61,8 +80,10 @@ export const MultiSelectWithCheckbox = ({
   menuPortalTarget?:any,
   menuPosition?:any,
   menuListStyles?:any
-  filterFn?:any
+  filterFn?:any,
+  setValue:UseFormSetValue<any>
 }) => {
+  const [selectedOptions,setSelectedOptions] = useState<any>([]);
   return (
     <div>
       <Controller
@@ -73,9 +94,11 @@ export const MultiSelectWithCheckbox = ({
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
             isMulti={true}
+            hideSelectedOptions={false}
             closeMenuOnSelect={false}
             components={{
               Option,
+              ValueContainer
             }}
             theme={(theme) => ({
               ...theme,
@@ -90,6 +113,10 @@ export const MultiSelectWithCheckbox = ({
               option:(baseStyles, state)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
+              }),
+              multiValue:(base, props) =>({
+                ...base,
+                background:'rgba(183, 182, 252, 1)'
               }),
               control: (baseStyles, state) => ({
                 ...baseStyles,
@@ -120,8 +147,22 @@ export const MultiSelectWithCheckbox = ({
             }}
             defaultValue={options.find((c) => c.value === defaultValue)}
             options={options}
-            value={options.find((c) => c.value === value)}
-            onChange={(val) => onChange(val)}
+            value={selectedOptions}
+            onChange={(val) => {
+            const isAllSelected = val.find(x=>x.value === 'all');
+            if(isAllSelected){
+                if(selectedOptions.length != options.length){
+                    setSelectedOptions(options)
+                }else{
+                    const removedAll = val.filter(x=>x.value!='all');
+                    setSelectedOptions(removedAll);
+                    onChange(removedAll)
+                }
+            }else{
+                setSelectedOptions(val);
+                onChange(val)
+            }
+            }}
             filterOption={filterFn}
             
           />
@@ -177,11 +218,13 @@ export const MultiSelectAsyncWithCheckbox = ({
           <AsyncSelect
             isMulti={isMulti}
             cacheOptions
+            hideSelectedOptions={false}
             loadOptions={loadOptions}
             closeMenuOnSelect={false}
             defaultOptions
             components={{
                 Option,
+                ValueContainer
             }}
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
@@ -198,6 +241,10 @@ export const MultiSelectAsyncWithCheckbox = ({
               option:(baseStyles, state)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
+              }),
+              multiValue:(base, props) =>({
+                ...base,
+                background:'rgba(183, 182, 252, 1)'
               }),
               control: (baseStyles, state) => ({
                 ...baseStyles,
@@ -234,7 +281,11 @@ export const MultiSelectAsyncWithCheckbox = ({
             // value={loadOptions?.then((option:any)=>{
             //   return option.find((c:any) => c.value === value)
             // })}
-            onChange={(val) => onChange((val as any))}
+            onChange={(val) => {
+                
+                    onChange(val)
+                
+            }}
           />
         )}
         defaultValue={defaultValue}

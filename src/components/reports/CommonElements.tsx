@@ -76,7 +76,7 @@ export const ReportTypeSelect = () => {
               indicatorSeparator: () => ({ display: "none" }),
 
             }}
-            defaultValue={options.find((c) => c.value === pathname)}
+            defaultValue={options.find((c) => pathname.includes(c.value))}
             options={options}
             onChange={(val) => handleReportTypeChange(val?.value!)}
           />

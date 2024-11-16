@@ -20,6 +20,7 @@ import {
 import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
 import { GenerateReportText, ReportTypeSelect } from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox, MultiSelectWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
+import { getStartAndEndDate } from "@/helpers/date";
 
 interface FormValues {
   reporttype: SelectOption[];
@@ -27,7 +28,8 @@ interface FormValues {
   country: SelectOption[];
   industry: SelectOption[];
   category: SelectOption[];
-  duration: SelectOption;
+  status: SelectOption[];
+  duration: string;
 }
 
 interface Option {
@@ -40,12 +42,31 @@ const industryOptions: Option[] = [{value:'all',label:'All Industries'},...Objec
 })];
 
 const durationOptions: Option[] = [
-  { value: "this month", label: "This Month" },
-  { value: "last month", label: "Last Month" },
-  { value: "last 3 months", label: "Last 3 months" },
-  { value: "last 6 months", label: "Last 6 months" },
-  { value: "data range", label: "Data Range" },
+  { value: "0", label: "This Month" },
+  { value: "1", label: "Last Month" },
+  { value: "3", label: "Last 3 months" },
+  { value: "6", label: "Last 6 months" },
+  { value: "custom", label: "Data Range" },
 ];
+
+const statusOptions = [
+  {
+    value: 'all',
+    label: "All status"
+  },
+  {
+    value: 'active',
+    label: "Active"
+  },
+  {
+    value: 'expired',
+    label: "Expired"
+  },
+  {
+    value: 'pending',
+    label: "Pending"
+  }
+]
 
 function JobPosted() {
   const router = useRouter();
@@ -56,22 +77,25 @@ function JobPosted() {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isValid },
   } = useForm<FormValues>();
 
 
   const onSubmit = async (data:FormValues) => {
     try {
+      setLoading(true)
       const response = await getReports(
         {
           type: reportType,
-          agency:data.agency.map((agency) => agency.value).join(","),
-          country:data.country.map((country) => country.value).join(","),
-          industry:data.industry.map((industry) => industry.value).join(","),
-          duration:data.duration.value
+          agency:data.agency?.map((agency) => agency.value).join(","),
+          country:data.country?.map((country) => country.value).join(","),
+          industry:data.industry?.map((industry) => industry.value).join(","),
+          duration:getStartAndEndDate(Number(data.duration)),
+          status: data.status?.map((status) => status.value).join(",")
         }
       );
-      setReportData(response.Reportdata);
+      setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -86,12 +110,12 @@ function JobPosted() {
     }, 500),
     []
   );
-  const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
+  const workLocations = [{value:'all',label:"All countries"},...Object.entries(COUNTRIES).map(([key, val]) => {
     return {
       label: val.label,
       value: key,
     };
-  });
+  })];
 
   const renderReportFields = () => {
     return (
@@ -113,26 +137,41 @@ function JobPosted() {
             />
           </Form.Group>
         </Col>
-        <Col  md={2}>
+        <Col md={2}>
           <Form.Group className={styles.selectField}>
             <Form.Label>Country</Form.Label>
             <MultiSelectWithCheckbox
               name="country"
               control={control}
+              setValue={setValue}
               error={errors.country as FieldError}
               options={workLocations}
               customStyles={{}}
             />
           </Form.Group>
         </Col>
-        <Col  md={2}>
+        <Col md={2}>
           <Form.Group className={styles.selectField}>
             <Form.Label>Industry</Form.Label>
             <MultiSelectWithCheckbox
               name="industry"
               control={control}
+              setValue={setValue}
               error={errors.industry as FieldError}
               options={industryOptions}
+              customStyles={{}}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={2}>
+          <Form.Group className={styles.selectField}>
+            <Form.Label>Job status</Form.Label>
+            <MultiSelectWithCheckbox
+              name="status"
+              control={control}
+              setValue={setValue}
+              error={errors.status as FieldError}
+              options={statusOptions}
               customStyles={{}}
             />
           </Form.Group>
@@ -145,6 +184,9 @@ function JobPosted() {
               control={control}
               error={errors.duration as FieldError}
               options={durationOptions}
+              menuListStyles={{
+                fontSize:"13px",
+              }}
               customStyles={{}}
             />
           </Form.Group>

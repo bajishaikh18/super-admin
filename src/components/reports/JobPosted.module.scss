@@ -10,6 +10,8 @@
 .container {
   width: 100%;
   display: flex;
+  position: relative;
+  z-index: 9;
   padding:24px 24px 8px 24px;
   flex-direction: column;
   background-color: #fff;
@@ -120,130 +122,25 @@ width: 230px;
   margin-top: 20px;
 }
 
-.tableContainer{
-  height: 37vh;
-  overflow: auto;
-}
 
-.reportTitleContainer {
-  margin-bottom: 20px;
-  text-align: left;
-  width: 1392px;
-  display: flex;
-  justify-content: space-between;
-}
 .downloadDropdownContainer {
   display: flex;
   align-items: center;
-  margin-top: 15px;
 }
 
 .downloadDropdown {
-  width: 150px;
+  padding: 14px 24px;
   border-radius: 8px;
-  padding: 5px 25px;
-  border: 1px solid #4137FF;
+  border: 1px solid $color-brand-1 !important;
+  line-height: 16px;
   background-color: #fff;
   cursor: pointer;
-  color: #4137FF;
+  color: $color-brand-1;
+  text-transform: uppercase;
+  font-size: 14px;
 }
 
 .downloadDropdown:hover {
   background-color: #f1f1f1;
-}
-
-.reportTable {
-  width: 100%; 
-  border-collapse: collapse;
-  margin-top: 10px;
-  table-layout: auto;
-  overflow-x: auto;
-  display: block;
-  white-space: nowrap;
-}
-
-.reportTable thead {
-  position: sticky;
-  background-color: #fff;
-}
-
-.reportTable th {
-  color: rgba(117, 117, 117, 1);
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-  text-transform: uppercase;
-  padding: 24px 5px;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.reportTable td {
-  font-size: 13px;
-  padding: 18px 5px;
-  overflow: hidden;
-  line-height: 23px;
-  white-space: nowrap;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-}
-
-.reportTable tbody tr:nth-child(odd) {
-  background-color: #f8f8f8;
-}
-
-.reportTable tbody tr:nth-child(even) {
-  background-color: #fff;
-}
-
-.reportTable tbody tr:hover {
-  background-color: #e9ecef;
-}
-
-@media (max-width: 768px) {
-  .container {
-    width: 100%;
-    padding: 10px;
-  }
-
-  .reportTypeField, .selectField {
-    min-width: 100%;
-  }
-
-  .submitButton {
-    max-width: 100%;
-    margin-top: 15px;
-  }
-
-  .generateReportText {
-    font-size: 18px;
-  }
-
-  .reportTable {
-    display: block;
-    overflow-x: auto;
-    width: 100%;
-  }
-
-  .reportTable th, .reportTable td {
-    font-size: 12px;
-    padding: 10px;
-  }
-}
-
-
-@media (max-width: 480px) {
-  .generateReportText {
-    font-size: 16px;
-  }
-
-  .reportTypeField select, 
-  .selectField select {
-    height: 40px;
-  }
-}
-
-.reportContainer {
-  max-width: 100%;
-  padding: 10px;
+  color: $color-brand-1;
 }
