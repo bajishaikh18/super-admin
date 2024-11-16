@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import styles from './JobPosted.module.scss';
-import { Form, Button, Row, Col, Image } from 'react-bootstrap';
+import { Form, Button, Row, Col, Image, Spinner } from 'react-bootstrap';
 import ReportTable from './JobPostedTable';
 import { useRouter } from 'next/navigation';
 import { MultiSelect} from "../common/form-fields/MultiSelect";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
+import { getReports } from "@/apis/dashboard";
 
 interface FormValues {
   employer: SelectOption;
@@ -55,10 +56,12 @@ const CustomOption = (props: {
 
 function EmployersReport() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('employer-report');
+  const [reportType, setReportType] = useState('Employer Applications Report');
   const [reportData, setReportData] = useState<any[]>([]);
   const [selectedEmployers, setSelectedEmployers] = useState<Option[]>([]);
   const [duration, setDuration] = useState('');
+  const [loading, setLoading] = useState(false); 
+
 
   const {
     control,
@@ -68,7 +71,7 @@ function EmployersReport() {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'employer-report') {
+    if (newReportType !== 'Employer Applications Report') {
       setSelectedEmployers([]);
     }
     if (newReportType !== 'Employers Applications Report') {
@@ -81,13 +84,31 @@ function EmployersReport() {
   const handleDurationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setDuration(event.target.value);
   };
-  const handleSubmit = () => {
-    const exampleData = [
-      { employerId: 'EMP1', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-10-01', status: 'Active' },
-      { employerId: 'EMP2', companyName: 'N/A', firstName: 'N/A', lastName: 'N/A', mobile: 'N/A', landline: 'N/A', email: 'N/A', regDate: '2023-09-15', status: 'Active' },
-    ];
-    setReportData(exampleData);
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const response = await getReports(
+        reportType, 
+        selectedEmployers.map((agency) => agency.value).join(','),
+        duration
+      );
+      const formattedData = response.Reportdata.map((item) => ({
+        jobId: item.jobId,
+        agencyName: item.agencyData?.name,  
+        jobLocation: item.jobData?.location, 
+        positions: item.jobData?.positions.join(', '), 
+        resume: item.resume,
+        createdAt: item.createdAt,
+      }));
+
+      setReportData(formattedData);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const renderReportFields = () => {
        
@@ -122,9 +143,9 @@ function EmployersReport() {
             </Form.Group>
             </Col>
             <Col>
-            <Button onClick={handleSubmit} className={styles.submitButton}>
-              Submit
-            </Button>
+            <Button onClick={handleSubmit} className={styles.submitButton} disabled={loading}>
+          {loading ? <Spinner size="sm" /> : "Submit"}
+        </Button>
           </Col>
           </Row>
         );
@@ -138,10 +159,10 @@ function EmployersReport() {
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
                 <option value={"jobs-posted"}>Jobs Posted</option>
-                <option value={"application-received"}>Agency Applications Report</option>
-                <option value={"job-applied"}>Job Applied Report</option>
-                <option value={"user-report"}>Users Report</option>
-                <option value={"employer-report"}>Employers Applications Report</option>
+                <option value={"Applications-Received"}>Agency Applications Report</option>
+                <option value={"Jobs-Applied"}>Job Applied Report</option>
+                <option value={"Users-Report"}>Users Report</option>
+                <option value={"Employer Applications Report"}>Employers Applications Report</option>
             </Form.Select>
           </Col>
         </Form.Group>
@@ -151,16 +172,14 @@ function EmployersReport() {
       {reportData.length === 0 && (
         <div className={styles.generateReportSection}>
           <div className={styles.generateReportImage}>
-            <Image src={'/generate-report.png'} alt="Generate Report" width={100} height={100} />
+            <Image src={"/generate-report.png"} alt="Generate Report" width={100} height={100} />
           </div>
           <h3>Generate Report</h3>
           <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
         </div>
       )}
 
-      {reportData.length > 0 && (
-        <ReportTable data={reportData} />
-      )}
+      {reportData.length > 0 && <ReportTable data={reportData} />}
     </div>
   );
 }

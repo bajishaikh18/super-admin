@@ -8,7 +8,8 @@
 }
 
 .container {
-  width: 100%;
+  width: 100%; 
+  height: auto;
   margin-top: 68px;
   display: flex;
   flex-direction: column;
@@ -20,6 +21,10 @@
   margin-bottom: 25px;
   display: flex;
   flex-direction: column;
+  width: 230px;
+  position: relative;
+  z-index: 20;
+  overflow: visible; 
 }
 
 .reportTypeField label {

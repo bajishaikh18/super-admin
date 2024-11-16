@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getReports } from "@/apis/dashboard";
 import { debounce } from "lodash";
-import { getFormattedAgencies, getFormattedJobTitles } from "@/helpers/asyncOptions";
+import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { COUNTRIES } from "@/helpers/constants";
 
 
@@ -29,10 +29,10 @@ interface Option {
 }
 const reportTypeOptions: Option[] = [
   { value: "jobs-posted", label: "Jobs Posted" },
-  { value: "application-received", label: "Agency Applications Report" },
-  { value: "job-applied", label: "Job Applied Report" },
-  { value: "user-report", label: "Users Report" },
-  { value: "employer-report", label: "Employers Applications Report" },
+  { value: "Applications-Received", label: "Agency Applications Report" },
+  { value: "Jobs-Applied", label: "Job Applied Report" },
+  { value: "Users-Report", label: "Users Report" },
+  { value: "Employer-Applications-Report", label: "Employers Applications Report" },
 ];
 
 const countryOptions: Option[] = [
@@ -67,6 +67,7 @@ const durationOptions: Option[] = [
 function JobPosted() {
   const router = useRouter();
   const [loading, setLoading] = useState(false); 
+  const [duration, setDuration] = useState("");
   const [reportType, setReportType] = useState("Jobs Posted");
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Option[]>([]);
@@ -76,29 +77,8 @@ function JobPosted() {
   const [reportData, setReportData] = useState<any[]>([]);
 
   const { control, formState: { errors, isValid } } = useForm<FormValues>();
-  
 
-  const handleAgencyChange = (
-    selected: MultiValue<Option>,
-    actionMeta: ActionMeta<Option>
-  ) => {
-    const allAgenciesOption = selected.find((option) => option.value === "all");
-  };
-
-  const handleCountryChange = (
-    selected: MultiValue<Option>,
-    actionMeta: ActionMeta<Option>
-  ) => {
-    const allCountriesOption = selected.find(
-      (option) => option.value === "all"
-    );
-    setSelectedCountries(
-      allCountriesOption ? countryOptions.slice(1) : (selected as Option[])
-    );
-  };
-
-
-  const handleIndustryChange = (
+   const handleIndustryChange = (
     selected: MultiValue<Option>,
     actionMeta: ActionMeta<Option>
   ) => {
@@ -139,8 +119,18 @@ function JobPosted() {
         selectedDuration.map((duration) => duration.value).join(',')
       );
   
-      console.log("Fetched report data:", response);
-      setReportData(response.Reportdata); 
+      const formattedData = response.Reportdata.map((item) => ({
+        jobId: item.jobId,
+        companyName: item.companyName, 
+        firstName: item.firstName,    
+        lastName: item.lastName, 
+        contactNumbers: item.contactNumbers,
+        email: item.email,
+        createdAt: item.createdAt,
+        status: item.status
+      }));
+
+      setReportData(formattedData); 
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -269,18 +259,20 @@ function JobPosted() {
   return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
-        <Form.Group className={styles.reportTypeField}>
-          <Form.Label>Report Type</Form.Label>
-          <Col>
-          <Form.Select onChange={handleReportTypeChange} value={reportType}>
-              <option value={"jobs-posted"}>Jobs Posted</option>
-              <option value={"application-received"}>Agency Applications Report</option>
-              <option value={"job-applied"}>Job Applied Report</option>
-              <option value={"user-report"}>Users Report</option>
-              <option value={"employer-report"}>Employers Applications Report</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
+      <Form.Group className={styles.reportTypeField}>
+  <Form.Label>Report Type</Form.Label>
+  <Col>
+  <MultiSelect
+              name="reporttype"
+              control={control}
+              error={errors.reporttype as FieldError}
+              options={reportTypeOptions}
+              onChange={handleReportTypeChange}
+              customStyles={{}}
+              rules={{ required: "Report Type is required" }}
+            />
+  </Col>
+</Form.Group>
         {renderReportFields()}
       </div>
 

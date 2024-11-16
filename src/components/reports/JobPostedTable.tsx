@@ -11,7 +11,7 @@ import * as XLSX from "xlsx";
 
 
 type ReportData = {
-  agencyId: string;
+  jobId: string;
   companyName: string;
   firstName: string;
   lastName: string;
@@ -39,7 +39,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   const columnHelper = createColumnHelper<ReportData>();
   const columns = useMemo(
     () => [
-      columnHelper.accessor("agencyId", {
+      columnHelper.accessor("jobId", {
         header: "Employer Id",
         cell: (info) => (
           <Link href={`/jobs-posted/${info.getValue()}`}>{info.getValue()}</Link>
@@ -50,27 +50,27 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
       }),
       columnHelper.accessor("companyName", {
         header: "Company Name",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("firstName", {
         header: "First Name",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("lastName", {
         header: "Last Name",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("contactNumbers", {
         header: "Mobile No.",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("landline", {
         header: "Landline No.",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("email", {
         header: "Company Email ID",
-        cell: (info) => info.renderValue(),
+        cell: (info) => info.renderValue() || "N/A",  
       }),
       columnHelper.accessor("createdAt", {
         header: "Regd. Date",
@@ -102,7 +102,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   const totalCount = data.length;
 
   const downloadExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(data); // Convert JSON data to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(data); 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "JobPostedReport");
 

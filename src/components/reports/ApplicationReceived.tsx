@@ -1,7 +1,7 @@
 import React, { useState,useCallback} from "react";
 import styles from "./JobPosted.module.scss";
+import { MultiValue, ActionMeta } from "react-select";
 import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
-import Select, { MultiValue, ActionMeta } from "react-select";
 import ReportTable from './JobPostedTable';
 import { useRouter } from "next/navigation";
 import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
@@ -58,10 +58,11 @@ const CustomOption = (props: {
 
 function ApplicationReceived() {
   const router = useRouter();
-  const [reportType, setReportType] = useState("application-received");
+  const [reportType, setReportType] = useState("Applications Received");
   const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
   const [postID, setPostID] = useState("");
   const [duration, setDuration] = useState("");
+  const [selectedDuration, setSelectedDuration] = useState<Option[]>([]);  
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false); 
 
@@ -81,7 +82,7 @@ function ApplicationReceived() {
     const newReportType = event.target.value;
     setReportType(newReportType);
     router.push(`/reports/${newReportType}`);
-    if (newReportType !== 'application-received') {
+    if (newReportType !== 'Applications Received') {
       setSelectedAgencies([]);
     }
     if (newReportType !== 'Agency Applications Report') {
@@ -95,28 +96,43 @@ function ApplicationReceived() {
  
 
   const handleDurationChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    selected: MultiValue<Option>,
+    actionMeta: ActionMeta<Option>
   ) => {
-    setDuration(event.target.value);
+    const allDurationOption = selected.find(
+      (option) => option.value === "all"
+    );
+    setSelectedDuration(allDurationOption ? durationOptions.slice(1) : (selected as Option[]));
   };
+
   
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const reports = await getReports(
-        reportType, 
+      const response = await getReports(
+        reportType,
         selectedAgencies.map((agency) => agency.value).join(','),
         postID,
-        duration
+        selectedDuration.map((duration) => duration.value).join(',')
       );
-      setReportData(reports);
+      const formattedData = response.Reportdata.map((item) => ({
+        jobId: item.jobId,
+        companyName: item.jobData?.companyName, 
+        firstName: item.firstName,    
+        lastName: item.lastName, 
+        phone: item.agencyData?.phone,
+        email: item.agencyData?.email,
+        createdAt: item.createdAt,
+        status: item.agencyData?.status
+      }));
+
+      setReportData(formattedData); 
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
       setLoading(false);
     }
   };
-
 
 
   const renderReportFields = () => {
@@ -180,10 +196,10 @@ function ApplicationReceived() {
           <Col>
             <Form.Select onChange={handleReportTypeChange} value={reportType}>
               <option value={"jobs-posted"}>Jobs Posted</option>
-              <option value={"application-received"}>Agency Applications Report</option>
-              <option value={"job-applied"}>Job Applied Report</option>
-              <option value={"user-report"}>Users Report</option>
-              <option value={"employer-report"}>Employers Applications Report</option>
+              <option value={"Applications Received"}>Agency Applications Report</option>
+              <option value={"Jobs-Applied"}>Job Applied Report</option>
+              <option value={"Users-Report"}>Users Report</option>
+              <option value={"Employer-Applications-Report"}>Employers Applications Report</option>
             </Form.Select>
           </Col>
         </Form.Group>
@@ -193,17 +209,14 @@ function ApplicationReceived() {
       {reportData.length === 0 && (
         <div className={styles.generateReportSection}>
           <div className={styles.generateReportImage}>
-            <Image src={'/generate-report.png'} alt="Generate Report" width={100} height={100} />
+            <Image src={"/generate-report.png"} alt="Generate Report" width={100} height={100} />
           </div>
           <h3>Generate Report</h3>
           <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
         </div>
       )}
 
-      {reportData.length > 0 && (
-        <ReportTable data={reportData} />
-      )}
-
+    {reportData.length > 0 && <ReportTable data={reportData} />}
     </div>
   );
 }
