@@ -11,7 +11,7 @@ const nextConfig = {
     images: {
         remotePatterns: [
          {
-           hostname: "wonderlybackendpublic.s3.ap-south-1.amazonaws.com"
+           hostname: "boon-backend-public-dev.s3.ap-south-1.amazonaws.com"
          },
        ],
      },
