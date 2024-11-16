@@ -1,8 +1,9 @@
 import { Col, Form } from "react-bootstrap";
 import styles from "./JobPosted.module.scss";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Select from "react-select";
 import Image from "next/image";
+import { useRouter } from "nextjs-toploader/app";
 
 const options = [
     {
@@ -15,15 +16,15 @@ const options = [
     },
     {
         label: "Job Applied Report",
-        value:"job-applied"
+        value:"jobs-applied"
     },
     {
         label: "Users Report",
-        value:"user-report"
+        value:"users-report"
     },
     {
         label: "Employers Applications Report",
-        value:"employer-report"
+        value:"employer-applications"
     }
 ]
 export const ReportTypeSelect = () => {

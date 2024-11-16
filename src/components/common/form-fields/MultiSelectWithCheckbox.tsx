@@ -63,7 +63,6 @@ export const MultiSelectWithCheckbox = ({
   menuListStyles={},
   filterFn,
   menuPortalTarget,
-  setValue,
   menuPosition,
 }: {
   name: string;
@@ -81,7 +80,6 @@ export const MultiSelectWithCheckbox = ({
   menuPosition?:any,
   menuListStyles?:any
   filterFn?:any,
-  setValue:UseFormSetValue<any>
 }) => {
   const [selectedOptions,setSelectedOptions] = useState<any>([]);
   return (

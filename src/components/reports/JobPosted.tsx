@@ -17,7 +17,7 @@ import {
   getFormattedAgencies,
   getFormattedJobTitles,
 } from "@/helpers/asyncOptions";
-import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
+import { COUNTRIES, DURATION_OPTIONS, INDUSTRIES } from "@/helpers/constants";
 import { GenerateReportText, ReportTypeSelect } from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox, MultiSelectWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
 import { getStartAndEndDate } from "@/helpers/date";
@@ -32,22 +32,12 @@ interface FormValues {
   duration: string;
 }
 
-interface Option {
-  value: string;
-  label: string;
-}
 
-const industryOptions: Option[] = [{value:'all',label:'All Industries'},...Object.entries(INDUSTRIES).map(([key,val])=>{
+const industryOptions = [{value:'all',label:'All Industries'},...Object.entries(INDUSTRIES).map(([key,val])=>{
   return { value: key, label: val }
 })];
 
-const durationOptions: Option[] = [
-  { value: "0", label: "This Month" },
-  { value: "1", label: "Last Month" },
-  { value: "3", label: "Last 3 months" },
-  { value: "6", label: "Last 6 months" },
-  { value: "custom", label: "Data Range" },
-];
+
 
 const statusOptions = [
   {
@@ -143,7 +133,6 @@ function JobPosted() {
             <MultiSelectWithCheckbox
               name="country"
               control={control}
-              setValue={setValue}
               error={errors.country as FieldError}
               options={workLocations}
               customStyles={{}}
@@ -156,7 +145,6 @@ function JobPosted() {
             <MultiSelectWithCheckbox
               name="industry"
               control={control}
-              setValue={setValue}
               error={errors.industry as FieldError}
               options={industryOptions}
               customStyles={{}}
@@ -169,7 +157,6 @@ function JobPosted() {
             <MultiSelectWithCheckbox
               name="status"
               control={control}
-              setValue={setValue}
               error={errors.status as FieldError}
               options={statusOptions}
               customStyles={{}}
@@ -183,7 +170,7 @@ function JobPosted() {
               name="duration"
               control={control}
               error={errors.duration as FieldError}
-              options={durationOptions}
+              options={DURATION_OPTIONS}
               menuListStyles={{
                 fontSize:"13px",
               }}

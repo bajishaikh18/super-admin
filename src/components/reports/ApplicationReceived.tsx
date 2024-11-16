@@ -1,188 +1,117 @@
-import React, { useState,useCallback} from "react";
+import React, { useState, useCallback } from "react";
 import styles from "./JobPosted.module.scss";
-import { MultiValue, ActionMeta } from "react-select";
-import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
-import ReportTable from './JobPostedTable';
-import { useRouter } from "next/navigation";
-import { MultiSelect, MultiSelectAsync } from "../common/form-fields/MultiSelect";
+import { Form, Button, Row, Col , Spinner } from "react-bootstrap";
+import ReportTable from "./JobPostedTable";
+import {
+  MultiSelect,
+} from "../common/form-fields/MultiSelect";
 import { debounce } from "lodash";
 import { FieldError, useForm } from "react-hook-form";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
+import { GenerateReportText, ReportTypeSelect } from "./CommonElements";
+import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
+import { getStartAndEndDate } from "@/helpers/date";
+import { DURATION_OPTIONS } from "@/helpers/constants";
 
 interface FormValues {
-  agency: SelectOption;
-  duration: SelectOption;
+  agency: SelectOption[];
+  duration: string;
+  postId:string;
 }
-
-interface Option {
-  value: string;
-  label: string;
-}
-
-const durationOptions: Option[] = [
-  { value: "this month", label: "This Month" },
-  { value: "last month", label: "Last Month" },
-  { value: "last 3 months", label: "Last 3 months" },
-  { value: "last 6 months", label: "Last 6 months" },
-  { value: "data range", label: "Data Range" },
-];
-
-const CustomOption = (props: {
-  data: Option;
-  innerRef: React.Ref<HTMLDivElement>;
-  innerProps: any;
-  isSelected: boolean;
-}) => {
-  const { data, innerRef, innerProps, isSelected } = props;
-
-  return (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{ display: "flex", alignItems: "center", padding: "2px" }}
-    >
-      {data.value !== "all" && (
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => null}
-          style={{ marginRight: "4px" }}
-        />
-      )}
-      {data.label}
-    </div>
-  );
-};
 
 function ApplicationReceived() {
-  const router = useRouter();
-  const [reportType, setReportType] = useState("Applications Received");
-  const [selectedAgencies, setSelectedAgencies] = useState<Option[]>([]);
-  const [postID, setPostID] = useState("");
-  const [duration, setDuration] = useState("");
-  const [selectedDuration, setSelectedDuration] = useState<Option[]>([]);  
   const [reportData, setReportData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
-      getFormattedAgencies(inputValue).then(options => callback(options));
+      getFormattedAgencies(inputValue,true).then((options) => callback(!inputValue ? [{value:'all',label:'All Agencies'},...options]: options));
     }, 500),
     []
   );
+
   const {
     control,
+    handleSubmit,
+    register,
     formState: { errors, isValid },
   } = useForm<FormValues>();
-  const handleReportTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newReportType = event.target.value;
-    setReportType(newReportType);
-    router.push(`/reports/${newReportType}`);
-    if (newReportType !== 'Applications Received') {
-      setSelectedAgencies([]);
-    }
-    if (newReportType !== 'Agency Applications Report') {
-      setPostID("");
-    }
-    if (newReportType !== 'Agency Applications Report') {
-      setDuration("");
-    }
-  };
-
- 
-
-  const handleDurationChange = (
-    selected: MultiValue<Option>,
-    actionMeta: ActionMeta<Option>
-  ) => {
-    const allDurationOption = selected.find(
-      (option) => option.value === "all"
-    );
-    setSelectedDuration(allDurationOption ? durationOptions.slice(1) : (selected as Option[]));
-  };
-
   
-  const handleSubmit = async () => {
-    setLoading(true);
+  const onSubmit = async (data:FormValues) => {
     try {
+      setLoading(true)
       const response = await getReports(
-        reportType,
-        selectedAgencies.map((agency) => agency.value).join(','),
-        postID,
-        selectedDuration.map((duration) => duration.value).join(',')
+        {
+          type: "Applications Received",
+          agency:data.agency?.map((agency) => agency.value).join(","),
+          duration:getStartAndEndDate(Number(data.duration)),
+          postId: data.postId
+        }
       );
-      const formattedData = response.Reportdata.map((item) => ({
-        jobId: item.jobId,
-        companyName: item.jobData?.companyName, 
-        firstName: item.firstName,    
-        lastName: item.lastName, 
-        phone: item.agencyData?.phone,
-        email: item.agencyData?.email,
-        createdAt: item.createdAt,
-        status: item.agencyData?.status
-      }));
-
-      setReportData(formattedData); 
+      setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
       setLoading(false);
     }
   };
-
+  
 
   const renderReportFields = () => {
     return (
       <Row>
-        <Col>
-        <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+        <Col md={2}>
+          <Form.Group className={styles.selectField}>
             <Form.Label>Agency</Form.Label>
-            <MultiSelectAsync
+            <MultiSelectAsyncWithCheckbox
               name="agency"
               control={control}
               error={errors.agency as FieldError}
               loadOptions={loadOptionsDebounced}
-              rules={{ required: "Agency is required" }}
               customStyles={{}}
-              menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+              isMulti={true}
+              menuPortalTarget={
+                document.getElementsByClassName("modal")[0] as HTMLElement
+              }
               menuPosition={"fixed"}
             />
           </Form.Group>
         </Col>
-        <Col>
+        <Col md={2}>
           <Form.Group className={styles.selectField}>
             <Form.Label>Post ID</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter Post ID"
-              className={styles.input}
-              value={postID}
-              onChange={(e) => setPostID(e.target.value)}
-            />
+              {...register("postId")}    
+                      />
           </Form.Group>
         </Col>
-        <Col>
-          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+        <Col md={2}>
+          <Form.Group className={styles.selectField}>
             <Form.Label>Duration</Form.Label>
             <MultiSelect
               name="duration"
               control={control}
               error={errors.duration as FieldError}
-              options={durationOptions}
-              onChange={handleDurationChange}
+              options={DURATION_OPTIONS}
+              menuListStyles={{
+                fontSize:"13px",
+              }}
               customStyles={{}}
-              rules={{ required: "Duration is required" }}
             />
           </Form.Group>
         </Col>
-        <Col>
-        <Button onClick={handleSubmit} className={styles.submitButton} disabled={loading}>
-          {loading ? <Spinner size="sm" /> : "Submit"}
-        </Button>
+        <Col md={2}>
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            className={styles.submitButton}
+            disabled={loading}
+          >
+            {loading ? <Spinner size="sm" /> : "Submit"}
+          </Button>
         </Col>
       </Row>
     );
@@ -191,32 +120,19 @@ function ApplicationReceived() {
   return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
-        <Form.Group className={styles.reportTypeField}>
-          <Form.Label>Report Type</Form.Label>
-          <Col>
-            <Form.Select onChange={handleReportTypeChange} value={reportType}>
-              <option value={"jobs-posted"}>Jobs Posted</option>
-              <option value={"Applications Received"}>Agency Applications Report</option>
-              <option value={"Jobs-Applied"}>Job Applied Report</option>
-              <option value={"Users-Report"}>Users Report</option>
-              <option value={"Employer-Applications-Report"}>Employers Applications Report</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
+        <Row>
+          <Col md={2}>
+         <ReportTypeSelect />
+         </Col>
+        </Row>
         {renderReportFields()}
       </div>
 
       {reportData.length === 0 && (
-        <div className={styles.generateReportSection}>
-          <div className={styles.generateReportImage}>
-            <Image src={"/generate-report.png"} alt="Generate Report" width={100} height={100} />
-          </div>
-          <h3>Generate Report</h3>
-          <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
-        </div>
+        <GenerateReportText/>
       )}
 
-    {reportData.length > 0 && <ReportTable data={reportData} />}
+      {reportData.length > 0 && <ReportTable data={reportData} />}
     </div>
   );
 }

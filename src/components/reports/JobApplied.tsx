@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image, Spinner } from 'react-bootstrap';
 import ReportTable from './JobPostedTable';
@@ -7,145 +7,94 @@ import { MultiSelect} from "../common/form-fields/MultiSelect";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
+import { GenerateReportText, ReportTypeSelect } from './CommonElements';
+import { MultiSelectAsyncWithCheckbox } from '../common/form-fields/MultiSelectWithCheckbox';
+import { getFormattedJobTitles } from '@/helpers/asyncOptions';
+import { debounce } from 'lodash';
+import { getStartAndEndDate } from '@/helpers/date';
+import { DURATION_OPTIONS } from '@/helpers/constants';
 
 
 interface FormValues {  
-  jobtitle: SelectOption;
-  duration: SelectOption;
+  jobtitle: SelectOption[];
+  duration: string;
 }
-interface Option {
-  value: string;
-  label: string;
-}
-const jobtitleOptions: Option[] = [
-  { value: "all", label: "All" },
-];
-const durationOptions: Option[] = [
-  { value: "this month", label: "This Month" },
-  { value: "last month", label: "Last Month" },
-  { value: "last 3 months", label: "Last 3 months" },
-  { value: "last 6 months", label: "Last 6 months" },
-  { value: "data range", label: "Data Range" },
-];
 
-const CustomOption = (props: {
-  data: Option;
-  innerRef: React.Ref<HTMLDivElement>;
-  innerProps: any;
-  isSelected: boolean;
-}) => {
-  const { data, innerRef, innerProps, isSelected } = props;
-
-  return (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{ display: 'flex', alignItems: 'center', padding: '2px' }}
-    >
-      {data.value !== 'all' && (
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => null}
-          style={{ marginRight: '4px' }}
-        />
-      )}
-      {data.label}
-    </div>
-  );
-};
 
 function JobApplied() {
   const router = useRouter();
-  const [reportType, setReportType] = useState('Jobs Applied');
-  const [duration, setDuration] = useState('');
-  const [selectedJob, setSelectedJob] = useState<Option[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false); 
 
 
   const {
     control,
+    handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormValues>();
-  const handleReportTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newReportType = event.target.value;
-    setReportType(newReportType);
-    router.push(`/reports/${newReportType}`)
-    if (newReportType !== 'Jobs Applied') {
-      setSelectedJob([]);
-    }
-    if (newReportType !== 'Job Applied Report') {
-      setDuration('');
-    }
-  };
-  const handleJobTitleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setDuration(event.target.value);
-  };
-
-
-  const handleDurationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setDuration(event.target.value);
-  };
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const response = await getReports(
-        reportType, 
-        selectedJob.map((agency) => agency.value).join(','), 
-        duration
-      );
-      
-      const formattedData = response.Reportdata.map((item) => ({
-        jobId: item.jobId,
-        agencyName: item.agencyData?.name,  
-        jobLocation: item.jobData?.location, 
-        positions: item.jobData?.positions.join(', '), 
-        resume: item.resume,
-        createdAt: item.createdAt,
-      }));
   
-      setReportData(formattedData); 
+  const onSubmit = async (data:FormValues) => {
+    try {
+      setLoading(true)
+      const response = await getReports(
+        {
+          type: "Jobs Applied",
+          jobTitle:data.jobtitle?.map((title) => title.value).join(","),
+          duration:getStartAndEndDate(Number(data.duration)),
+        }
+      );
+      setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
       setLoading(false);
     }
   };
+  
+  
+
+  const loadOptionsDebounced = useCallback(
+    debounce((inputValue: string, callback: (options: any) => void) => {
+      getFormattedJobTitles(inputValue).then((options) => callback(!inputValue ? [{value:'all',label:'All Agencies'},...options]: options));
+    }, 500),
+    []
+  );
+
 
   const renderReportFields = () => {
       return (
         <Row>
-          <Col>
-          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+          <Col md={2}>
+          <Form.Group className={`${styles.selectField}`}>
             <Form.Label>Job Title</Form.Label>
-            <MultiSelect
+            <MultiSelectAsyncWithCheckbox
               name="jobtitle"
               control={control}
               error={errors.jobtitle as FieldError}
-              options={jobtitleOptions}
-              onChange={handleJobTitleChange}
+              loadOptions={loadOptionsDebounced}
               customStyles={{}}
-              rules={{ required: "Job Title is required" }}
+              isMulti={true}
+              menuPortalTarget={
+                document.getElementsByClassName("modal")[0] as HTMLElement
+              }
+              menuPosition={"fixed"}
             />
             </Form.Group>
           </Col>
-          <Col>
-          <Form.Group className={`${styles.selectField} ${styles.Dropdown}`}>
+          <Col md={2}>
+          <Form.Group className={`${styles.selectField}`}>
             <Form.Label>Duration</Form.Label>
             <MultiSelect
               name="duration"
               control={control}
               error={errors.duration as FieldError}
-              options={durationOptions}
-              onChange={handleDurationChange}
+              options={DURATION_OPTIONS}
               customStyles={{}}
-              rules={{ required: "Duration is required" }}
             />
           </Form.Group>
           </Col>
           <Col>
-          <Button onClick={handleSubmit} className={styles.submitButton} disabled={loading}>
+          <Button onClick={handleSubmit(onSubmit)} className={styles.submitButton} disabled={loading}>
           {loading ? <Spinner size="sm" /> : "Submit"}
         </Button>
           </Col>
@@ -156,29 +105,16 @@ function JobApplied() {
   return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
-        <Form.Group className={styles.reportTypeField}>
-          <Form.Label>Report Type</Form.Label>
-          <Col>
-            <Form.Select onChange={handleReportTypeChange} value={reportType}>
-              <option value={"jobs-posted"}>Jobs Posted</option>
-              <option value={"Applications-Received"}>Agency Applications Report</option>
-              <option value={"Jobs Applied"}>Job Applied Report</option>
-              <option value={"Users-Report"}>Users Report</option>
-              <option value={"Employer-Applications-Report"}>Employers Applications Report</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
+        <Row>
+          <Col md={2}>
+         <ReportTypeSelect />
+         </Col>
+        </Row>
         {renderReportFields()}
       </div>
 
       {reportData.length === 0 && (
-        <div className={styles.generateReportSection}>
-          <div className={styles.generateReportImage}>
-            <Image src={"/generate-report.png"} alt="Generate Report" width={100} height={100} />
-          </div>
-          <h3>Generate Report</h3>
-          <p>Generate the report by selecting the appropriate filters above and clicking Submit</p>
-        </div>
+        <GenerateReportText/>
       )}
 
       {reportData.length > 0 && <ReportTable data={reportData} />}
