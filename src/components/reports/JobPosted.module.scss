@@ -4,14 +4,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding-top: 85px;
 }
 
 .container {
-  width: 100%; 
-  height: auto;
-  margin-top: 68px;
+  width: 100%;
   display: flex;
+  padding:24px 24px 8px 24px;
   flex-direction: column;
   background-color: #fff;
 }
@@ -29,16 +28,7 @@
 
 .reportTypeField label {
   margin-bottom: 7px;
-  font-weight: 500;
-}
-
-.reportTypeField select {
-  width: 100%;
-  height: 44px;
-  max-width: 225px;
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  font-weight: 400;
 }
 
 .filterRow {
@@ -47,13 +37,7 @@
   gap: 10px;
 }
 .selectField {
-  margin-bottom: 25px;
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-  flex: 1;
-  position: relative;
-  z-index: 10; 
+  margin-bottom: 24px;
 }
 .input{
 width: 230px;
@@ -62,19 +46,6 @@ width: 230px;
   width: 230px;
 }
 
-.selectField label {
-  margin-bottom: 7px;
-  font-weight: 500;
-}
-
-.selectField select {
-  width: 100%;
-  height: 44px;
-  max-width: 225px;
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
 
 
 .customSelect .react-select__control {
@@ -104,21 +75,10 @@ width: 230px;
   color: #333;
 }
 .submitButton {
-  margin-top: 27px;
-  background-color: #0045E6;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  width: 100%;
+  margin-top: 30px;
   max-width: 120px;
   height: 44px;
-  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #003bb5;
-  }
 }
 
 .generateReportImage {
@@ -138,6 +98,18 @@ width: 230px;
 .generateReportSection {
   text-align: center;
   margin-top: 20px;
+  h3{
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(80, 80, 80, 1);
+    margin-bottom: 10px;
+    margin-top: 12px;
+  }
+  p{
+    font-weight: 300;
+    font-size: 16px;
+    color: rgba(26, 26, 26, 1);
+  }
 }
 
 
@@ -192,7 +164,6 @@ width: 230px;
 
 .reportTable thead {
   position: sticky;
-  z-index: 1;
   background-color: #fff;
 }
 

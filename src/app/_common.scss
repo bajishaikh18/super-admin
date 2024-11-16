@@ -15,3 +15,20 @@
   .success{
     color: $color-success !important;
   }
+
+  .multiselect-checkbox-container{
+    display: flex !important;
+    align-items: center !important;
+    padding: 16px 24px !important;
+    .multiselect-checkbox{
+      width: 16px;
+      height: 16px;
+      border-color: #000;
+      border-radius: 2px;
+      margin-right: 16px;
+    }
+    img{
+      margin-right: 8px;
+    }
+  }
+ 

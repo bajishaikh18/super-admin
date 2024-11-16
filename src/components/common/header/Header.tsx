@@ -124,42 +124,53 @@ const Header: React.FC<HeaderProps> = () => {
                 }`}
                 href="/walk-in"
               >
-                Walkins
+                Walk-ins
               </Link>
             )}
 
-            {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
-              <Link
-                className={`${styles.navListItem} ${
-                  pathname.includes("/agency") ? styles.active : ""
-                }`}
-                href="/agency"
+
+
+         
+ {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
+              <NavDropdown
+                title="Users"
+                className={`${styles.navListItem} nav-list-item`}
               >
-                Agencies
-              </Link>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/users?type=app") ? styles.active : ""
+                  }`}
+                  href="/users?type=app"
+                >
+                Registered app users
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/users?type=admin") ? styles.active : ""
+                  }`}
+                  href="/users?type=admin"
+                >
+               Internal users
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/agency") ? styles.active : ""
+                  }`}
+                  href="/agency"
+                >
+                 Agencies / Trade centers
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/employers" ? styles.active : ""
+                  }`}
+                  href="/employers"
+                >
+                Employers
+                </NavDropdown.Item>
+              
+              </NavDropdown>
             )}
-
-            {shouldVisible([ROLE.superAdmin]) && (
-              <Link
-                className={`${styles.navListItem} ${
-                  pathname.includes("/users") ? styles.active : ""
-                }`}
-                href="/users"
-              >
-                Users
-              </Link>
-            )}
-            {shouldVisible([ROLE.admin, ROLE.superAdmin]) && (
-              <Link
-              className={`${styles.navListItem} ${
-                pathname == "/employers" ? styles.active : ""
-              }`}
-              href="/employers"
-            >
-              Employers
-            </Link>
-            )}
-
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <NavDropdown
                 title="Reports"
