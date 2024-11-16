@@ -43,7 +43,6 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedFormat, setSelectedFormat] =
     useState<string>("Download Report");
-  const debouncedSearchTerm = useDebounce(search, 300);
 
   const columnHelper = createColumnHelper<ReportData>();
   const columns = [
@@ -205,11 +204,24 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
   const totalCount = data.length;
 
   const downloadExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    const payload = data.map(x=>{
+      return {
+        "Post id": x.jobId,
+       "Agency": x.agency,
+        "Benefits": x.amenities.join(','),
+        "Posted By": x.postedBy,
+        "Target Country": x.country,
+        "Job Location":x.location,
+        "No of Positions": x.positions.length,
+        "Posted Date": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
+        "Expiry Date": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
+        "Status": x.status,
+      }
+    })
+    const worksheet = XLSX.utils.json_to_sheet(payload);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "JobPostedReport");
-
-    XLSX.writeFile(workbook, "JobPostedReport.xlsx");
+    XLSX.writeFile(workbook, `JobPostedReport_${DateTime.now().toFormat("dd_MM_yyyy hh:mm:ss")}.xlsx`);
   };
 
   return (
