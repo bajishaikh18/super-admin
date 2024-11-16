@@ -40,6 +40,9 @@
 }
 .selectField {
   margin-bottom: 24px;
+  &.dateField{
+    margin-bottom: 10px;
+  }
 }
 .input{
 width: 230px;

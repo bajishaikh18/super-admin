@@ -5,223 +5,37 @@ import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "../common/table/DataTable";
 import { DateTime } from "luxon";
 import { useDebounce } from "@uidotdev/usehooks";
-import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import styles from "./JobPosted.module.scss";
 import Link from "next/link";
 import * as XLSX from "xlsx";
 import { COUNTRIES } from "@/helpers/constants";
 import { FullScreenImage } from "../common/FullScreenImage";
 
-type ReportData = {
-  _id: string;
-  jobId: string;
-  agency: string;
-  location: string;
-  amenities: string[];
-  positions: object[];
-  imageUrl: string;
-  createdAt: string;
-  expiry: string;
-  country: string;
-  postedBy: string;
-  status:string;
-};
+
 
 type ReportTableProps = {
-  data: ReportData[];
+  data: any;
+  columns: any;
+  exportPayload:any;
+  exportFileName:string;
+  showImage?: boolean;
+  imageUrl?:string
+  resetLinkClick?:()=>void
 };
 
-const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
-  const [field, setField] = useState<SelectOption>({
-    value: "employerId",
-    label: "Employer ID",
-  });
-  const [imageUrl, setImageUrl] = useState("");
-  const [search, setSearch] = React.useState<string>("");
-  const [showImage, setShowImage] = useState(false);
-
+const ReportTable: React.FC<ReportTableProps> = ({ data, columns, exportPayload,exportFileName,showImage,imageUrl,resetLinkClick }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedFormat, setSelectedFormat] =
     useState<string>("Download Report");
 
-  const columnHelper = createColumnHelper<ReportData>();
-  const columns = [
-    columnHelper.accessor("jobId", {
-      header: "Post Id",
-      cell: (info) => (
-        <Link href={`/posted-jobs/${info.getValue()}`} passHref>
-          {info.getValue()}
-        </Link>
-      ),
-      meta: {
-        classes: "f-3",
-      },
-    }),
-  
-    columnHelper.accessor("agency", {
-      header: "Agency",
-      cell: (info) => info.renderValue() || "N/A",
-      meta: {
-        classes: "f-4",
-      },
-    }),
-  
-    columnHelper.accessor("postedBy", {
-      header: "Posted by",
-      cell: (info) => info.renderValue() || "N/A",
-      meta: {
-        classes: "f-4",
-      },
-    }),
-  
-
-    columnHelper.accessor("country", {
-      header: "Target country",
-      cell: (info) =>
-        COUNTRIES[info.renderValue() as "sa"]?.label ||
-        info.renderValue() ||
-        "N/A",
-      meta: {
-        classes: "capitalize f-5",
-        filterType: "select",
-        selectOptions: Object.entries(COUNTRIES).map(([key, val]) => ({
-          label: val.label,
-          value: key,
-        })),
-      },
-    }),
-  
-    columnHelper.accessor("location", {
-      header: "Job Location",
-      cell: (info) =>
-        COUNTRIES[info.renderValue() as "sa"]?.label ||
-        info.renderValue() ||
-        "N/A",
-      meta: {
-        classes: "capitalize f-5",
-        filterType: "select",
-        selectOptions: Object.entries(COUNTRIES).map(([key, val]) => ({
-          label: val.label,
-          value: key,
-        })),
-      },
-    }),
-  
-    columnHelper.accessor("amenities", {
-      header: "Benefits",
-      cell: (info) => (
-        <span title={info.renderValue()?.join(", ") || "N/A"}>
-          {info.renderValue()?.join(", ") || "N/A"}
-        </span>
-      ),
-      meta: {
-        filterType: "select",
-        selectOptions: [
-          { value: "Food", label: "Food" },
-          { value: "Transportation", label: "Transportation" },
-          { value: "Stay", label: "Stay" },
-          { value: "Recruitment", label: "Recruitment" },
-        ],
-      },
-    }),
-  
-    columnHelper.accessor("positions", {
-      header: "No. of positions",
-      cell: (info) => info.getValue()?.length || "N/A",
-      meta: {
-        filterType: "number",
-        classes: "f-4",
-      },
-    }),
-  
-    columnHelper.accessor("imageUrl", {
-      header: "Media",
-      cell: (info) => (
-        <>
-          {info.getValue() ? (
-            <Link
-              href={`javascript:;`}
-              onClick={() => {
-                setShowImage(true);
-                setImageUrl(info.getValue());
-              }}
-              className={dataTableStyles.normalLink}
-            >
-              View Image
-            </Link>
-          ) : (
-            "N/A"
-          )}
-        </>
-      ),
-      meta: {
-        filter: false,
-        classes: "f-4",
-      },
-    }),
-  
-    columnHelper.accessor("createdAt", {
-      header: "Posted Date",
-      cell: (info) =>
-        info.renderValue()
-          ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
-          : "N/A",
-      meta: {
-        filterType: "date",
-        classes: "f-5",
-      },
-    }),
-  
-    columnHelper.accessor("expiry", {
-      header: "Expiry",
-      cell: (info) =>
-        info.renderValue()
-          ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
-          : "N/A",
-      meta: {
-        filterType: "date",
-        classes: "f-5",
-      },
-    }),
-    columnHelper.accessor("status", {
-      header: "Status",
-      meta: {
-        classes: "capitalize f-4",
-        filterType: "select",
-        selectOptions: [
-          { value: "active", label: "Active" },
-          { value: "inactive", label: "InActive" },
-        ],
-      },
-      cell: (info) => {
-        return (
-          <div className="status-cont">{info.renderValue() || "N/A"}</div>
-        );
-      },
-    }),
-  ];
-
   const totalCount = data.length;
 
+
   const downloadExcel = () => {
-    const payload = data.map(x=>{
-      return {
-        "Post id": x.jobId,
-       "Agency": x.agency,
-        "Benefits": x.amenities.join(','),
-        "Posted By": x.postedBy,
-        "Target Country": x.country,
-        "Job Location":x.location,
-        "No of Positions": x.positions.length,
-        "Posted Date": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
-        "Expiry Date": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
-        "Status": x.status,
-      }
-    })
-    const worksheet = XLSX.utils.json_to_sheet(payload);
+    const worksheet = XLSX.utils.json_to_sheet(exportPayload);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "JobPostedReport");
-    XLSX.writeFile(workbook, `JobPostedReport_${DateTime.now().toFormat("dd_MM_yyyy hh:mm:ss")}.xlsx`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, exportFileName);
+    XLSX.writeFile(workbook, `${exportFileName}_${DateTime.now().toFormat("dd_MM_yyyy hh:mm:ss")}.xlsx`);
   };
 
   return (
@@ -250,19 +64,17 @@ const ReportTable: React.FC<ReportTableProps> = ({ data }) => {
               setSorting(updater);
             }}
             data={data}
-            tableHeight={"75vh"}
-            isSearch={!!search}
+            tableHeight={"60vh"}
+            isSearch={false}
             fetchNextPage={() => {}}
             isLoading={false}
             isFetching={false}
           />
         </Card>
         <FullScreenImage
-        isOpen={showImage}
-        handleClose={() => {
-          setImageUrl(""), setShowImage(false);
-        }}
-        imageUrl={imageUrl}
+        isOpen={!!showImage}
+        handleClose={resetLinkClick ? resetLinkClick: ()=>{}}
+        imageUrl={imageUrl || ""}
       />
     </div>
   );

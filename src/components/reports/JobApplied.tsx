@@ -7,7 +7,7 @@ import { MultiSelect} from "../common/form-fields/MultiSelect";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
-import { GenerateReportText, ReportTypeSelect } from './CommonElements';
+import { Duration, GenerateReportText, ReportTypeSelect } from './CommonElements';
 import { MultiSelectAsyncWithCheckbox } from '../common/form-fields/MultiSelectWithCheckbox';
 import { getFormattedJobTitles } from '@/helpers/asyncOptions';
 import { debounce } from 'lodash';
@@ -25,11 +25,13 @@ function JobApplied() {
   const router = useRouter();
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false); 
+  const [dateRange, setDateRange] = useState("");
 
 
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors, isValid },
   } = useForm<FormValues>();
   
@@ -40,7 +42,7 @@ function JobApplied() {
         {
           type: "Jobs Applied",
           jobTitle:data.jobtitle?.map((title) => title.value).join(","),
-          duration:getStartAndEndDate(Number(data.duration)),
+          duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
         }
       );
       setReportData(response.reportdata);
@@ -82,16 +84,8 @@ function JobApplied() {
             </Form.Group>
           </Col>
           <Col md={2}>
-          <Form.Group className={`${styles.selectField}`}>
-            <Form.Label>Duration</Form.Label>
-            <MultiSelect
-              name="duration"
-              control={control}
-              error={errors.duration as FieldError}
-              options={DURATION_OPTIONS}
-              customStyles={{}}
-            />
-          </Form.Group>
+          <Duration watch={watch} control={control} errors={errors} handleDateChange={setDateRange}/>
+
           </Col>
           <Col>
           <Button onClick={handleSubmit(onSubmit)} className={styles.submitButton} disabled={loading}>

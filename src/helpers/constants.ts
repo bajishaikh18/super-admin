@@ -54,5 +54,5 @@ export const DURATION_OPTIONS: {
   { value: "1", label: "Last Month" },
   { value: "3", label: "Last 3 months" },
   { value: "6", label: "Last 6 months" },
-  { value: "custom", label: "Data Range" },
+  { value: "custom", label: "Custom date range" },
 ];
