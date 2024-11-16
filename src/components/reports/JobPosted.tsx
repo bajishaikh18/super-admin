@@ -35,14 +35,6 @@ const reportTypeOptions: Option[] = [
   { value: "Employer-Applications-Report", label: "Employers Applications Report" },
 ];
 
-const countryOptions: Option[] = [
-  { value: "all", label: "All" },
-  { value: "dubai", label: "Dubai" },
-  { value: "kuwait", label: "Kuwait" },
-  { value: "oman", label: "Oman" },
-  { value: "qatar", label: "Qatar" },
-  { value: "saudi", label: "Saudi Arabia" },
-];
 
 const industryOptions: Option[] = [
   { value: "all", label: "All" },
