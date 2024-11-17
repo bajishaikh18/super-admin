@@ -4,7 +4,7 @@ import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
-import ReportTable from "./JobPostedTable";
+import ReportTable from "./ReportTable";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import { getReports } from "@/apis/dashboard";
 import { debounce } from "lodash";
@@ -73,11 +73,11 @@ type ReportData = {
 
 function JobPosted() {
   const [loading, setLoading] = useState(false);
-  const [reportType, setReportType] = useState("Jobs Posted");
   const [reportData, setReportData] = useState<any[]>([]);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<ReportData>();
   const [showImage, setShowImage] = useState(false);
+  const [filters,setFilters] = useState<string[]|null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [dateRange, setDateRange] = useState("");
   const columns = [
@@ -243,14 +243,17 @@ function JobPosted() {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      const response = await getReports({
-        type: reportType,
+      const reportPayload  = {
+        type: "jobs-posted",
         agency: data.agency?.map((agency) => agency.value).join(","),
         country: data.country?.map((country) => country.value).join(","),
         industry: data.industry?.map((industry) => industry.value).join(","),
         duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
         status: data.status?.map((status) => status.value).join(","),
-      });
+      }
+      const response = await getReports(reportPayload);
+      const filters = Object.keys(reportPayload).filter((x)=>reportPayload[x as 'type']);
+      setFilters(filters)
       const payload = response?.reportdata.map((x: any) => {
         return {
           "Post id": x.jobId,
@@ -387,6 +390,8 @@ function JobPosted() {
 
       {reportData.length > 0 && (
         <ReportTable
+          type="jobs-posted"
+          filters={filters}
           showImage={showImage}
           resetLinkClick={resetLinkClick}
           exportFileName="JobsPosted"

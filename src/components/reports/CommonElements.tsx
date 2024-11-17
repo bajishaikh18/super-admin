@@ -12,9 +12,9 @@ import { CustomDatePicker, CustomDateRangePicker } from "../common/form-fields/D
 import DatePicker from "react-datepicker";
 import { DateTime } from "luxon";
 
-const options = [
+export const reportTypeOptions = [
   {
-    label: "Jobs Posted",
+    label: "Jobs Posted Report",
     value: "jobs-posted",
   },
   {
@@ -83,8 +83,8 @@ export const ReportTypeSelect = () => {
           }),
           indicatorSeparator: () => ({ display: "none" }),
         }}
-        defaultValue={options.find((c) => pathname.includes(c.value))}
-        options={options}
+        defaultValue={reportTypeOptions.find((c) => pathname.includes(c.value))}
+        options={reportTypeOptions}
         onChange={(val) => handleReportTypeChange(val?.value!)}
       />
     </Form.Group>

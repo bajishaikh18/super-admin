@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import styles from './JobPosted.module.scss';
 import { Form, Button, Row, Col, Image, Spinner } from 'react-bootstrap';
-import ReportTable from './JobPostedTable';
+import ReportTable from './ReportTable';
 import { useRouter } from 'next/navigation';
 import { MultiSelect} from "../common/form-fields/MultiSelect";
 import { FieldError, useForm } from "react-hook-form";
@@ -44,7 +44,7 @@ function EmployersReport() {
       setLoading(true)
       const response = await getReports(
         {
-          type: "Employer Applications Report",
+          type: "employer-applications",
           employer:data.employer?.map((title) => title.value).join(","),
           duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
         }

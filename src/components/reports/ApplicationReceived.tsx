@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import styles from "./JobPosted.module.scss";
 import { Form, Button, Row, Col , Spinner } from "react-bootstrap";
-import ReportTable from "./JobPostedTable";
+import ReportTable from "./ReportTable";
 import {
   MultiSelect,
 } from "../common/form-fields/MultiSelect";
@@ -46,6 +46,7 @@ function ApplicationReceived() {
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState("");
   const columnHelper = createColumnHelper<ApplicationReceivedData>();
+  const [filters,setFilters] = useState<string[]|null>(null);
   const columns = [
     columnHelper.accessor("jobId", {
       header: "Post Id",
@@ -173,14 +174,17 @@ function ApplicationReceived() {
   const onSubmit = async (data:FormValues) => {
     try {
       setLoading(true)
+      const reportPayload =   {
+        type: "application-received",
+        agency:data.agency?.map((agency) => agency.value).join(","),
+        duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
+        postId: data.postId
+      }
       const response:{reportdata: ApplicationReceivedData[]} = await getReports(
-        {
-          type: "Applications Received",
-          agency:data.agency?.map((agency) => agency.value).join(","),
-          duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
-          postId: data.postId
-        }
+        reportPayload
       );
+      const filters = Object.keys(reportPayload).filter((x)=>reportPayload[x as 'type']);
+      setFilters(filters)
       const payload = response?.reportdata.map(x=> {
         return {
           "Post Id": x.jobId,
@@ -263,7 +267,7 @@ function ApplicationReceived() {
         <GenerateReportText/>
       )}
 
-      {reportData.length > 0 && <ReportTable exportPayload={exportPayload} exportFileName="Agency_Applications" columns={columns} data={reportData} />}
+      {reportData.length > 0 && <ReportTable filters={filters} type="application-received" exportPayload={exportPayload} exportFileName="Agency_Applications" columns={columns} data={reportData} />}
     </div>
   );
 }

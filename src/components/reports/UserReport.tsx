@@ -4,7 +4,7 @@ import { Form, Button, Row, Col, Image, Spinner } from 'react-bootstrap';
 import { MultiValue, ActionMeta } from 'react-select';
 import { MultiSelect,} from "../common/form-fields/MultiSelect";
 import { useRouter } from 'next/navigation';
-import ReportTable from './JobPostedTable';
+import ReportTable from './ReportTable';
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
@@ -41,6 +41,7 @@ function UserReport() {
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<User>();
   const [dateRange, setDateRange] = useState("");
+  const [filters,setFilters] = useState<string[]|null>(null);
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
@@ -205,14 +206,17 @@ function UserReport() {
   const onSubmit = async (data:FormValues) => {
     try {
       setLoading(true)
+      const reportPayload =  {
+        type: "users-report",
+        jobTitle:data.jobtitle?.map((title) => title.value).join(","),
+        industry:data.industry?.map((industry) => industry.value).join(","),
+        duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
+      }
       const response:{reportdata:User[]} = await getReports(
-        {
-          type: "Users Report",
-          jobTitle:data.jobtitle?.map((title) => title.value).join(","),
-          industry:data.industry?.map((industry) => industry.value).join(","),
-          duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
-        }
+       reportPayload
       );
+      const filters = Object.keys(reportPayload).filter((x)=>reportPayload[x as 'type']);
+      setFilters(filters)
       const payload = response?.reportdata.map(x=> {
         return {
           "User Id": x.userId,
@@ -303,7 +307,7 @@ function UserReport() {
         <GenerateReportText/>
       )}
 
-      {reportData.length > 0 && <ReportTable exportPayload={exportPayload} exportFileName='User_Report' columns={columns} data={reportData} />}
+      {reportData.length > 0 && <ReportTable type='users-report' filters={filters} exportPayload={exportPayload} exportFileName='User_Report' columns={columns} data={reportData} />}
     </div>
   );
 }
