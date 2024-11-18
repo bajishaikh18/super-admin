@@ -2,6 +2,7 @@
 // InitialScreen.tsx
 import React, { useCallback, useRef, useState } from "react";
 import styles from "./CreateJob.module.scss";
+import uploadStyles from "../common/Common.module.scss";
 import Image from "next/image";
 import { Button } from 'react-bootstrap';
 import {useDropzone} from 'react-dropzone'
@@ -50,11 +51,11 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
         >
           
         </IoClose>          </div>
-      <div className={styles.uploadSection} {...getRootProps()}>
+      <div className={uploadStyles.uploadSection} {...getRootProps()}>
 
         <input accept=".docx,.pdf"  {...getInputProps()} />
        
-        <div className={styles.uploadHeader}>
+        <div className={uploadStyles.uploadHeader}>
         <svg
                 width="16"
                 height="16"
@@ -94,13 +95,13 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
             <p>Upload Media</p>
         }
         </div>
-        <p className={`${styles.fileInfo} ${fileRejections.length >0 ? styles.error : ''}`}>
+        <p className={`${uploadStyles.fileInfo} ${fileRejections.length >0 ? styles.error : ''}`}>
           .jpeg, .jpg & .png are allowed. File size should not exceed 5 MB
         </p>
        
       
         {selectedFile ? (
-          <p className={styles.selectedFileName}>
+          <p className={uploadStyles.selectedFileName}>
             Selected file: {selectedFile.name}
           </p>
         ) :   <Button className={`outlined bg-white ${styles.outlinedButton}`}  onClick={open}>
