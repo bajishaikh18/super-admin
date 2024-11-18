@@ -1,16 +1,17 @@
 import React, { useState, useCallback } from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col , Spinner } from "react-bootstrap";
+import { Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import ReportTable from "./ReportTable";
-import {
-  MultiSelect,
-} from "../common/form-fields/MultiSelect";
 import { debounce } from "lodash";
 import { FieldError, useForm } from "react-hook-form";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
-import { Duration, GenerateReportText, ReportTypeSelect } from "./CommonElements";
+import {
+  Duration,
+  GenerateReportText,
+  ReportTypeSelect,
+} from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
 import { getStartAndEndDate } from "@/helpers/date";
 import { DURATION_OPTIONS } from "@/helpers/constants";
@@ -23,21 +24,21 @@ import { DateTime } from "luxon";
 interface FormValues {
   agency: SelectOption[];
   duration: string;
-  postId:string;
+  postId: string;
 }
 
-interface ApplicationReceivedData{
-  jobId:string,
-  _id: string,
-  appliedBy: string,
-  agency:{
+interface ApplicationReceivedData {
+  jobId: string;
+  _id: string;
+  appliedBy: string;
+  agency: {
     name: string;
-    _id: string
-  }
-  resume: string,
-  workVideo: string,
-  positions: string[]
-  createdAt: string
+    _id: string;
+  };
+  resume: string;
+  workVideo: string;
+  positions: string[];
+  createdAt: string;
 }
 
 function ApplicationReceived() {
@@ -46,7 +47,7 @@ function ApplicationReceived() {
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState("");
   const columnHelper = createColumnHelper<ApplicationReceivedData>();
-  const [filters,setFilters] = useState<string[]|null>(null);
+  const [filters, setFilters] = useState<string[] | null>(null);
   const columns = [
     columnHelper.accessor("jobId", {
       header: "Post Id",
@@ -70,7 +71,6 @@ function ApplicationReceived() {
       meta: {
         classes: "f-6",
       },
-     
     }),
 
     columnHelper.accessor("_id", {
@@ -92,7 +92,7 @@ function ApplicationReceived() {
     columnHelper.accessor("resume", {
       cell: (info) => {
         const [, extn] = info.getValue()?.split("") || [];
-        return info.getValue()? (
+        return info.getValue() ? (
           <Link
             href={`javascript:;`}
             onClick={() =>
@@ -109,11 +109,11 @@ function ApplicationReceived() {
           "N/A"
         );
       },
-      meta: { filter: false,classes:'f-5' },
+      meta: { filter: false, classes: "f-5" },
       header: "CV Availability",
     }),
     columnHelper.accessor("workVideo", {
-      meta: { filter: false,classes:'f-5' },
+      meta: { filter: false, classes: "f-5" },
       cell: (info) => {
         return info.getValue() ? (
           <Link
@@ -158,7 +158,13 @@ function ApplicationReceived() {
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
-      getFormattedAgencies(inputValue,true).then((options) => callback(!inputValue ? [{value:'all',label:'All Agencies'},...options]: options));
+      getFormattedAgencies(inputValue, true).then((options) =>
+        callback(
+          !inputValue
+            ? [{ value: "all", label: "All Agencies" }, ...options]
+            : options
+        )
+      );
     }, 500),
     []
   );
@@ -170,32 +176,36 @@ function ApplicationReceived() {
     watch,
     formState: { errors, isValid },
   } = useForm<FormValues>();
-  
-  const onSubmit = async (data:FormValues) => {
+
+  const onSubmit = async (data: FormValues) => {
     try {
-      setLoading(true)
-      const reportPayload =   {
+      setLoading(true);
+      const reportPayload = {
         type: "application-received",
-        agency:data.agency?.map((agency) => agency.value).join(","),
-        duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
-        postId: data.postId
-      }
-      const response:{reportdata: ApplicationReceivedData[]} = await getReports(
-        reportPayload
+        agency: data.agency?.map((agency) => agency.value).join(","),
+        duration:
+          data.duration === "custom"
+            ? dateRange
+            : getStartAndEndDate(Number(data.duration)),
+        postId: data.postId,
+      };
+      const response: { reportdata: ApplicationReceivedData[] } =
+        await getReports(reportPayload);
+      const filters = Object.keys(reportPayload).filter(
+        (x) => reportPayload[x as "type"]
       );
-      const filters = Object.keys(reportPayload).filter((x)=>reportPayload[x as 'type']);
-      setFilters(filters)
-      const payload = response?.reportdata.map(x=> {
+      setFilters(filters);
+      const payload = response?.reportdata.map((x) => {
         return {
           "Post Id": x.jobId,
-          "Agency": x.agency.name,
+          Agency: x.agency.name,
           "Application Id": x._id,
-          "Positions": x.positions.join(','),
-          "Applied on": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy")
+          Positions: x.positions.join(","),
+          "Applied on": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
         };
       });
-      setExportPayload(payload)
-    
+      setExportPayload(payload);
+
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -203,7 +213,6 @@ function ApplicationReceived() {
       setLoading(false);
     }
   };
-  
 
   const renderReportFields = () => {
     return (
@@ -231,13 +240,17 @@ function ApplicationReceived() {
             <Form.Control
               type="text"
               placeholder="Enter Post ID"
-              {...register("postId")}    
-                      />
+              {...register("postId")}
+            />
           </Form.Group>
         </Col>
         <Col md={2}>
-          <Duration watch={watch} control={control} errors={errors} handleDateChange={setDateRange}/>
-
+          <Duration
+            watch={watch}
+            control={control}
+            errors={errors}
+            handleDateChange={setDateRange}
+          />
         </Col>
         <Col md={2}>
           <Button
@@ -257,17 +270,24 @@ function ApplicationReceived() {
       <div className={styles.container}>
         <Row>
           <Col md={2}>
-         <ReportTypeSelect />
-         </Col>
+            <ReportTypeSelect />
+          </Col>
         </Row>
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && (
-        <GenerateReportText/>
-      )}
+      {reportData.length === 0 && <GenerateReportText />}
 
-      {reportData.length > 0 && <ReportTable filters={filters} type="application-received" exportPayload={exportPayload} exportFileName="Agency_Applications" columns={columns} data={reportData} />}
+      {reportData.length > 0 && (
+        <ReportTable
+          filters={filters}
+          type="application-received"
+          exportPayload={exportPayload}
+          exportFileName="Agency_Applications"
+          columns={columns}
+          data={reportData}
+        />
+      )}
     </div>
   );
 }

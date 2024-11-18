@@ -1,68 +1,70 @@
-import React, { useState,useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col, Image, Spinner } from 'react-bootstrap';
-import { MultiValue, ActionMeta } from 'react-select';
-import { MultiSelect,} from "../common/form-fields/MultiSelect";
-import { useRouter } from 'next/navigation';
-import ReportTable from './ReportTable';
+import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
+import { MultiValue, ActionMeta } from "react-select";
+import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { useRouter } from "next/navigation";
+import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
-import { Duration, GenerateReportText, ReportTypeSelect } from './CommonElements';
-import { MultiSelectAsyncWithCheckbox, MultiSelectWithCheckbox } from '../common/form-fields/MultiSelectWithCheckbox';
-import { debounce } from 'lodash';
-import { getFormattedJobTitles } from '@/helpers/asyncOptions';
-import { getStartAndEndDate } from '@/helpers/date';
-import { DURATION_OPTIONS, INDUSTRIES } from '@/helpers/constants';
-import { createColumnHelper } from '@tanstack/react-table';
-import { User } from '@/stores/useUserStore';
-import Link from 'next/link';
-import { INDIAN_STATES } from '@/helpers/stateList';
-import { downloadMedia } from '@/helpers/mediaDownload';
+import {
+  Duration,
+  GenerateReportText,
+  ReportTypeSelect,
+} from "./CommonElements";
+import {
+  MultiSelectAsyncWithCheckbox,
+  MultiSelectWithCheckbox,
+} from "../common/form-fields/MultiSelectWithCheckbox";
+import { debounce } from "lodash";
+import { getFormattedJobTitles } from "@/helpers/asyncOptions";
+import { getStartAndEndDate } from "@/helpers/date";
+import { DURATION_OPTIONS, INDUSTRIES } from "@/helpers/constants";
+import { createColumnHelper } from "@tanstack/react-table";
+import { User } from "@/stores/useUserStore";
+import Link from "next/link";
+import { INDIAN_STATES } from "@/helpers/stateList";
+import { downloadMedia } from "@/helpers/mediaDownload";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 interface FormValues {
   jobtitle: SelectOption[];
   industry: SelectOption[];
   duration: string;
-
 }
 
-const industryOptions = [{value:'all',label:'All Industries'},...Object.entries(INDUSTRIES).map(([key,val])=>{
-  return { value: key, label: val }
-})];
-
-
+const industryOptions = [
+  { value: "all", label: "All Industries" },
+  ...Object.entries(INDUSTRIES).map(([key, val]) => {
+    return { value: key, label: val };
+  }),
+];
 
 function UserReport() {
   const [reportData, setReportData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<User>();
   const [dateRange, setDateRange] = useState("");
-  const [filters,setFilters] = useState<string[]|null>(null);
+  const [filters, setFilters] = useState<string[] | null>(null);
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
         header: " Name",
         cell: (info) => info.renderValue() || "N/A",
         enableColumnFilter: true,
-        
       }),
       columnHelper.accessor("phone", {
         header: "Mobile No",
         cell: (info) => (
           <Link href={`/user/${info.renderValue()}`}>{info.renderValue()}</Link>
         ),
-       
       }),
       columnHelper.accessor("email", {
         header: "Email Id",
-        cell: (info) => (
-
-            <>{info.renderValue() || "N/A"}</>
-        ),
+        cell: (info) => <>{info.renderValue() || "N/A"}</>,
         meta: {
           classes: "px-10",
         },
@@ -77,7 +79,7 @@ function UserReport() {
       }),
       columnHelper.accessor("currentJobTitle", {
         header: "Job title",
-        cell: (info) => ((info.renderValue() as any)?.title || "N/A"),
+        cell: (info) => (info.renderValue() as any)?.title || "N/A",
       }),
       columnHelper.accessor("industry", {
         header: "Industry",
@@ -95,7 +97,7 @@ function UserReport() {
         header: "Experience",
         meta: {
           filterType: "number",
-          classes:"f-7"
+          classes: "f-7",
         },
         cell: (info) =>
           info.renderValue() ? `${info.renderValue()} Years` : "N/A",
@@ -134,11 +136,11 @@ function UserReport() {
             "N/A"
           );
         },
-        meta: { filter: false,classes:'f-8' },
+        meta: { filter: false, classes: "f-8" },
         header: "CV Availability",
       }),
       columnHelper.accessor("workVideo", {
-        meta: { filter: false,classes:'f-7' },
+        meta: { filter: false, classes: "f-7" },
         cell: (info) => {
           return info.getValue()?.keyName ? (
             <Link
@@ -167,7 +169,7 @@ function UserReport() {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
-        meta: { filterType: "date",classes:"f-7" },
+        meta: { filterType: "date", classes: "f-7" },
       }),
       columnHelper.accessor("lastLoginDate", {
         header: "Last access",
@@ -175,7 +177,7 @@ function UserReport() {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
-        meta: { filterType: "date",classes:"f-7" },
+        meta: { filterType: "date", classes: "f-7" },
       }),
       columnHelper.accessor("status", {
         header: "Status",
@@ -203,35 +205,43 @@ function UserReport() {
     formState: { errors, isValid },
   } = useForm<FormValues>();
 
-  const onSubmit = async (data:FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     try {
-      setLoading(true)
-      const reportPayload =  {
+      setLoading(true);
+      const reportPayload = {
         type: "users-report",
-        jobTitle:data.jobtitle?.map((title) => title.value).join(","),
-        industry:data.industry?.map((industry) => industry.value).join(","),
-        duration: data.duration === 'custom'? dateRange : getStartAndEndDate(Number(data.duration)),
-      }
-      const response:{reportdata:User[]} = await getReports(
-       reportPayload
+        jobTitle: data.jobtitle?.map((title) => title.value).join(","),
+        industry: data.industry?.map((industry) => industry.value).join(","),
+        duration:
+          data.duration === "custom"
+            ? dateRange
+            : getStartAndEndDate(Number(data.duration)),
+      };
+      const response: { reportdata: User[] } = await getReports(reportPayload);
+      const filters = Object.keys(reportPayload).filter(
+        (x) => reportPayload[x as "type"]
       );
-      const filters = Object.keys(reportPayload).filter((x)=>reportPayload[x as 'type']);
-      setFilters(filters)
-      const payload = response?.reportdata.map(x=> {
+      setFilters(filters);
+      const payload = response?.reportdata.map((x) => {
         return {
           "User Id": x.userId,
           "Mobile No": x.phone,
           "Email Id": x.email,
-          "State":  INDIAN_STATES.find((state) => state.state_code === x.state)?.name,
-          "Job Title":(x.currentJobTitle as any)?.title,
-          "Industry": INDUSTRIES[x.industry as "oil_gas"] || x.industry,
-          "Experience": `${x.totalExperience} Years`,
+          State: INDIAN_STATES.find((state) => state.state_code === x.state)
+            ?.name,
+          "Job Title": (x.currentJobTitle as any)?.title,
+          Industry: INDUSTRIES[x.industry as "oil_gas"] || x.industry,
+          Experience: `${x.totalExperience} Years`,
           "Has Gulf Experience": x.gulfExperience ? "Yes" : "No",
-          "Registered On":DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
-          "Last logged in": DateTime.fromISO(x.lastLoginDate).toFormat("dd MMM yyyy")
+          "Registered On": DateTime.fromISO(x.createdAt).toFormat(
+            "dd MMM yyyy"
+          ),
+          "Last logged in": DateTime.fromISO(x.lastLoginDate).toFormat(
+            "dd MMM yyyy"
+          ),
         };
       });
-      setExportPayload(payload)
+      setExportPayload(payload);
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -239,19 +249,24 @@ function UserReport() {
       setLoading(false);
     }
   };
-  
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
-      getFormattedJobTitles(inputValue).then((options) => callback(!inputValue ? [{value:'all',label:'All titles'},...options]: options));
+      getFormattedJobTitles(inputValue).then((options) =>
+        callback(
+          !inputValue
+            ? [{ value: "all", label: "All titles" }, ...options]
+            : options
+        )
+      );
     }, 500),
     []
   );
 
   const renderReportFields = () => {
-      return (
-        <Row>
-          <Col md={2}>
+    return (
+      <Row>
+        <Col md={2}>
           <Form.Group className={`${styles.selectField}`}>
             <Form.Label>Job Title</Form.Label>
             <MultiSelectAsyncWithCheckbox
@@ -266,9 +281,9 @@ function UserReport() {
               }
               menuPosition={"fixed"}
             />
-            </Form.Group>
-          </Col>
-          <Col md={2}>
+          </Form.Group>
+        </Col>
+        <Col md={2}>
           <Form.Group className={`${styles.selectField}`}>
             <Form.Label>Industry</Form.Label>
             <MultiSelectWithCheckbox
@@ -280,34 +295,50 @@ function UserReport() {
             />
           </Form.Group>
         </Col>
-          <Col md={2}>
-          <Duration watch={watch} control={control} errors={errors} handleDateChange={setDateRange}/>
-          </Col>
-          <Col>
-          <Button onClick={handleSubmit(onSubmit)} className={styles.submitButton} disabled={loading}>
-          {loading ? <Spinner size="sm" /> : "Submit"}
-        </Button>
-          </Col>
-        </Row>
-      );
-   };
+        <Col md={2}>
+          <Duration
+            watch={watch}
+            control={control}
+            errors={errors}
+            handleDateChange={setDateRange}
+          />
+        </Col>
+        <Col>
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            className={styles.submitButton}
+            disabled={loading}
+          >
+            {loading ? <Spinner size="sm" /> : "Submit"}
+          </Button>
+        </Col>
+      </Row>
+    );
+  };
 
-   return (
+  return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
         <Row>
           <Col md={2}>
-         <ReportTypeSelect />
-         </Col>
+            <ReportTypeSelect />
+          </Col>
         </Row>
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && (
-        <GenerateReportText/>
-      )}
+      {reportData.length === 0 && <GenerateReportText />}
 
-      {reportData.length > 0 && <ReportTable type='users-report' filters={filters} exportPayload={exportPayload} exportFileName='User_Report' columns={columns} data={reportData} />}
+      {reportData.length > 0 && (
+        <ReportTable
+          type="users-report"
+          filters={filters}
+          exportPayload={exportPayload}
+          exportFileName="User_Report"
+          columns={columns}
+          data={reportData}
+        />
+      )}
     </div>
   );
 }
