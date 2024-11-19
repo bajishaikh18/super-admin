@@ -47,6 +47,7 @@ function EmployersReport() {
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState("");
+  const [totalCount,setTotalCount] = useState(0);
   const columnHelper = createColumnHelper<EmployersReportData>();
   const [filters, setFilters] = useState<string[] | null>(null);
   const columns = [
@@ -174,7 +175,7 @@ function EmployersReport() {
             ? dateRange
             : getStartAndEndDate(Number(data.duration)),
       };
-      const response: { reportdata: EmployersReportData[] } = await getReports(
+      const response: { reportdata: EmployersReportData[],totalCount:number } = await getReports(
         reportPayload
       );
       const filters = Object.keys(reportPayload).filter(
@@ -191,6 +192,7 @@ function EmployersReport() {
         };
       });
       setExportPayload(payload);
+      setTotalCount(response.totalCount)
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -268,6 +270,7 @@ function EmployersReport() {
 
       {reportData.length > 0 && (
         <ReportTable
+          totalCount={totalCount}
           exportPayload={exportPayload}
           columns={columns}
           filters={filters}

@@ -44,6 +44,7 @@ function JobApplied() {
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState("");
   const columnHelper = createColumnHelper<JobsAppliedData>();
+  const [totalCount,setTotalCount] = useState(0);
   const [filters, setFilters] = useState<string[] | null>(null);
   const columns = [
     columnHelper.accessor("jobId", {
@@ -171,7 +172,7 @@ function JobApplied() {
             ? dateRange
             : getStartAndEndDate(Number(data.duration)),
       };
-      const response: { reportdata: JobsAppliedData[] } = await getReports(
+      const response: { reportdata: JobsAppliedData[],totalCount:number } = await getReports(
         reportPayload
       );
       const filters = Object.keys(reportPayload).filter(
@@ -188,6 +189,7 @@ function JobApplied() {
         };
       });
       setExportPayload(payload);
+      setTotalCount(response.totalCount)
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -266,6 +268,7 @@ function JobApplied() {
       {reportData.length > 0 && (
         <ReportTable
           filters={filters}
+          totalCount={totalCount}
           type="jobs-applied"
           exportFileName="Jobs_Applied"
           exportPayload={exportPayload}

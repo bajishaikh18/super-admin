@@ -48,6 +48,7 @@ function UserReport() {
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<User>();
   const [dateRange, setDateRange] = useState("");
+  const [totalCount,setTotalCount] = useState(0);
   const [filters, setFilters] = useState<string[] | null>(null);
   const columns = useMemo(
     () => [
@@ -217,7 +218,7 @@ function UserReport() {
             ? dateRange
             : getStartAndEndDate(Number(data.duration)),
       };
-      const response: { reportdata: User[] } = await getReports(reportPayload);
+      const response: { reportdata: User[],totalCount:number } = await getReports(reportPayload);
       const filters = Object.keys(reportPayload).filter(
         (x) => reportPayload[x as "type"]
       );
@@ -242,6 +243,7 @@ function UserReport() {
         };
       });
       setExportPayload(payload);
+      setTotalCount(response.totalCount)
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -331,6 +333,7 @@ function UserReport() {
 
       {reportData.length > 0 && (
         <ReportTable
+          totalCount={totalCount}
           type="users-report"
           filters={filters}
           exportPayload={exportPayload}

@@ -46,6 +46,7 @@ function ApplicationReceived() {
   const [loading, setLoading] = useState(false);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState("");
+  const [totalCount,setTotalCount] = useState(0);
   const columnHelper = createColumnHelper<ApplicationReceivedData>();
   const [filters, setFilters] = useState<string[] | null>(null);
   const columns = [
@@ -189,7 +190,7 @@ function ApplicationReceived() {
             : getStartAndEndDate(Number(data.duration)),
         postId: data.postId,
       };
-      const response: { reportdata: ApplicationReceivedData[] } =
+      const response: { reportdata: ApplicationReceivedData[],totalCount:number } =
         await getReports(reportPayload);
       const filters = Object.keys(reportPayload).filter(
         (x) => reportPayload[x as "type"]
@@ -204,8 +205,9 @@ function ApplicationReceived() {
           "Applied on": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
         };
       });
+      
       setExportPayload(payload);
-
+      setTotalCount(response.totalCount)
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -286,6 +288,7 @@ function ApplicationReceived() {
           exportFileName="Agency_Applications"
           columns={columns}
           data={reportData}
+          totalCount={totalCount}
         />
       )}
     </div>

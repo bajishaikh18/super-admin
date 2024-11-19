@@ -146,6 +146,7 @@ export const Duration = ({
           control={control}
           error={errors.duration as FieldError}
           options={DURATION_OPTIONS}
+          defaultValue="0"
           menuListStyles={{
             fontSize: "13px",
           }}

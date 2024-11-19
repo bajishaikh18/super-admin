@@ -19,6 +19,7 @@ import { createNotification } from "@/apis/notification";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { reportTypeOptions } from "./CommonElements";
+import { createApproval } from "@/apis/approval";
 
 interface FormValues {
   noOfRecords: string,
@@ -29,11 +30,13 @@ interface FormValues {
 function RequestMore({
   handleModalClose,
   type,
-  filters
+  filters,
+  maxQuantity
 }: {
   handleModalClose: () => void;
   type: string,
   filters:string[] | null
+  maxQuantity:number
 }) {
   const queryClient = useQueryClient();
   const { formData } = useNotificationStore();
@@ -55,8 +58,16 @@ function RequestMore({
   const onSubmit = async (data: any) => {
     try{
       setLoading(true);
-      console.log(data)
-      console.log(filters);
+      const payload = {
+        reportType : type,
+        quantity: data.noOfRecords,
+        filters:filters,
+        reason: data.reason
+      }
+      await createApproval(payload);
+      toast.success("Your request has been sent to super admin")
+      setLoading(false);
+      handleClose();
     }catch(e){
       toast.error("Error while submitting request");
       setLoading(false);
@@ -101,9 +112,13 @@ function RequestMore({
               type="number"
               placeholder="Enter No. of records"
               className={styles.input}
+              max={maxQuantity}
               isInvalid={!!errors.noOfRecords}
-              defaultValue={100}
-              {...register("noOfRecords", { required: "No. of records" })}
+              defaultValue={maxQuantity}
+              {...register("noOfRecords", { required: "No. of records",max: {
+                value: maxQuantity,
+                message: `The number must be less than or equal to ${maxQuantity}`,
+              }, })}
             />
             {errors.noOfRecords && (
               <span className={styles.error}>{errors.noOfRecords.message}</span>

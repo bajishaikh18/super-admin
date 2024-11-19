@@ -80,6 +80,7 @@ function JobPosted() {
   const [filters,setFilters] = useState<string[]|null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [dateRange, setDateRange] = useState("");
+  const [totalCount,setTotalCount] = useState(0);
   const columns = [
     columnHelper.accessor("jobId", {
       header: "Post Id",
@@ -269,6 +270,7 @@ function JobPosted() {
         };
       });
       setExportPayload(payload);
+      setTotalCount(response.totalCount)
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -397,6 +399,7 @@ function JobPosted() {
           exportFileName="JobsPosted"
           imageUrl={imageUrl}
           columns={columns}
+          totalCount={totalCount}
           exportPayload={exportPayload}
           data={reportData}
         />

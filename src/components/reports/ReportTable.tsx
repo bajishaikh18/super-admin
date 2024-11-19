@@ -25,19 +25,20 @@ type ReportTableProps = {
   exportPayload:any;
   filters: string[] | null;
   exportFileName:string;
+  totalCount: number;
   showImage?: boolean;
   imageUrl?:string
   resetLinkClick?:()=>void
 };
 
-const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPayload,exportFileName,showImage,imageUrl,filters,resetLinkClick }) => {
+const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPayload,exportFileName,showImage,imageUrl,totalCount,filters,resetLinkClick }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [requestMore, setRequestMore] = useState(false);
   const [selectedFormat, setSelectedFormat] =
     useState<string>("Download Report");
   const { role } = useAuthUserStore();
 
-  const totalCount = data.length;
+  const total = data.length;
 
 
   const downloadExcel = () => {
@@ -53,7 +54,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPay
       <div className="page-title">
         <div className={styles.headingContainer}>
         <h3 className="section-heading">{name} ({data.length || 0})</h3>
-        {role === ROLE.admin && data.length >=20 && <h4 onClick={()=>setRequestMore(true)}>Request more data</h4>}
+        {role === ROLE.admin && totalCount != data.length && <h4 onClick={()=>setRequestMore(true)}>Request more data</h4>}
         </div>
         <div className={styles.downloadDropdownContainer}>
           <Dropdown>
@@ -69,7 +70,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPay
 
         <Card>
           <DataTable
-            totalCount={totalCount}
+            totalCount={total}
             columns={columns}
             sorting={sorting}
             sortingChanged={(updater: any) => {
@@ -89,7 +90,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPay
         imageUrl={imageUrl || ""}
       />
        <Modal show={requestMore} onHide={()=>setRequestMore(false)} centered backdrop="static">
-        {requestMore && <RequestMore type={type} filters={filters} handleModalClose={()=>setRequestMore(false)} /> }
+        {requestMore && <RequestMore type={type} maxQuantity={totalCount} filters={filters} handleModalClose={()=>setRequestMore(false)} /> }
       </Modal>
     </div>
   );
