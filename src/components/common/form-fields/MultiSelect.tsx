@@ -114,7 +114,8 @@ export const MultiSelectAsync = ({
   menuListStyles={},
   menuPortalTarget,
   menuPosition,
-  isMulti
+  isMulti,
+  placeHolder
 }: {
   name: string;
   control: Control<any, any>;
@@ -135,6 +136,7 @@ export const MultiSelectAsync = ({
   menuPosition?:any,
   menuListStyles?:any,
   isMulti?:boolean
+  placeHolder?:string
 }) => {
   console.log(defaultValue)
   return (
@@ -150,6 +152,7 @@ export const MultiSelectAsync = ({
             defaultOptions={defaultOptions}
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
+            placeholder={placeHolder || "Select..."}
             theme={(theme) => ({
               ...theme,
               borderRadius: 0,

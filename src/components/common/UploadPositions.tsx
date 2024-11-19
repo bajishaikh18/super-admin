@@ -25,13 +25,6 @@ export const UploadPositions = ({handleUploadProcessed}:{handleUploadProcessed:(
         complete: (results) => {
             console.log(results.data);
             if (results.meta.fields?.length) {
-                const missingColumnList = difference(
-                  CSVColumns,
-                  results.meta.fields as string[]
-                );
-                const isValid = CSVColumns.every((x) =>
-                  results.meta.fields?.includes(x)
-                );
                 handleUploadProcessed(results.data)
             }
         }})

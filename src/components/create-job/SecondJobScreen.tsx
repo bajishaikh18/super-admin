@@ -54,6 +54,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
   const [manualEntry,setManualEntry] = useState(true);
+  const [uploaded,setUploaded] = useState(true);
   const [defaultTitleOptions,setDefaultTitleOptions] = useState<{
     value:string,
     label:string,
@@ -135,6 +136,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     getValues,
     control,
     setValue,
+    reset,
     formState: { errors,isValid },
   } = useForm<FormValues>({
     mode: 'all'
@@ -152,20 +154,34 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 
 
   const onDataUpload = async (data:any)=>{
+    setFormData({jobPositions:undefined});
+    setJobPositions([
+      { title: {value:"",label:""}, experience: "0", salary: "" },
+    ]);
+    reset({
+      jobPositions:[
+        { title: {value:"",label:""}, experience: "0", salary: "" },
+      ],
+    });
     const positions = data.map((x:any)=>x.Position);
     const defaultOptions = await setDefaultOptionsForTitles(positions);
+    const formattedData = data.map((x:any,index:number)=>{
+      const selectedOption = defaultOptions.find(option=>option.label.toLowerCase() === x.Position.toLowerCase());
+      setValue(`jobPositions.${index}.title`, selectedOption);
+      setValue(`jobPositions.${index}.experience`, x.Experience.toString());
+      setValue(`jobPositions.${index}.salary`, x.Salary.toString());
+      return {
+        title:selectedOption,
+        experience: x.Experience.toString(),
+        salary: x.Salary.toString()
+      }
+    })
     const formData = {
-      jobPositions: data.map((x:any)=>{
-        const selectedOption = defaultOptions.find(option=>option.label.toLowerCase() === x.Position.toLowerCase());
-        return {
-          title:selectedOption,
-          experience: x.Experience.toString(),
-          salary: x.Salary
-        }
-      })
+      jobPositions: formattedData
     }
+    setUploaded(true);
     setFormData(formData)
-    setJobPositions(data);
+    setJobPositions(formattedData);
   }
   
 
@@ -266,11 +282,11 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
       
             {
-              (!manualEntry) && <>
+              (!manualEntry && !uploaded) && <>
                 <UploadPositions handleUploadProcessed={onDataUpload}/>
                 <div className={styles.manualUpload}>
                 {
-                  (!manualEntry && jobPositions.length == 1) && <button
+                  (!manualEntry && !uploaded) && <button
                         type="button"
                         className={`${styles.addMoreButton} ${styles.manualButton}`}
                         onClick={()=>setManualEntry(true)}
@@ -282,12 +298,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           
           <div className={`${styles.overFlowSection} scroll-box`}>
             {
-              (manualEntry || jobPositions.length > 1) && <Form.Group className={styles.formGroup}>
+              (manualEntry || uploaded) && <Form.Group className={styles.formGroup}>
               <label className={styles.formLabel}>Add positions</label>
               <button
                 type="button"
                 className={styles.addMoreButton}
-                onClick={()=>setManualEntry(false)}
+                onClick={()=>{setManualEntry(false);setUploaded(false);}}
               >
                 Upload positions
               </button>
@@ -312,6 +328,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                           <MultiSelectAsync
                             name={`jobPositions.${index}.title`}
                             control={control}
+                            placeHolder="Type to search job titles"
                             defaultOptions={defaultTitleOptions}
                             // @ts-ignore
                             error={errors[`jobPositions.${index}.title`]}

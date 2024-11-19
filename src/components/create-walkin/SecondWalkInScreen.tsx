@@ -302,6 +302,7 @@ const createWalkInMutation = useMutation({
                         <MultiSelectAsync
                           name={`jobPositions.${index}.title`}
                           control={control}
+                          placeHolder="Type to search job titles"
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.title`]}
                           loadOptions={loadOptionsDebounced}

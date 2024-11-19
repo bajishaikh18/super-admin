@@ -575,6 +575,8 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
               onClick={handleClose}
             ></IoClose>{" "}
           </div>
+          <div className={`${styles.overFlowSection} scroll-box`}>
+
           <div className={styles.headerContainer}>
             <h4 className={styles.h4}>Your job is successfully {isEdit?"updated":"created"}</h4>
           </div>
@@ -609,6 +611,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
           </div>
           <div className={styles.colorPicker}>
             {showPicker && <HexColorPicker color={color} onChange={setColor} />}
+          </div>
           </div>
           <div className={styles.actions}>
             <div
@@ -648,6 +651,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
               {loading ? <div className="spinner"></div> : "Post Job"}
             </Button>
           </div>
+         
         </div>
       )}
       <Modal

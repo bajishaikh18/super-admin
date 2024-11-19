@@ -97,6 +97,7 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
           <Form.Label>Agency</Form.Label>
           <MultiSelectAsync
                          name="agency"
+                         placeHolder="Type to search agency"
                          control={control}
                          error={errors.agency as FieldError}
                           loadOptions={loadOptionsDebounced}

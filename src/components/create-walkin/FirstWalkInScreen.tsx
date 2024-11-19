@@ -98,6 +98,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
           <MultiSelectAsync
                          name="agency"
                          control={control}
+                         placeHolder="Type to search agency"
                          error={errors.agency as FieldError}
                           loadOptions={loadOptionsDebounced}
                           rules={{ required: "Agency is required" }}
