@@ -33,6 +33,10 @@ export const reportTypeOptions = [
     label: "Employers Applications Report",
     value: "employer-applications",
   },
+  {
+    label: "Approval for Export Report",
+    value: "approval-exports",
+  },
 ];
 export const ReportTypeSelect = () => {
   const router = useRouter();

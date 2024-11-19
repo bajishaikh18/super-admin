@@ -216,6 +216,14 @@ const Header: React.FC<HeaderProps> = () => {
                 >
                   Employers Report
                 </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/approval-exports" ? styles.active : ""
+                  }`}
+                  href="/reports/approval-exports"
+                >
+                  Approval for Exports Report
+                </NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>

@@ -158,3 +158,15 @@ width: 230px;
   background-color: #f1f1f1;
   color: $color-brand-1;
 }
+.heading {
+  margin: 130px 25px 0;
+  font-size: 18px;
+  width: 100%; 
+}
+.cardContainer {
+  margin: 20px ; 
+  padding: 0px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
