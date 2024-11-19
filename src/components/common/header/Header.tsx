@@ -186,33 +186,33 @@ const Header: React.FC<HeaderProps> = () => {
                 </NavDropdown.Item>
                 <NavDropdown.Item
                    className={`${styles.navListItem} ${
-                    pathname == "/Applications-Received" ? styles.active : ""
+                    pathname == "/application-received" ? styles.active : ""
                   }`}
-                  href="/reports/Applications-Received"
+                  href="/reports/application-received"
                 >
                 Applications Received by Agency Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
-                    pathname == "/Jobs-Applied" ? styles.active : ""
+                    pathname == "/jobs-applied" ? styles.active : ""
                   }`}
-                  href="/reports/Jobs-Applied"
+                  href="/reports/jobs-applied"
                 >
                   Job Applied Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
-                    pathname == "/Users-Report" ? styles.active : ""
+                    pathname == "/users-report" ? styles.active : ""
                   }`}
-                  href="/reports/Users-Report"
+                  href="/reports/users-report"
                 >
                   Total Users/Candidates Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
-                    pathname == "/Employer-Applications-Report" ? styles.active : ""
+                    pathname == "/employer-applications" ? styles.active : ""
                   }`}
-                  href="/reports/Employer-Applications-Report"
+                  href="/reports/employer-applications"
                 >
                   Employers Report
                 </NavDropdown.Item>

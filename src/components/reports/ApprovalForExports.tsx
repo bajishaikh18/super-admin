@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
 import { Card } from "react-bootstrap";
 import styles from "./JobPosted.module.scss";
+import { getApprovals, updateApprovalStatus } from "@/apis/approval";
 
 type TabType = "Approved" | "Pending";
 
@@ -14,63 +15,25 @@ export type JobType = {
   requestBy: number;
   reportType: string;
   quantity: string;
-  Filters: string;
+  filters: string;
   approvedBy: string;
+  createdAt: string;
   action: string;
   status: string;
 };
 
-const mockData: JobType[] = [
-  {
-    _id: "1",
-    requestBy: 1,
-    reportType: "",
-    quantity: "",
-    Filters: "",
-    approvedBy: "",
-    status: "approved",
-    action: "Approve",
-  },
-  {
-    _id: "2",
-    requestBy: 2,
-    reportType: "",
-    quantity: "",
-    Filters: "",
-    approvedBy: "",
-    status: "pending",
-    action: "Approve",
-  },
-];
-
 const ApprovalRequest: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Approved");
-  const [sortingApproved, setSortingApproved] = React.useState<SortingState>([]);
-  const [sortingPending, setSortingPending] = React.useState<SortingState>([]);
-  const [searchApproved, setSearchApproved] = React.useState<string>(""); 
-  const [searchPending, setSearchPending] = React.useState<string>("");
+  const [sortingApproved, setSortingApproved] = useState<SortingState>([]);
+  const [sortingPending, setSortingPending] = useState<SortingState>([]);
+  const [searchApproved, setSearchApproved] = useState<string>(""); 
+  const [searchPending, setSearchPending] = useState<string>("");
 
-  const handleTabClick = (tab: TabType) => {
-    setActiveTab(tab);
-  };
-
-  const flattendActiveEmployerData = React.useMemo(
-    () => mockData.filter((employer) => employer.status === "approved"),
-    []
-  );
-
-  const flattendPendingEmployerData = React.useMemo(
-    () => mockData.filter((employer) => employer.status === "pending"),
-    []
-  );
-
-  const [approvedEmployers, setApprovedEmployers] = useState<JobType[]>(flattendActiveEmployerData);
-  const [pendingEmployers, setPendingEmployers] = useState<JobType[]>(flattendPendingEmployerData);
-
-  const totalActiveCount = approvedEmployers.length;
-  const totalPendingCount = pendingEmployers.length;
+  const [approvedEmployers, setApprovedEmployers] = useState<JobType[]>([]);
+  const [pendingEmployers, setPendingEmployers] = useState<JobType[]>([]);
 
   const columnHelper = createColumnHelper<JobType>();
+
   const columns = [
     columnHelper.accessor("requestBy", {
       header: "Request By",
@@ -91,7 +54,7 @@ const ApprovalRequest: React.FC = () => {
       header: "Quantity",
       cell: (info) => info.renderValue() || "N/A",
     }),
-    columnHelper.accessor("Filters", {
+    columnHelper.accessor("filters", {
       header: "Filters",
       cell: (info) => info.renderValue() || "N/A",
     }),
@@ -99,12 +62,12 @@ const ApprovalRequest: React.FC = () => {
       header: "Approved By",
       cell: (info) => info.renderValue() || "N/A",
     }),
+    columnHelper.accessor("createdAt", {
+      header: "Regd Date",
+      cell: (info) => info.renderValue() || "N/A",
+    }),
     columnHelper.accessor("status", {
       header: "Status",
-      meta: {
-        classes: "capitalize f-5",
-        filter:false
-      },
       cell: (info) => {
         return (
           <div className={`status-cont ${info.getValue() === "pending" ? styles.pending : ""}`}>
@@ -119,12 +82,8 @@ const ApprovalRequest: React.FC = () => {
     ...columns,
     columnHelper.accessor("action", {
       header: "Action",
-      meta: {
-        classes: "f-7",
-        filter:false
-      },
       cell: (info) => (
-        <div style={{ display: "flex", gap: "32px", fontSize:"14px", fontWeight:600, cursor: "pointer" }}>
+        <div style={{ display: "flex", gap: "32px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}>
           <span onClick={() => handleApprove(info.row.original)} className="color-brand-1">Approve</span>
           <span onClick={() => handleReject(info.row.original)} className="error">Reject</span>
         </div>
@@ -132,15 +91,55 @@ const ApprovalRequest: React.FC = () => {
     }),
   ];
 
-  const handleApprove = (employer: JobType) => {
-    setApprovedEmployers((prev) => [...prev, employer]);
-    setPendingEmployers((prev) => prev.filter((item) => item._id !== employer._id));
-    setActiveTab("Approved");
+  const handleTabClick = (tab: TabType) => {
+    setActiveTab(tab);
   };
 
-  const handleReject = (employer: JobType) => {
-    setPendingEmployers((prev) => prev.filter((item) => item._id !== employer._id));
+  const handleApprove = async (employer: JobType) => {
+    try {
+      await updateApprovalStatus(employer._id, "approve");
+      setApprovedEmployers((prev) => [...prev, employer]);
+      setPendingEmployers((prev) => prev.filter((item) => item._id !== employer._id));
+      setActiveTab("Approved");
+    } catch (error) {
+      console.error("Error updating approval status:", error);
+    }
   };
+
+  const handleReject = async (employer: JobType) => {
+    try {
+      await updateApprovalStatus(employer._id, "reject");
+      setPendingEmployers((prev) => prev.filter((item) => item._id !== employer._id));
+    } catch (error) {
+      console.error("Error rejecting approval:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchApprovalData = async () => {
+      try {
+        const response = await getApprovals();
+        console.log("Response Data:", response); 
+
+        const approvalData = response.ApprovalData; 
+        const approved = approvalData.filter((item: any) => item.status === "approved");
+        const pending = approvalData.filter((item: any) => item.status === "pending");
+
+        setApprovedEmployers(approved);
+        setPendingEmployers(pending);
+      } catch (error) {
+        console.error("Error fetching approvals:", error);
+      }
+    };
+
+    fetchApprovalData();
+  }, []);
+
+  const filteredApprovedEmployers = approvedEmployers.filter(employer => employer.requestBy.toString().includes(searchApproved));
+  const filteredPendingEmployers = pendingEmployers.filter(employer => employer.requestBy.toString().includes(searchPending));
+
+  const totalApprovedCount = filteredApprovedEmployers.length;
+  const totalPendingCount = filteredPendingEmployers.length;
 
   return (
     <div className="page-block">
@@ -149,47 +148,44 @@ const ApprovalRequest: React.FC = () => {
       </div>
       <Card className={styles.cardContainer}>
         <div className={styles.tabContainer}>
-        <button
-              className={`tab-button ${activeTab === "Approved" ? "active" : ""}`}
-              onClick={() => handleTabClick("Approved")}
-            >
-              Active ({totalActiveCount})
-            </button>
-            <button
-              className={`tab-button ${
-                activeTab === "Pending" ? "active" : ""
-              }`}
-              onClick={() => handleTabClick("Pending")}
-            >
-              Pending ({totalPendingCount})
-            </button>
+          <button
+            className={`tab-button ${activeTab === "Approved" ? "active" : ""}`}
+            onClick={() => handleTabClick("Approved")}
+          >
+            Approved ({totalApprovedCount})
+          </button>
+          <button
+            className={`tab-button ${activeTab === "Pending" ? "active" : ""}`}
+            onClick={() => handleTabClick("Pending")}
+          >
+            Pending ({totalPendingCount})
+          </button>
         </div>
 
         {activeTab === "Approved" ? (
           <DataTable
-          columns={columns}
-          sorting={sortingApproved}
-          totalCount={totalActiveCount}
-          isSearch={!!searchApproved}
-          sortingChanged={(updater: any) => setSortingApproved(updater)}
-          data={approvedEmployers}
-          fetchNextPage={() => {}}
-          isLoading={false}
-          isFetching={false}
-        />
-
+            columns={columns}
+            sorting={sortingApproved}
+            totalCount={totalApprovedCount}
+            isSearch={!!searchApproved}
+            sortingChanged={(updater: any) => setSortingApproved(updater)}
+            data={filteredApprovedEmployers}
+            fetchNextPage={() => {}}
+            isLoading={false}
+            isFetching={false}
+          />
         ) : (
           <DataTable
-          columns={pendingColumns}
-          sorting={sortingPending}
-          totalCount={totalPendingCount}
-          isSearch={!!searchPending}
-          sortingChanged={(updater: any) => setSortingPending(updater)}
-          data={pendingEmployers}
-          fetchNextPage={() => {}}
-          isLoading={false}
-          isFetching={false}
-        />
+            columns={pendingColumns}
+            sorting={sortingPending}
+            totalCount={totalPendingCount}
+            isSearch={!!searchPending}
+            sortingChanged={(updater: any) => setSortingPending(updater)}
+            data={filteredPendingEmployers}
+            fetchNextPage={() => {}}
+            isLoading={false}
+            isFetching={false}
+          />
         )}
       </Card>
     </div>
