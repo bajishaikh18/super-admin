@@ -106,6 +106,7 @@ export const MultiSelectAsync = ({
   control,
   loadOptions,
   error,
+  defaultOptions,
   rules,
   defaultValue,
   customStyles,
@@ -113,11 +114,13 @@ export const MultiSelectAsync = ({
   menuListStyles={},
   menuPortalTarget,
   menuPosition,
-  isMulti
+  isMulti,
+  placeHolder
 }: {
   name: string;
   control: Control<any, any>;
   loadOptions: any;
+  defaultOptions?:any;
   error?: FieldError;
   rules?: Omit<
     RegisterOptions<any, string>,
@@ -133,6 +136,7 @@ export const MultiSelectAsync = ({
   menuPosition?:any,
   menuListStyles?:any,
   isMulti?:boolean
+  placeHolder?:string
 }) => {
   console.log(defaultValue)
   return (
@@ -145,9 +149,10 @@ export const MultiSelectAsync = ({
             isMulti={isMulti}
             cacheOptions
             loadOptions={loadOptions}
-            defaultOptions
+            defaultOptions={defaultOptions}
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
+            placeholder={placeHolder || "Select..."}
             theme={(theme) => ({
               ...theme,
               borderRadius: 0,

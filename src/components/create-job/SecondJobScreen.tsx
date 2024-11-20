@@ -12,7 +12,9 @@ import { createJob, updateJob } from "@/apis/job";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
-import { debounce } from "lodash";
+import { debounce, flatten } from "lodash";
+import { UploadPositions } from "../common/UploadPositions";
+import { FaPlus } from "react-icons/fa6";
 
 interface JobPosition {
   title: {
@@ -51,6 +53,12 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
+  const [manualEntry,setManualEntry] = useState(true);
+  const [uploaded,setUploaded] = useState(true);
+  const [defaultTitleOptions,setDefaultTitleOptions] = useState<{
+    value:string,
+    label:string,
+  }[]>([]);
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
         getFormattedJobTitles(inputValue).then(options => callback(options))
@@ -67,6 +75,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
 
   useEffect(()=>{
     if(formData?.jobPositions){
+      const positions = formData?.jobPositions.map((x)=>x.title.label);
+      setDefaultOptionsForTitles(positions)
       setJobPositions(formData.jobPositions);
     }
   },[formData])
@@ -126,10 +136,54 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     getValues,
     control,
     setValue,
+    reset,
     formState: { errors,isValid },
   } = useForm<FormValues>({
     mode: 'all'
   });
+
+
+  const setDefaultOptionsForTitles = useCallback(async (positions:any[])=>{
+    const uniquePositions = positions.filter((x:any,i:any)=>positions.indexOf(x)===i);
+    const defaultOptions = flatten(await Promise.all(uniquePositions.map(async (position:string)=>{
+      return getFormattedJobTitles(position);
+    })))
+    setDefaultTitleOptions(defaultOptions)
+    return defaultOptions;
+  },[])
+
+
+  const onDataUpload = async (data:any)=>{
+    setFormData({jobPositions:undefined});
+    setJobPositions([
+      { title: {value:"",label:""}, experience: "0", salary: "" },
+    ]);
+    reset({
+      jobPositions:[
+        { title: {value:"",label:""}, experience: "0", salary: "" },
+      ],
+    });
+    const positions = data.map((x:any)=>x.Position);
+    const defaultOptions = await setDefaultOptionsForTitles(positions);
+    const formattedData = data.map((x:any,index:number)=>{
+      const selectedOption = defaultOptions.find(option=>option.label.toLowerCase() === x.Position.toLowerCase());
+      setValue(`jobPositions.${index}.title`, selectedOption);
+      setValue(`jobPositions.${index}.experience`, x.Experience.toString());
+      setValue(`jobPositions.${index}.salary`, x.Salary.toString());
+      return {
+        title:selectedOption,
+        experience: x.Experience.toString(),
+        salary: x.Salary.toString()
+      }
+    })
+    const formData = {
+      jobPositions: formattedData
+    }
+    setUploaded(true);
+    setFormData(formData)
+    setJobPositions(formattedData);
+  }
+  
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -226,107 +280,136 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+      
+          
           <div className={`${styles.overFlowSection} scroll-box`}>
-          <Form.Group className={styles.formGroup}>
-            <label className={styles.formLabel}>Add positions</label>
-            {/* <div className={styles.overFlowTable}> */}
-            <Table>
-              <thead>
-                <tr>
-                  <th className="w-50">Job Title</th>
-                  <th className="w-30">Exp Required</th>
-                  <th className="w-20">Salary</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobPositions.map((position, index) => {
-                  if (position.deleted) {
-                    return null;
-                  }
-                  return (
-                    <tr key={index}>
-                      <td>
-                        <MultiSelectAsync
-                          name={`jobPositions.${index}.title`}
-                          control={control}
-                          // @ts-ignore
-                          error={errors[`jobPositions.${index}.title`]}
-                          loadOptions={loadOptionsDebounced}
-                          defaultValue={formData?.jobPositions?.[index]?.title}
-                          rules={{ required: "Job title is required" }}
-                          customStyles={{
-                            border: "none !important",
-                            boxShadow: "none !important",
-                            fontSize: "14px",
-                            "&:focus": {
-                              border: "none",
-                            },
-                          }}
-                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
-                          menuPosition={"fixed"}
-                        />
-                      </td>
-                      <td>
-                        <MultiSelect
-                          name={`jobPositions.${index}.experience`}
-                          control={control}
-                          // @ts-ignore
-                          error={errors[`jobPositions.${index}.experience`]}
-                          options={experienceLevels}
-                          defaultValue={
-                            formData?.jobPositions?.[index]?.experience
-                          }
-                          rules={{ required: "Job Experience is required" }}
-                          customStyles={{
-                            border: "none !important",
-                            boxShadow: "none !important",
-                            fontSize: "14px",
-                            "&:focus": {
-                              border: "none",
-                            },
-                          }}
-                          menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
-                          menuPosition={"fixed"}
-                        />
-                      </td>
-                      <td>
-                        <Form.Control
-                          type="text"
-                          placeholder="0-0"
-                          className={styles.input}
-                          defaultValue={formData?.jobPositions?.[index]?.salary}
-                          {...register(`jobPositions.${index}.salary`, {})}
-                        />
-                      </td>
-                      <td>
-                        {index != 0 && (
-                          <AiOutlineDelete
-                            className={styles.positionDelete}
-                            onClick={() => handleRemove(index)}
-                          />
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-            {/* </div> */}
-            {errorMessage && (
-              <div>
-                <Form.Text className="error">{errorMessage}</Form.Text>
-              </div>
-            )}
 
-            <button
-              type="button"
-              className={styles.addMoreButton}
-              onClick={handleAddMore}
-            >
-              Add More
-            </button>
-          </Form.Group>
+          {
+              (!manualEntry && !uploaded) && <>
+                <UploadPositions handleUploadProcessed={onDataUpload}/>
+                <div className={styles.manualUpload}>
+                {
+                  (!manualEntry && !uploaded) && <button
+                        type="button"
+                        className={`${styles.addMoreButton} ${styles.manualButton}`}
+                        onClick={()=>setManualEntry(true)}
+                      ><FaPlus fontSize={10}/> Add Manually</button>
+                }
+               </div>
+              </>
+            }
+            {
+              (manualEntry || uploaded) && <Form.Group className={styles.formGroup}>
+              <label className={styles.formLabel}>Add positions</label>
+              <button
+                type="button"
+                className={styles.addMoreButton}
+                onClick={()=>{setManualEntry(false);setUploaded(false);}}
+              >
+                Upload positions
+              </button>
+              {/* <div className={styles.overFlowTable}> */}
+              <Table>
+                <thead>
+                  <tr>
+                    <th className="w-50">Job Title</th>
+                    <th className="w-30">Exp Required</th>
+                    <th className="w-20">Salary</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobPositions.map((position, index) => {
+                    if (position.deleted) {
+                      return null;
+                    }
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <MultiSelectAsync
+                            name={`jobPositions.${index}.title`}
+                            control={control}
+                            placeHolder="Type to search job titles"
+                            defaultOptions={defaultTitleOptions}
+                            // @ts-ignore
+                            error={errors[`jobPositions.${index}.title`]}
+                            loadOptions={loadOptionsDebounced}
+                            defaultValue={formData?.jobPositions?.[index]?.title}
+                            rules={{ required: "Job title is required" }}
+                            customStyles={{
+                              border: "none !important",
+                              boxShadow: "none !important",
+                              fontSize: "14px",
+                              "&:focus": {
+                                border: "none",
+                              },
+                            }}
+                            menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                            menuPosition={"fixed"}
+                          />
+                        </td>
+                        <td>
+                          <MultiSelect
+                            name={`jobPositions.${index}.experience`}
+                            control={control}
+                            // @ts-ignore
+                            error={errors[`jobPositions.${index}.experience`]}
+                            options={experienceLevels}
+                            defaultValue={
+                              formData?.jobPositions?.[index]?.experience
+                            }
+                            rules={{ required: "Job Experience is required" }}
+                            customStyles={{
+                              border: "none !important",
+                              boxShadow: "none !important",
+                              fontSize: "14px",
+                              "&:focus": {
+                                border: "none",
+                              },
+                            }}
+                            menuPortalTarget={document.getElementsByClassName('modal')[0] as HTMLElement}
+                            menuPosition={"fixed"}
+                          />
+                        </td>
+                        <td>
+                          <Form.Control
+                            type="text"
+                            placeholder="0-0"
+                            className={styles.input}
+                            defaultValue={formData?.jobPositions?.[index]?.salary}
+                            {...register(`jobPositions.${index}.salary`, {})}
+                          />
+                        </td>
+                        <td>
+                          {index != 0 && (
+                            <AiOutlineDelete
+                              className={styles.positionDelete}
+                              onClick={() => handleRemove(index)}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+              {/* </div> */}
+              {errorMessage && (
+                <div>
+                  <Form.Text className="error">{errorMessage}</Form.Text>
+                </div>
+              )}
+  
+              <button
+                type="button"
+                className={styles.addMoreButton}
+                onClick={handleAddMore}
+              >
+                Add More
+              </button>
+            </Form.Group>
+            }
+         
           <Form.Group className={styles.formGroup}>
             <Form.Label>Contact Mobile Number</Form.Label>
             <InputGroup className={`contact-field`}>

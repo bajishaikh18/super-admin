@@ -48,68 +48,6 @@
   cursor: pointer;
 }
 
-
-.uploadSection {
-  border: 1px dashed $color-brand-1;
-  padding: 16px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  background-color: $color-brand-2;
-  text-align: left;
-  position: relative;
-}
-
-.uploadHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: $color-brand-1;
-  margin-bottom: 8px;
-
-  p {
-    margin-bottom: 0px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-}
-
-.uploadIcon {
-  width: 20px;
-  height: 20px;
-}
-
-.fileInfo {
-  font-size: 14px;
-  color: $color-grey-1;
-  white-space: normal;
-  margin-bottom: 16px;
-
-  &.error {
-    color: $color-danger;
-  }
-}
-
-.fileInput {
-  display: none;
-}
-
-.browseButton {
-  display: block;
-  margin-top: 8px;
-  background-color: white;
-  color: #0045e6;
-  border: 1px solid #0045e6;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.browseButton:hover {
-  background-color: #0045e6;
-  color: white;
-}
-
 .createSection {
   border: 1px dashed $color-border-grey;
   padding: 26px 24px;
@@ -124,6 +62,16 @@
   }
 }
 
+.manualUpload{
+  display: flex;
+  justify-content: right;
+  margin-top: -10px;
+  .manualButton{
+    margin-top: -10px;
+    margin-bottom: 20px;
+  }
+  
+}
 .outlinedButton {
   margin-top: 10px;
   margin-bottom: 0px;
