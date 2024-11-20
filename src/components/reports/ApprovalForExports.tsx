@@ -43,6 +43,8 @@ const ApprovalRequest: React.FC = () => {
   const [approvedEmployers, setApprovedEmployers] = useState<JobType[]>([]);
   const [pendingEmployers, setPendingEmployers] = useState<JobType[]>([]);
   const [completedEmployers, setCompletedEmployers] = useState<JobType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const queryClient = useQueryClient();
 
   const columnHelper = createColumnHelper<JobType>();
@@ -160,6 +162,7 @@ const ApprovalRequest: React.FC = () => {
 
   useEffect(() => {
     const fetchApprovalData = async () => {
+      setLoading(true);
       try {
         const response = await getApprovals();
         console.log("Response Data:", response); 
@@ -174,9 +177,12 @@ const ApprovalRequest: React.FC = () => {
         setCompletedEmployers(completed);
       } catch (error) {
         console.error("Error fetching approvals:", error);
+        toast.error("Failed to fetch approvals.");
+      } finally {
+        setLoading(false); 
       }
     };
-
+  
     fetchApprovalData();
   }, []);
 
@@ -224,8 +230,8 @@ const ApprovalRequest: React.FC = () => {
             sortingChanged={(updater: any) => setSortingApproved(updater)}
             data={filteredApprovedEmployers}
             fetchNextPage={() => {}}
-            isLoading={false}
-            isFetching={false}
+            isLoading={loading}
+            isFetching={loading}
           />
         ) : activeTab === "Pending" ? (
           <DataTable
@@ -236,8 +242,8 @@ const ApprovalRequest: React.FC = () => {
             sortingChanged={(updater: any) => setSortingPending(updater)}
             data={filteredPendingEmployers}
             fetchNextPage={() => {}}
-            isLoading={false}
-            isFetching={false}
+            isLoading={loading}
+            isFetching={loading}
           />
         ) : (
           <DataTable
@@ -248,8 +254,8 @@ const ApprovalRequest: React.FC = () => {
             sortingChanged={(updater: any) => setSortingCompleted(updater)}
             data={filteredCompletedEmployers}
             fetchNextPage={() => {}}
-            isLoading={false}
-            isFetching={false}
+            isLoading={loading}
+            isFetching={loading}
           />
         )}
       </Card>
