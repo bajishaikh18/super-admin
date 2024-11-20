@@ -4,7 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
-import { useDebounce } from "@uidotdev/usehooks";
 import { DateTime } from "luxon";
 import { Card } from "react-bootstrap";
 import styles from "./JobPosted.module.scss";
@@ -25,6 +24,13 @@ export type JobType = {
   action: string;
   status: string;
   reason: string;
+};
+const reportTypeMapping: { [key: string]: string } = {
+  "jobs-posted": "Jobs Posted",
+  "application-received": "Applications Received",
+  "jobs-applied": "Jobs Applied",
+  "users-report": "Users Report",
+  "employer-applications": "Employers Application"
 };
 
 const ApprovalRequest: React.FC = () => {
@@ -56,7 +62,10 @@ const ApprovalRequest: React.FC = () => {
     }),
     columnHelper.accessor("reportType", {
       header: "Report Type",
-      cell: (info) => info.renderValue() || "N/A",
+      cell: (info) => {
+        const reportType = info.getValue() || "N/A";
+        return reportTypeMapping[reportType] || reportType;
+      },
     }),
     columnHelper.accessor("quantity", {
       header: "Quantity",
