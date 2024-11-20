@@ -32,7 +32,6 @@ const reportTypeMapping: { [key: string]: string } = {
   "users-report": "Users Report",
   "employer-applications": "Employers Application"
 };
-
 const ApprovalRequest: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Approved");
   const [sortingApproved, setSortingApproved] = useState<SortingState>([]);

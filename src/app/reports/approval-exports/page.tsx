@@ -5,10 +5,9 @@ import { Authorize } from '@/components/common/Authorize';
  
 const EmployerReportPage = () => {
   return (
-    <Authorize roles={[ROLE.superAdmin]}>
-        <ApprovalRequest />
-        </Authorize>
-
+  <Authorize roles={[ROLE.superAdmin]}>
+      <ApprovalRequest />
+  </Authorize>
   );
 };
 
