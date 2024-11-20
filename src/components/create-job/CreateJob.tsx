@@ -15,7 +15,7 @@ export default function CreateJob({
   handleModalClose: () => void;
   jobDetails?: Job
 }) {
-  const [screen, setScreen] = useState(2);
+  const [screen, setScreen] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
   const {setFormData,setFacilities} = usePostJobStore();
   const {
