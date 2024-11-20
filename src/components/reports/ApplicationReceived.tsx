@@ -138,7 +138,7 @@ function ApplicationReceived() {
 
     columnHelper.accessor("positions", {
       header: "Positions applied for",
-      cell: (info) => info.getValue()?.length || "N/A",
+      cell: (info) => info.getValue()?.join(", ") || "N/A",
       meta: {
         filterType: "number",
       },
