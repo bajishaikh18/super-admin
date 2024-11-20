@@ -281,7 +281,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
       
-            {
+          
+          <div className={`${styles.overFlowSection} scroll-box`}>
+
+          {
               (!manualEntry && !uploaded) && <>
                 <UploadPositions handleUploadProcessed={onDataUpload}/>
                 <div className={styles.manualUpload}>
@@ -295,8 +298,6 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                </div>
               </>
             }
-          
-          <div className={`${styles.overFlowSection} scroll-box`}>
             {
               (manualEntry || uploaded) && <Form.Group className={styles.formGroup}>
               <label className={styles.formLabel}>Add positions</label>

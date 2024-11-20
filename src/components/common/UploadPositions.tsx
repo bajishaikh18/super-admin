@@ -3,13 +3,14 @@ import styles from "./Common.module.scss";
 import { useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
-import { difference, result } from "lodash";
+import { difference, result, set } from "lodash";
 
 const CSVColumns = ["Position", "Experience", "Salary"];
 
 export const UploadPositions = ({handleUploadProcessed}:{handleUploadProcessed:(data: any)=>void}) => {
   const { readString } = usePapaParse();
   const [selectedFile,setSelectedFile] = useState<File|null>(null);
+  const [error,setError] = useState(false);
   const onDrop = useCallback(async (acceptedFiles: any) => {
     const file = acceptedFiles[0];
     if (!file) {
@@ -23,10 +24,18 @@ export const UploadPositions = ({handleUploadProcessed}:{handleUploadProcessed:(
         dynamicTyping: true,
         header: true,
         complete: (results) => {
-            console.log(results.data);
-            if (results.meta.fields?.length) {
-                handleUploadProcessed(results.data)
+           
+            const isValid = CSVColumns.every((x) =>
+              results.meta.fields?.includes(x)
+            );
+            if(!isValid){
+              setError(true)
+            }else{
+              setError(false)
             }
+            if (results.meta.fields?.length) {
+              handleUploadProcessed(results.data)
+          }
         }})
   }, []);
 
@@ -85,6 +94,12 @@ export const UploadPositions = ({handleUploadProcessed}:{handleUploadProcessed:(
       >
         .csv is allowed. File size should not exceed 5 MB
       </p>
+      {
+        error &&   <p className={`${styles.fileInfo} ${styles.error}`}>
+          Looks like csv is invalid. check if it contains following columns {CSVColumns.join(", ")}
+      </p>
+      }
+     
       <div className={styles.userUploadActions}>
       {selectedFile ? (
           <p className={styles.selectedFileName}>
