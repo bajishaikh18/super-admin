@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
-import { useQueryClient } from "@tanstack/react-query";
+import {useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
@@ -14,7 +14,7 @@ type TabType = "Approved" | "Pending"| "Completed";
 const fetchSize = 50;
 
 export type JobType = {
-  _id: string;
+  _id: string; 
   requestBy: number;
   reportType: string;
   quantity: string;
@@ -46,9 +46,10 @@ const ApprovalRequest: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
-
-  const columnHelper = createColumnHelper<JobType>();
-
+  const {data} = useQuery({
+    queryKey: ['approvals'],  
+    queryFn: getApprovals,
+  });  const columnHelper = createColumnHelper<JobType>();
   const columns = [
     columnHelper.accessor("requestBy", {
       header: "Request By",
@@ -135,13 +136,13 @@ const ApprovalRequest: React.FC = () => {
       await updateApprovalStatus(employer._id, "approve");
       await queryClient.invalidateQueries({
         predicate: (query) => {
-          return query.queryKey.includes('employers');
+          return query.queryKey.includes('approvals');
         },
         refetchType:'all'
       })
       toast.success("Employer approved successfully!");
     } catch (error) {
-      toast.error("Failed to approve.");
+      toast.error("Failed to approve employer.");
     }
   };
 
@@ -151,12 +152,12 @@ const ApprovalRequest: React.FC = () => {
       toast.success("Employer rejected successfully!");
       await queryClient.invalidateQueries({
         predicate: (query) => {
-          return query.queryKey.includes('employers');
+          return query.queryKey.includes('approvals');
         },
         refetchType:'all'
       })
     } catch (error) {
-      toast.error("Failed to reject.");
+      toast.error("Failed to reject employer.");
     }
   };
 
