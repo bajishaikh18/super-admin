@@ -133,14 +133,6 @@ function JobApplied() {
       header: "Work Video",
     }),
 
-    columnHelper.accessor("positions", {
-      header: "Positions applied for",
-      cell: (info) => info.getValue()?.length || "N/A",
-      meta: {
-        filterType: "number",
-      },
-    }),
-
     columnHelper.accessor("createdAt", {
       header: "Applied Date",
       cell: (info) =>
@@ -184,7 +176,7 @@ function JobApplied() {
           "Post Id": x.jobId,
           Agency: x.agency.name,
           "Application Id": x._id,
-          Positions: x.positions.join(","),
+          "Applied By":x.appliedBy,
           "Applied on": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
         };
       });
@@ -203,7 +195,7 @@ function JobApplied() {
       getFormattedJobTitles(inputValue).then((options) =>
         callback(
           !inputValue
-            ? [{ value: "all", label: "All Agencies" }, ...options]
+            ? [{ value: "all", label: "All Job titles" }, ...options]
             : options
         )
       );

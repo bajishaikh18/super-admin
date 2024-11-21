@@ -61,7 +61,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPay
             <Dropdown.Toggle className={styles.downloadDropdown}>
               {selectedFormat}
             </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu className={styles.dropdownMenu}>
               <Dropdown.Item onClick={downloadExcel}>Excel</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>

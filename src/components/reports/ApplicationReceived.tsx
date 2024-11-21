@@ -201,6 +201,7 @@ function ApplicationReceived() {
           "Post Id": x.jobId,
           Agency: x.agency.name,
           "Application Id": x._id,
+          "Applied By":x.appliedBy,
           Positions: x.positions.join(","),
           "Applied on": DateTime.fromISO(x.createdAt).toFormat("dd MMM yyyy"),
         };
