@@ -43,13 +43,14 @@ const ApprovalRequest: React.FC = () => {
   const [approvedEmployers, setApprovedEmployers] = useState<JobType[]>([]);
   const [pendingEmployers, setPendingEmployers] = useState<JobType[]>([]);
   const [completedEmployers, setCompletedEmployers] = useState<JobType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
-  const {data} = useQuery({
+  const {data,isLoading:loading, isFetching:fetching} = useQuery({
     queryKey: ['approvals'],  
     queryFn: getApprovals,
-  });  const columnHelper = createColumnHelper<JobType>();
+  });  
+  
+  const columnHelper = createColumnHelper<JobType>();
   const columns = [
     columnHelper.accessor("requestBy", {
       header: "Request By",
@@ -135,9 +136,7 @@ const ApprovalRequest: React.FC = () => {
     try {
       await updateApprovalStatus(employer._id, "approve");
       await queryClient.invalidateQueries({
-        predicate: (query) => {
-          return query.queryKey.includes('approvals');
-        },
+        queryKey:['approvals'],
         refetchType:'all'
       })
       toast.success("Employer approved successfully!");
@@ -162,30 +161,16 @@ const ApprovalRequest: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchApprovalData = async () => {
-      setLoading(true);
-      try {
-        const response = await getApprovals();
-        console.log("Response Data:", response); 
-
-        const approvalData = response.ApprovalData; 
-        const approved = approvalData.filter((item: any) => item.status === "approved");
-        const pending = approvalData.filter((item: any) => item.status === "pending");
-        const completed = approvalData.filter((item: any) => item.status === "completed");
-
-        setApprovedEmployers(approved);
-        setPendingEmployers(pending);
-        setCompletedEmployers(completed);
-      } catch (error) {
-        console.error("Error fetching approvals:", error);
-        toast.error("Failed to fetch approvals.");
-      } finally {
-        setLoading(false); 
-      }
-    };
-  
-    fetchApprovalData();
-  }, []);
+    if(data){
+      const approvalData = data.ApprovalData; 
+      const approved = approvalData.filter((item: any) => item.status === "approved");
+      const pending = approvalData.filter((item: any) => item.status === "pending");
+      const completed = approvalData.filter((item: any) => item.status === "completed");
+      setApprovedEmployers(approved);
+      setPendingEmployers(pending);
+      setCompletedEmployers(completed);
+    }
+    }, [data]);
 
   const filteredApprovedEmployers = approvedEmployers.filter(employer => employer.requestBy.toString().includes(searchApproved));
   const filteredPendingEmployers = pendingEmployers.filter(employer => employer.requestBy.toString().includes(searchPending));
@@ -232,7 +217,7 @@ const ApprovalRequest: React.FC = () => {
             data={filteredApprovedEmployers}
             fetchNextPage={() => {}}
             isLoading={loading}
-            isFetching={loading}
+            isFetching={fetching}
           />
         ) : activeTab === "Pending" ? (
           <DataTable
@@ -244,7 +229,7 @@ const ApprovalRequest: React.FC = () => {
             data={filteredPendingEmployers}
             fetchNextPage={() => {}}
             isLoading={loading}
-            isFetching={loading}
+            isFetching={fetching}
           />
         ) : (
           <DataTable
@@ -256,7 +241,7 @@ const ApprovalRequest: React.FC = () => {
             data={filteredCompletedEmployers}
             fetchNextPage={() => {}}
             isLoading={loading}
-            isFetching={loading}
+            isFetching={fetching}
           />
         )}
       </Card>

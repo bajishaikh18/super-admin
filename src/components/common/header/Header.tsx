@@ -216,7 +216,8 @@ const Header: React.FC<HeaderProps> = () => {
                 >
                   Employers Report
                 </NavDropdown.Item>
-                <NavDropdown.Item
+                {
+                  shouldVisible([ROLE.superAdmin]) &&<NavDropdown.Item
                   className={`${styles.navListItem} ${
                     pathname == "/approval-exports" ? styles.active : ""
                   }`}
@@ -224,6 +225,8 @@ const Header: React.FC<HeaderProps> = () => {
                 >
                   Approval for Exports Report
                 </NavDropdown.Item>
+                }
+                
               </NavDropdown>
             )}
           </Nav>

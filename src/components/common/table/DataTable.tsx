@@ -113,7 +113,7 @@ export function DataTable({
   });
 
   if (isLoading || (isFetching && isSearch)) {
-    return <div style={{minHeight:'40vh'}}><Loader text="Fetching user data" size="md" textSize="md"/></div>
+    return <div style={{minHeight:'40vh'}}><Loader text="Fetching data" size="md" textSize="md"/></div>
   }
   
   if(data.length === 0){
