@@ -162,7 +162,7 @@ const ApprovalRequest: React.FC = () => {
 
   useEffect(() => {
     if(data){
-      const approvalData = data.ApprovalData; 
+      const approvalData = data.approvalData; 
       const approved = approvalData.filter((item: any) => item.status === "approved");
       const pending = approvalData.filter((item: any) => item.status === "pending");
       const completed = approvalData.filter((item: any) => item.status === "completed");
