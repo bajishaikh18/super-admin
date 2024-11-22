@@ -145,6 +145,8 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         </p>
         <div className={styles.createSpinner}></div>
       </div> :    <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+      <div className={`${styles.overFlowSection} scroll-box`}>
+
         <Form.Group className={styles.formGroup}>
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -345,6 +347,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
               </Form.Group>
             </Col>
           </Row>
+          </div>
         <div className={styles.actions}>
           <Button
             type="button"

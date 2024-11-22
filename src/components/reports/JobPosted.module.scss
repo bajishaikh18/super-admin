@@ -1,0 +1,179 @@
+@import "../../app/variables"; 
+
+.outerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 85px;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  position: relative;
+  z-index: 9;
+  padding:24px 24px 8px 24px;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.dropdownMenu{
+  width: 100%;
+}
+
+.reportTypeField {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  position: relative;
+  z-index: 20;
+  overflow: visible; 
+}
+
+.reportTypeField label {
+  margin-bottom: 7px;
+  font-weight: 400;
+}
+.headingContainer{
+  display: flex;
+  gap:20px;
+  align-items: center;
+  h4{
+    color: $color-brand-1;
+    font-weight: 500;
+    margin: 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.selectField {
+  margin-bottom: 24px;
+  &.dateField{
+    margin-bottom: 10px;
+  }
+}
+.input{
+width: 230px;
+}
+.Dropdown{
+  width: 230px;
+}
+
+
+
+.customSelect .react-select__control {
+  border: 2px solid #4137FF;  
+  background-color: #f9f9f9; 
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.customSelect .react-select__menu {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+}
+
+.customSelect .react-select__option {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.customSelect .react-select__option--is-selected {
+  background-color: #0045E6;
+  color: #fff;
+}
+
+.customSelect .react-select__option--is-focused {
+  background-color: #e6f7ff;
+  color: #333;
+}
+.submitButton {
+  margin-top: 30px;
+  max-width: 120px;
+  height: 44px;
+  cursor: pointer;
+}
+
+.generateReportImage {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.generateReportText {
+  font-size: 20px;
+  font-weight: 700;
+  color: #505050;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.generateReportSection {
+  text-align: center;
+  margin-top: 20px;
+  h3{
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(80, 80, 80, 1);
+    margin-bottom: 10px;
+    margin-top: 12px;
+  }
+  p{
+    font-weight: 300;
+    font-size: 16px;
+    color: rgba(26, 26, 26, 1);
+  }
+}
+
+
+.reportTitle {
+  color:#000000;
+  font-size: 16px;
+  font-weight: 500px;
+  margin-top: 20px;
+}
+
+
+.downloadDropdownContainer {
+  display: flex;
+  align-items: center;
+}
+
+.downloadDropdown {
+  padding: 14px 24px;
+  border-radius: 8px;
+  border: 1px solid $color-brand-1 !important;
+  line-height: 16px;
+  background-color: #fff;
+  cursor: pointer;
+  color: $color-brand-1;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.downloadDropdown:hover {
+  background-color: #f1f1f1;
+  color: $color-brand-1;
+}
+.heading {
+  margin: 130px 25px 0;
+  font-size: 18px;
+  width: 100%; 
+}
+.cardContainer {
+  margin: 20px ; 
+  padding: 0px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.pending{
+  background: $color-warning;
+  color: #fff;
+}

@@ -44,3 +44,15 @@ export const ROLE = {
   employer: 3,
   user: 4,
 };
+
+
+export const DURATION_OPTIONS: {
+  value: string;
+  label: string;
+}[] = [
+  { value: "0", label: "This Month" },
+  { value: "1", label: "Last Month" },
+  { value: "3", label: "Last 3 months" },
+  { value: "6", label: "Last 6 months" },
+  { value: "custom", label: "Custom date range" },
+];

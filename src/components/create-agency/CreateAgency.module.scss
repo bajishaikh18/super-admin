@@ -76,6 +76,13 @@
     cursor: pointer;
   }
   
+  .overFlowSection{
+    max-height: 600px;
+    padding-right: 32px;
+    overflow-y: auto;
+    margin-right: -32px;
+  }
+  
   
 
   .formGroup {
