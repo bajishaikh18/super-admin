@@ -23,9 +23,9 @@ import { createAgency, updateAgency } from "@/apis/agency";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
-  GetCity,
   GetState,
 } from "react-country-state-city";
+import { CITIES } from "@/helpers/stateList";
 
 const phoneRegex = /^[0-9]{10}$/;
 
@@ -73,10 +73,10 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         const selectedState:any = states?.find(
           (cty: any) => cty.state_code === state
         );
-        const cityList = await GetCity(101,selectedState?.id);
+        const cityList = CITIES[selectedState?.state_code as "KL"];
         return cityList.map((city: any) => ({
-          value: city.name,
-          label: city.name,
+          value: city,
+          label: city,
         }));
       }
       return [];
@@ -145,6 +145,8 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         </p>
         <div className={styles.createSpinner}></div>
       </div> :    <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
+      <div className={`${styles.overFlowSection} scroll-box`}>
+
         <Form.Group className={styles.formGroup}>
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -345,6 +347,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
               </Form.Group>
             </Col>
           </Row>
+          </div>
         <div className={styles.actions}>
           <Button
             type="button"

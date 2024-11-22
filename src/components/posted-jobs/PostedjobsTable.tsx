@@ -193,16 +193,20 @@ const PostedJobsTable: React.FC = () => {
     columnHelper.accessor("jobId", {
       header: "Post Id",
       cell: (info) => (
-        <Link href={`/posted-jobs/${info.getValue()}`}>{info.getValue()}</Link>
+        <Link href={`/posted-jobs/${info.getValue()}`} passHref>
+          {info.getValue()}
+        </Link>
       ),
       meta: {
         classes: "f-3",
       },
     }),
+  
     columnHelper.accessor("agency", {
-      cell: (info) => info.renderValue() || "N/A",
       header: "Agency",
+      cell: (info) => info.renderValue() || "N/A",
     }),
+  
     columnHelper.accessor("location", {
       header: "Location",
       cell: (info) =>
@@ -218,6 +222,7 @@ const PostedJobsTable: React.FC = () => {
         })),
       },
     }),
+  
     columnHelper.accessor("amenities", {
       header: "Benefits",
       cell: (info) => (
@@ -228,70 +233,73 @@ const PostedJobsTable: React.FC = () => {
       meta: {
         filterType: "select",
         selectOptions: [
-          {
-            value: "Food",
-            label: "Food",
-          },
-          {
-            value: "Transportation",
-            label: "Transportation",
-          },
-          {
-            value: "Stay",
-            label: "Stay",
-          },
-          {
-            value: "Recruitment",
-            label: "Recruitment",
-          },
+          { value: "Food", label: "Food" },
+          { value: "Transportation", label: "Transportation" },
+          { value: "Stay", label: "Stay" },
+          { value: "Recruitment", label: "Recruitment" },
         ],
       },
     }),
+  
     columnHelper.accessor("positions", {
       header: "No. of positions",
       cell: (info) => info.getValue()?.length || "N/A",
-      meta: { filterType: "number",classes:"f-7" },
+      meta: {
+        filterType: "number",
+        classes: "f-7",
+      },
     }),
+  
     columnHelper.accessor("imageUrl", {
+      header: "Media",
       cell: (info) => (
         <>
-          {
-            info.getValue() ? <Link
-            href={`javascript:;`}
-            onClick={() => {
-              setShowImage(true);
-              setImageUrl(info.getValue());
-            }}
-            className={dataTableStyles.normalLink}
-          >
-            
-            View Image
-          </Link> : "N/A"
-          }
+          {info.getValue() ? (
+            <Link
+              href={`javascript:;`}
+              onClick={() => {
+                setShowImage(true);
+                setImageUrl(info.getValue());
+              }}
+              className={dataTableStyles.normalLink}
+            >
+              View Image
+            </Link>
+          ) : (
+            "N/A"
+          )}
         </>
-        
       ),
-      header: "Media",
-      meta: { filter: false,classes:'f-5' },
+      meta: {
+        filter: false,
+        classes: "f-5",
+      },
     }),
+  
     columnHelper.accessor("createdAt", {
       header: "Posted Date",
       cell: (info) =>
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
-      meta: { filterType: "date",classes:'f-5' },
+      meta: {
+        filterType: "date",
+        classes: "f-5",
+      },
     }),
+  
     columnHelper.accessor("expiry", {
       header: "Expiry",
       cell: (info) =>
         info.renderValue()
           ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
           : "N/A",
-      meta: { filterType: "date",classes:'f-5' },
+      meta: {
+        filterType: "date",
+        classes: "f-5",
+      },
     }),
   ];
-
   return (
     <div className="page-block">
       <div className="page-title">

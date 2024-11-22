@@ -12,8 +12,8 @@ export const COUNTRIES = {
 };
 
 export const IMAGE_BASE_URL =
-  "https://wonderlybackendpublic.s3.ap-south-1.amazonaws.com";
-
+  "https://boon-backend-public-dev.s3.ap-south-1.amazonaws.com";
+  
 export const FACILITIES_IMAGES = {
   Food: "/food.png",
   Transportation: "/transport.png",
@@ -22,11 +22,20 @@ export const FACILITIES_IMAGES = {
 };
 
 export const INDUSTRIES = {
-  software: "Software",
-  automotive: "Automotive",
-  finance: "Finance",
+  oil_gas: "Oil & Gas",
+  constructions: "Constructions",
+  facility_management: "Facility Management / Operations Maintenance",
+  hospitality: "Hospitality",
   manufacturing: "Manufacturing",
-  healthcare: "Healthcare",
+  logistics: "Logistics & E-Commerce",
+  health_care:"Health Care",
+  information_technology:"Information Technology",
+  education:"Education",
+  travel_tourism:"Travel & Tourism",
+  tele_communication:"Tele Communication",
+  banking_finance:"Banking & Finance",
+  fcmg:"FMCG",
+  retail:"Retail"
 };
 
 export const ROLE = {
@@ -35,3 +44,15 @@ export const ROLE = {
   employer: 3,
   user: 4,
 };
+
+
+export const DURATION_OPTIONS: {
+  value: string;
+  label: string;
+}[] = [
+  { value: "0", label: "This Month" },
+  { value: "1", label: "Last Month" },
+  { value: "3", label: "Last 3 months" },
+  { value: "6", label: "Last 6 months" },
+  { value: "custom", label: "Custom date range" },
+];

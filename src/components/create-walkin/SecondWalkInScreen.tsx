@@ -12,13 +12,16 @@ import { createInterview, updateInterview } from "@/apis/walkin";
 import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
-import { debounce } from "lodash";
+import { debounce, flatten } from "lodash";
 import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
 import { DateTime } from "luxon";
 import {
   GetCity,
   GetState,
 } from "react-country-state-city";
+import { CITIES } from "@/helpers/stateList";
+import { FaPlus } from "react-icons/fa6";
+import { UploadPositions } from "../common/UploadPositions";
 interface JobPosition {
   title: {
     value:string,
@@ -77,6 +80,12 @@ const createWalkInMutation = useMutation({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { selectedFacilities, setFormData,selectedFile, formData, newlyCreatedWalkin, setNewlyCreatedWalkin, setRefreshImage } = usePostWalkinStore();
   const [stateList,setStateList] = useState([]);
+  const [manualEntry,setManualEntry] = useState(true);
+  const [uploaded,setUploaded] = useState(true);
+  const [defaultTitleOptions,setDefaultTitleOptions] = useState<{
+    value:string,
+    label:string,
+  }[]>([]);
 
   useEffect(()=>{
     if(formData?.jobPositions){
@@ -138,6 +147,7 @@ const createWalkInMutation = useMutation({
     control,
     setValue,
     watch,
+    reset,
     formState: { errors,isValid },
   } = useForm<FormValues>({
     mode: 'all'
@@ -167,16 +177,59 @@ const createWalkInMutation = useMutation({
         const selectedState:any = states?.find(
           (cty: any) => cty.state_code === state
         );
-        const cityList = await GetCity(101,selectedState?.id);
+        const cityList = CITIES[selectedState?.state_code as "KL"];
         return cityList.map((city: any) => ({
-          value: city.name,
-          label: city.name,
+          value: city,
+          label: city,
         }));
       }
       return [];
     },
     retry: 3,
   });
+
+
+  const setDefaultOptionsForTitles = useCallback(async (positions:any[])=>{
+    const uniquePositions = positions.filter((x:any,i:any)=>positions.indexOf(x)===i);
+    const defaultOptions = flatten(await Promise.all(uniquePositions.map(async (position:string)=>{
+      return getFormattedJobTitles(position);
+    })))
+    setDefaultTitleOptions(defaultOptions)
+    return defaultOptions;
+  },[])
+
+
+  const onDataUpload = async (data:any)=>{
+    setFormData({jobPositions:undefined});
+    setJobPositions([
+      { title: {value:"",label:""}, experience: "0", salary: "" },
+    ]);
+    reset({
+      jobPositions:[
+        { title: {value:"",label:""}, experience: "0", salary: "" },
+      ],
+    });
+    const positions = data.map((x:any)=>x.Position);
+    const defaultOptions = await setDefaultOptionsForTitles(positions);
+    const formattedData = data.map((x:any,index:number)=>{
+      const selectedOption = defaultOptions.find(option=>option.label.toLowerCase() === x.Position.toLowerCase());
+      setValue(`jobPositions.${index}.title`, selectedOption);
+      setValue(`jobPositions.${index}.experience`, x.Experience.toString());
+      setValue(`jobPositions.${index}.salary`, x.Salary.toString());
+      return {
+        title:selectedOption,
+        experience: x.Experience.toString(),
+        salary: x.Salary.toString()
+      }
+    })
+    const formData = {
+      jobPositions: formattedData
+    }
+    setUploaded(true);
+    setFormData(formData)
+    setJobPositions(formattedData);
+  }
+
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
@@ -276,10 +329,34 @@ const createWalkInMutation = useMutation({
         </div>
       ) : (
         <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
-                    <div className={`${styles.overFlowSection} scroll-box`}>
-
+           
+          
+          <div className={`${styles.overFlowSection} scroll-box`}>
+          {
+              (!manualEntry && !uploaded) && <>
+                <UploadPositions handleUploadProcessed={onDataUpload}/>
+                <div className={styles.manualUpload}>
+                {
+                  (!manualEntry && !uploaded) && <button
+                        type="button"
+                        className={`${styles.addMoreButton} ${styles.manualButton}`}
+                        onClick={()=>setManualEntry(true)}
+                      ><FaPlus fontSize={10}/> Add Manually</button>
+                }
+               </div>
+              </>
+            }
+          {
+              (manualEntry || uploaded) && 
           <Form.Group className={styles.formGroup}>
             <label className={styles.formLabel}>Add positions</label>
+            <button
+                type="button"
+                className={styles.addMoreButton}
+                onClick={()=>{setManualEntry(false);setUploaded(false);}}
+              >
+                Upload positions
+              </button>
             <div className={styles.overFlowTable}>
             <Table>
               <thead>
@@ -301,6 +378,8 @@ const createWalkInMutation = useMutation({
                         <MultiSelectAsync
                           name={`jobPositions.${index}.title`}
                           control={control}
+                          defaultOptions={defaultTitleOptions}
+                          placeHolder="Type to search job titles"
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.title`]}
                           loadOptions={loadOptionsDebounced}
@@ -378,6 +457,7 @@ const createWalkInMutation = useMutation({
               Add More
             </button>
           </Form.Group>
+          }
           <Form.Group className={styles.formGroup}>
             <Form.Label>Contact Mobile Number</Form.Label>
             <InputGroup className={`contact-field`}>

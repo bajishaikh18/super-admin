@@ -8,10 +8,12 @@ export const getFormattedJobTitles = async (title:string)=>{
     }))
 }
 
-export const getFormattedAgencies = async (name:string)=>{
+export const getFormattedAgencies = async (name:string,addImage?:boolean)=>{
     const agencies = await getAgenciesList(name);
     return agencies.map((title:any)=>({
         value: title._id,
-        label: title.name
+        label: title.name,
+        image: addImage ? title.profilePic || '/no_image.jpg' : undefined,
+        hasImage: !!title.profilePic
     }))
 }

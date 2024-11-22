@@ -8,7 +8,7 @@ export const downloadMedia = async (key:string,name:string)=>{
         const link = document.createElement("a");
         link.href = resp.downloadUrl;
         link.target="_blank";
-        link.setAttribute('download', `${name}`);
+        link.setAttribute('download', `${name}.pdf`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

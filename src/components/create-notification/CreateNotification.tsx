@@ -138,6 +138,7 @@ function CreateNotification({
             <MultiSelectAsync
               name="jobTitle"
               isMulti={true}
+              placeHolder="Type to search job titles"
               control={control}
               error={errors.jobTitle as FieldError}
               loadOptions={loadOptionsDebounced}

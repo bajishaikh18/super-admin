@@ -22,6 +22,7 @@ import { Notification } from "@/stores/useNotificationStore";
 interface HeaderProps {}
 const HIDEPATHS = ["/login", "/reset-password"];
 
+
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -108,7 +109,7 @@ const Header: React.FC<HeaderProps> = () => {
             {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/posted-jobs" ? styles.active : ""
+                  pathname.includes("posted-jobs") ? styles.active : ""
                 }`}
                 href="/posted-jobs"
               >
@@ -119,84 +120,117 @@ const Header: React.FC<HeaderProps> = () => {
               {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
-                  pathname == "/walk-in" ? styles.active : ""
+                  pathname.includes("walk-in") ? styles.active : ""
                 }`}
                 href="/walk-in"
               >
-                Walkins
+                Walk-ins
               </Link>
             )}
 
+
+
+         
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
-              <Link
-                className={`${styles.navListItem} ${
-                  pathname == "/agency" ? styles.active : ""
-                }`}
-                href="/agency"
+              <NavDropdown
+                title="Users"
+                className={`${styles.navListItem} nav-list-item`}
               >
-                Agencies
-              </Link>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/users?type=app") ? styles.active : ""
+                  }`}
+                  href="/users?type=app"
+                >
+                Registered app users
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/users?type=admin") ? styles.active : ""
+                  }`}
+                  href="/users?type=admin"
+                >
+               Internal users
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                   className={`${styles.navListItem} ${
+                    pathname.includes("/agency") ? styles.active : ""
+                  }`}
+                  href="/agency"
+                >
+                 Agencies / Trade centers
+                </NavDropdown.Item>
+                <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/employers" ? styles.active : ""
+                  }`}
+                  href="/employers"
+                >
+                Employers
+                </NavDropdown.Item>
+              
+              </NavDropdown>
             )}
-
-            {shouldVisible([ROLE.superAdmin]) && (
-              <Link
-                className={`${styles.navListItem} ${
-                  pathname == "/users" ? styles.active : ""
-                }`}
-                href="/users"
-              >
-                Users
-              </Link>
-            )}
-            {shouldVisible([ROLE.admin, ROLE.superAdmin]) && (
-              <Link
-              className={`${styles.navListItem} ${
-                pathname == "/employers" ? styles.active : ""
-              }`}
-              href="/employers"
-            >
-              Employers
-            </Link>
-            )}
-
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <NavDropdown
                 title="Reports"
                 className={`${styles.navListItem} nav-list-item`}
               >
                 <NavDropdown.Item
-                  href="#action/3.1"
-                  className={styles.navListItem}
+                  className={`${styles.navListItem} ${
+                    pathname == "/jobs-posted" ? styles.active : ""
+                  }`}
+                  href="/reports/jobs-posted"
                 >
-                  Job Posted Report
+                Job Posted Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href="#action/3.2"
-                  className={styles.navListItem}
+                   className={`${styles.navListItem} ${
+                    pathname == "/application-received" ? styles.active : ""
+                  }`}
+                  href="/reports/application-received"
                 >
-                  Applications Received by Agency Report
+                Applications Received by Agency Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href="#action/3.2"
-                  className={styles.navListItem}
+                  className={`${styles.navListItem} ${
+                    pathname == "/jobs-applied" ? styles.active : ""
+                  }`}
+                  href="/reports/jobs-applied"
                 >
                   Job Applied Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href="#action/3.2"
-                  className={styles.navListItem}
+                  className={`${styles.navListItem} ${
+                    pathname == "/users-report" ? styles.active : ""
+                  }`}
+                  href="/reports/users-report"
                 >
                   Total Users/Candidates Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                  href="#action/3.2"
-                  className={styles.navListItem}
+                  className={`${styles.navListItem} ${
+                    pathname == "/employer-applications" ? styles.active : ""
+                  }`}
+                  href="/reports/employer-applications"
                 >
                   Employers Report
                 </NavDropdown.Item>
+                {
+                  shouldVisible([ROLE.superAdmin]) &&<NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                    pathname == "/approval-exports" ? styles.active : ""
+                  }`}
+                  href="/reports/approval-exports"
+                >
+                  Approval for Exports Report
+                </NavDropdown.Item>
+                }
+                
               </NavDropdown>
             )}
           </Nav>
+
 
           <Nav className={styles.rightNavItems}>
             <Nav.Link href="javascript:;" onClick={() => {setShowNotification(!showNotification)}} className={styles.notificationTrigger}>

@@ -23,6 +23,7 @@ import CreateUserForm from "../users/CreateUsers";
 import { Button, Modal } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa6";
 import { GetCountries, GetState } from "react-country-state-city";
+import { useSearchParams } from "next/navigation";
 
 type RegisteredUsersProps = {
   showButton: boolean;
@@ -36,9 +37,12 @@ const fetchSize = 100;
 
 const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
   const [showCreateUser, setShowCreateUser] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabType>("app");
+  const searchParams = useSearchParams();
+  const type = searchParams.get('type')
+  const [activeTab, setActiveTab] = useState<TabType>((type as TabType) || "app");
   // const [countries, setCountries] = useState<any[] | null>(null);
   // const [states, setStates] = useState<any[] | null>(null);
+ 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [sortingAdmin, setSortingAdmin] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");

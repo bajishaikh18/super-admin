@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./CreateJob.module.scss";
+
 import InitialScreen from "@/components/create-job/InitialScreen";
 import FirstJobScreen from "@/components/create-job/FirstJobScreen";
 import SecondJobScreen from "@/components/create-job/SecondJobScreen";

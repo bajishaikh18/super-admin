@@ -19,6 +19,16 @@
     width: 5px;
   }
 }
+.manualUpload{
+  display: flex;
+  justify-content: right;
+  margin-top: -10px;
+  .manualButton{
+    margin-top: -10px;
+    margin-bottom: 20px;
+  }
+  
+}
 .overFlowSection{
   max-height: 600px;
   padding-right: 32px;

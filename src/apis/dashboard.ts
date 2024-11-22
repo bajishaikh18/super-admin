@@ -1,6 +1,6 @@
 import { apiClient } from "./common";
 
-const pathUrl = '/dashboard';
+const pathUrl = "/dashboard";
 
 export const getSummary = async () => {
   try {
@@ -11,12 +11,12 @@ export const getSummary = async () => {
   }
 };
 
-export const getJobCount = async (date:string) => {
+export const getJobCount = async (date: string) => {
   try {
-    const response = await apiClient.get(`${pathUrl}/getJobCount`,{
-      params:{
-        date:date
-      }
+    const response = await apiClient.get(`${pathUrl}/getJobCount`, {
+      params: {
+        date: date,
+      },
     });
     return response.data;
   } catch (error) {
@@ -24,12 +24,12 @@ export const getJobCount = async (date:string) => {
   }
 };
 
-export const getSitePerformance = async (date:string) => {
+export const getSitePerformance = async (date: string) => {
   try {
-    const response = await apiClient.get(`${pathUrl}/siteperformance`,{
-      params:{
-        date:date
-      }
+    const response = await apiClient.get(`${pathUrl}/siteperformance`, {
+      params: {
+        date: date,
+      },
     });
     return response.data;
   } catch (error) {
@@ -37,37 +37,65 @@ export const getSitePerformance = async (date:string) => {
   }
 };
 
-
-export const getUsers = async (type:string,start: number,size:number,filter:string,field:string) => {
-  try {
-    const response = await apiClient.get(`/dashboard/users/${type}`,{
-        params:{
-            "page": start+1,
-            "limit": size,
-            "field":field || '',
-            "filterTerm": filter
-        }
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-export const getEmployers = async (
-  status: string, 
-  page: number,    
-  limit: number,  
-  field: string,   
-  filterTerm: string 
+export const getUsers = async (
+  type: string,
+  start: number,
+  size: number,
+  filter: string,
+  field: string
 ) => {
   try {
-    const response = await apiClient.get(`/dashboard/employers/${status}`, {
+    const response = await apiClient.get(`/dashboard/users/${type}`, {
       params: {
-        page: page + 1,
-        limit: limit,
-        field: field || '',
-        filterTerm: filterTerm || ''
-      }
+        page: start + 1,
+        limit: size,
+        field: field || "",
+        filterTerm: filter,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getReports = async ({
+  type,
+  agency,
+  country,
+  industry,
+  category,
+  duration,
+  postId,
+  jobTitle,
+  status,
+  employer,
+}: {
+  type: string;
+  agency?: string;
+  country?: string;
+  industry?: string;
+  category?: string;
+  duration?: string;
+  postId?: string;
+  jobTitle?: string;
+  employer?: string;
+  status?:string
+}) => {
+  try {
+    const response: any = await apiClient.get(`${pathUrl}/reports`, {
+      params: {
+        type: type,
+        agency,
+        country,
+        industry,
+        category,
+        duration,
+        postId,
+        jobTitle,
+        status,
+        employer,
+      },
     });
     console.log("API Response:", response.data);
     return response.data;
@@ -76,13 +104,44 @@ export const getEmployers = async (
     throw error;
   }
 };
-export const updateEmployers = async (id: string, action: 'approve' | 'reject') => {
+
+export const getEmployers = async (
+  status: string,
+  page: number,
+  limit: number,
+  field: string,
+  filterTerm: string
+) => {
   try {
-    const response = await apiClient.patch(`/dashboard/employers/${id}/status`, {
-      action: action 
+    const response = await apiClient.get(`/dashboard/employers/${status}`, {
+      params: {
+        page: page + 1,
+        limit: limit,
+        field: field || "",
+        filterTerm: filterTerm || "",
+      },
     });
     console.log("API Response:", response.data);
-    return response.data; 
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch employers:", error);
+    throw error;
+  }
+};
+
+export const updateEmployers = async (
+  id: string,
+  action: "approve" | "reject"
+) => {
+  try {
+    const response = await apiClient.patch(
+      `/dashboard/employers/${id}/status`,
+      {
+        action: action,
+      }
+    );
+    console.log("API Response:", response.data);
+    return response.data;
   } catch (error) {
     console.error("Failed to update employer:", error);
     throw error;
