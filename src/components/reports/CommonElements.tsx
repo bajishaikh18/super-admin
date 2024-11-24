@@ -103,7 +103,7 @@ export const GenerateReportText = () => {
         />
       </div>
       <h3>Generate Report</h3>
-      <p>Please select report details you're looking for</p>
+      <p>Please select report details you&apos;re looking for</p>
     </div>
   );
 };
