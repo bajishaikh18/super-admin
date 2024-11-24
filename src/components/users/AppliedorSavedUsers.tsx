@@ -48,7 +48,7 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
       columnHelper.accessor("phone", {
         header: "Mobile No",
         cell: (info) => (
-          <Link href={`/user/${info.renderValue()}`}>{info.renderValue()}</Link>
+          info.renderValue()
         ),
       }),
       columnHelper.accessor("email", {
