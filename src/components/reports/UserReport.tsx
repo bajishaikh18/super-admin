@@ -11,6 +11,7 @@ import { getReports } from "@/apis/dashboard";
 import {
   Duration,
   GenerateReportText,
+  NoReportText,
   ReportTypeSelect,
 } from "./CommonElements";
 import {
@@ -20,7 +21,7 @@ import {
 import { debounce } from "lodash";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { getStartAndEndDate } from "@/helpers/date";
-import { DURATION_OPTIONS, INDUSTRIES } from "@/helpers/constants";
+import { INDUSTRIES } from "@/helpers/constants";
 import { createColumnHelper } from "@tanstack/react-table";
 import { User } from "@/stores/useUserStore";
 import Link from "next/link";
@@ -45,6 +46,7 @@ const industryOptions = [
 function UserReport() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [noData, setNoData] = useState(false);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<User>();
   const [dateRange, setDateRange] = useState("");
@@ -84,7 +86,7 @@ function UserReport() {
       }),
       columnHelper.accessor("industry", {
         header: "Industry",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) => INDUSTRIES[info.getValue() as "oil_gas"] || info.renderValue() || "N/A",
         meta: {
           classes: "capitalize f-9",
           filterType: "select",
@@ -209,6 +211,7 @@ function UserReport() {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      setNoData(false);
       const reportPayload = {
         type: "users-report",
         jobTitle: data.jobtitle?.map((title) => title.value).join(","),
@@ -244,6 +247,9 @@ function UserReport() {
       });
       setExportPayload(payload);
       setTotalCount(response.totalCount)
+      if(response.reportdata.length === 0){
+        setNoData(true);
+      }   
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -329,8 +335,8 @@ function UserReport() {
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && <GenerateReportText />}
-
+      {(reportData.length === 0 && !noData) && <GenerateReportText />}
+      {(noData) && <NoReportText/>}
       {reportData.length > 0 && (
         <ReportTable
           totalCount={totalCount}

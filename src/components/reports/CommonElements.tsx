@@ -108,6 +108,24 @@ export const GenerateReportText = () => {
   );
 };
 
+export const NoReportText = () => {
+  return (
+    <div className={styles.generateReportSection}>
+      <div className={styles.generateReportImage}>
+        <Image
+          src={"/generate.svg"}
+          alt="Generate Report"
+          width={229}
+          height={178}
+        />
+      </div>
+      <h3>No Reports found</h3>
+      <p>Try adjusting the filters</p>
+    </div>
+  );
+};
+
+
 export const Duration = ({
   control,
   errors,

@@ -10,7 +10,7 @@ import { getReports } from "@/apis/dashboard";
 import { debounce } from "lodash";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { COUNTRIES, DURATION_OPTIONS, INDUSTRIES } from "@/helpers/constants";
-import { Duration, GenerateReportText, ReportTypeSelect } from "./CommonElements";
+import { Duration, GenerateReportText, NoReportText, ReportTypeSelect } from "./CommonElements";
 import {
   MultiSelectAsyncWithCheckbox,
   MultiSelectWithCheckbox,
@@ -74,6 +74,7 @@ type ReportData = {
 function JobPosted() {
   const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
+  const [noData, setNoData] = useState(false);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
   const columnHelper = createColumnHelper<ReportData>();
   const [showImage, setShowImage] = useState(false);
@@ -244,6 +245,7 @@ function JobPosted() {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      setNoData(false);
       const reportPayload  = {
         type: "jobs-posted",
         agency: data.agency?.map((agency) => agency.value).join(","),
@@ -271,7 +273,11 @@ function JobPosted() {
       });
       setExportPayload(payload);
       setTotalCount(response.totalCount)
+      if(response.reportdata.length === 0){
+        setNoData(true);
+      }   
       setReportData(response.reportdata);
+      
     } catch (error) {
       console.error("Error fetching report data:", error);
     } finally {
@@ -388,7 +394,8 @@ function JobPosted() {
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && <GenerateReportText />}
+      {(reportData.length === 0 && !noData) && <GenerateReportText />}
+      {(noData) && <NoReportText/>}
 
       {reportData.length > 0 && (
         <ReportTable

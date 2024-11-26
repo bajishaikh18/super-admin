@@ -10,6 +10,7 @@ import { getReports } from "@/apis/dashboard";
 import {
   Duration,
   GenerateReportText,
+  NoReportText,
   ReportTypeSelect,
 } from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
@@ -45,6 +46,7 @@ function ApplicationReceived() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
+  const [noData, setNoData] = useState(false);
   const [dateRange, setDateRange] = useState("");
   const [totalCount,setTotalCount] = useState(0);
   const columnHelper = createColumnHelper<ApplicationReceivedData>();
@@ -181,6 +183,7 @@ function ApplicationReceived() {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      setNoData(false);
       const reportPayload = {
         type: "application-received",
         agency: data.agency?.map((agency) => agency.value).join(","),
@@ -208,7 +211,10 @@ function ApplicationReceived() {
       });
       
       setExportPayload(payload);
-      setTotalCount(response.totalCount)
+      setTotalCount(response.totalCount);
+      if(response.reportdata.length === 0){
+        setNoData(true);
+      }   
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -279,7 +285,8 @@ function ApplicationReceived() {
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && <GenerateReportText />}
+      {(reportData.length === 0 && !noData) && <GenerateReportText />}
+      {(noData) && <NoReportText/>}
 
       {reportData.length > 0 && (
         <ReportTable

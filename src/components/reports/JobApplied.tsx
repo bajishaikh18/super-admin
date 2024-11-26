@@ -8,6 +8,7 @@ import { getReports } from "@/apis/dashboard";
 import {
   Duration,
   GenerateReportText,
+  NoReportText,
   ReportTypeSelect,
 } from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
@@ -41,6 +42,7 @@ interface JobsAppliedData {
 function JobApplied() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [exportPayload, setExportPayload] = useState<any[]>([]);
+  const [noData, setNoData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState("");
   const columnHelper = createColumnHelper<JobsAppliedData>();
@@ -156,6 +158,7 @@ function JobApplied() {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      setNoData(false);
       const reportPayload = {
         type: "jobs-applied",
         jobTitle: data.jobtitle?.map((title) => title.value).join(","),
@@ -182,6 +185,9 @@ function JobApplied() {
       });
       setExportPayload(payload);
       setTotalCount(response.totalCount)
+      if(response.reportdata.length === 0){
+        setNoData(true);
+      }   
       setReportData(response.reportdata);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -255,7 +261,8 @@ function JobApplied() {
         {renderReportFields()}
       </div>
 
-      {reportData.length === 0 && <GenerateReportText />}
+      {(reportData.length === 0 && !noData) && <GenerateReportText />}
+      {(noData) && <NoReportText/>}
 
       {reportData.length > 0 && (
         <ReportTable
