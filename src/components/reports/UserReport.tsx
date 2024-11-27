@@ -75,7 +75,7 @@ function UserReport() {
       columnHelper.accessor("state", {
         header: "State",
         cell: (info) =>
-          INDIAN_STATES.find((state) => state.state_code === info.renderValue())
+          INDIAN_STATES.find((state) => state.state_code === info.getValue()?.toUpperCase())
             ?.name ||
           info.renderValue() ||
           "N/A",

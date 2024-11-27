@@ -87,7 +87,7 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
       }),
       columnHelper.accessor("industry", {
         header: "Industry",
-        cell: (info) => info.renderValue() || "N/A",
+        cell: (info) =>INDUSTRIES[info.getValue() as "oil_gas"] || info.renderValue() || "N/A",
         meta: {
           classes: "capitalize f-9",
           filterType: "select",
