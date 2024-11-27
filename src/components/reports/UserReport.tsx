@@ -84,6 +84,8 @@ function UserReport() {
         header: "Job title",
         cell: (info) => (info.renderValue() as any)?.title || "N/A",
       }),
+
+      
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => INDUSTRIES[info.getValue() as "oil_gas"] || info.renderValue() || "N/A",
@@ -95,6 +97,10 @@ function UserReport() {
             label: label,
           })),
         },
+      }),
+      columnHelper.accessor("applicationCount", {
+        header: "Applications",
+        cell: (info) => info.renderValue() || "0",
       }),
       columnHelper.accessor("totalExperience", {
         header: "Experience",

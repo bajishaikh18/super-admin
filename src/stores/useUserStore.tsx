@@ -9,6 +9,7 @@ export interface User {
     firstName: string
     lastName: string
     phone: number
+    applicationCount?:number;
     mobile?:string,
     landline?:string,
     industry: string,
