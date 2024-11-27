@@ -139,7 +139,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
       columnHelper.accessor("phone", {
         header: "Mobile No",
         cell: (info) => (
-          <Link href={`/user/${info.renderValue()}`}>{info.renderValue()}</Link>
+          info.renderValue()
         ),
        
       }),

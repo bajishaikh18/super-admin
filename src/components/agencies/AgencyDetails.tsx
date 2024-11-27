@@ -232,7 +232,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                  <h3>Jobs Posted by {name} ({postedJobs})</h3>
                  <div>
                     <Image src={"/share.svg"} width={20} height={20} alt="applications received"/>
-                    <p>Total applications received <Link href="#">{data?.applicationCount}</Link></p>
+                    <p>Total applications received <Link href={`/users/applied/${agencyId}?type=agency`}>{data?.applicationCount}</Link></p>
                  </div>
                 </div>
                 <div className={styles.actionContainer}>

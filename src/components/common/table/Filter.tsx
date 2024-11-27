@@ -255,7 +255,7 @@ export const TableFilter = ({
       <div id="filter-sec">
       <div>
         <div className="filter-icon" onClick={openFilter}>
-          <Image src="./filter.svg" alt="filter" width={12} height={12} />
+          <Image src="/filter.svg" alt="filter" width={12} height={12} />
         </div>
       </div>
       <div className="select-container">

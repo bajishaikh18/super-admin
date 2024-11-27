@@ -67,9 +67,9 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     viewed,
     status,
     description,
+    savedBy,
     amenities,
   } = data?.job || {};
-
   const goBack = () => {
     router.push('/posted-jobs');
   };
@@ -193,7 +193,16 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       height={18}
                       alt="applie"
                     />
-                    Applied by <Link href={""}>{numberofApplications || 0} Candidates</Link>
+                    Applied by <Link href={`/users/applied/${jobId}?type=job`}>{numberofApplications || 0} Candidates</Link>
+                  </li>
+                  <li>
+                    <Image
+                      src={"/applied.svg"}
+                      width={18}
+                      height={18}
+                      alt="applie"
+                    />
+                    Saved by <Link href={`/users/saved/${jobId}?type=job`}>{savedBy || 0} Candidates</Link>
                   </li>
                 </ul>
                 <ul className={styles.footerInfo}>
