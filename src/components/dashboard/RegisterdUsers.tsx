@@ -300,10 +300,8 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
       columnHelper.accessor("adminUserId", {
         header: "User Id",
         cell: (info) => (
-          <Link href={`/user/${info.row.getValue("adminUserId")}`}>
-            {info.renderValue() || "N/A"}
-          </Link>
-        ),
+            info.renderValue()
+       ),
         enableColumnFilter: true,
       }),
       columnHelper.accessor("firstName", {
@@ -313,9 +311,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
       columnHelper.accessor("email", {
         header: "Email Id",
         cell: (info) => (
-          <Link href={`/user/${info.row.getValue("adminUserId")}`}>
-            {info.renderValue() || "N/A"}
-          </Link>
+            info.renderValue() 
         ),
         meta: {
           classes: "px-10",

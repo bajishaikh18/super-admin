@@ -18,7 +18,7 @@ import Image from "next/image";
 import { IMAGE_BASE_URL } from "@/helpers/constants";
 import agencyStyles from "./Agency.module.scss";
 
-const fetchSize = 10;
+const fetchSize = 100;
 
 type AgencyResponse = {
   agencies: AgencyType[],

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Navbar, Nav, NavDropdown, Modal, Badge } from "react-bootstrap";
 import styles from "./Header.module.scss";
@@ -26,6 +26,7 @@ const HIDEPATHS = ["/login", "/reset-password"];
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const ref = useRef<any>(null);
   const [showNotification, setShowNotification] = useState(false);
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
@@ -49,6 +50,15 @@ const Header: React.FC<HeaderProps> = () => {
     setShowCreateAgency(false);
   };
 
+  useEffect(() => {
+    document.addEventListener("mousedown", (e: any) => outsideClose(e));
+    return () => {
+       document.removeEventListener("mousedown", (e: any) =>
+        outsideClose(e)
+       );
+     };
+  }, []);
+  
   useEffect(()=>{
     if(notifications){
       const unread =notifications.filter(x=>!x.dismissed).length;
@@ -56,6 +66,17 @@ const Header: React.FC<HeaderProps> = () => {
       setNotifCount(notifications.length);
     }
   },[notifCount, notifications])
+
+  const outsideClose = (e: any) => {
+    let filterDiv = document.getElementById("notification-menu");
+    if (
+      filterDiv &&
+      !filterDiv?.contains(e.target) &&
+      ref?.current !== undefined
+    ) {
+      setShowNotification(false)
+    }
+  };
 
   if (!role) {
     const tokenDetails = getTokenClaims();
@@ -233,10 +254,10 @@ const Header: React.FC<HeaderProps> = () => {
 
 
           <Nav className={styles.rightNavItems}>
-            <Nav.Link href="javascript:;" onClick={() => {setShowNotification(!showNotification)}} className={styles.notificationTrigger}>
+            <Nav.Link href="javascript:;" id='notification-menu' ref={ref} onClick={() => {setShowNotification(true)}} className={styles.notificationTrigger}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
               {!!unReadCount && <Badge className={styles.notificationBadge}>{unReadCount}</Badge>}
-              {showNotification && <Notifications notifications={notifications} isLoading={isLoading} error={error}/>}
+              {showNotification && <Notifications notifications={notifications} handleClose={() => {setShowNotification(false)}} isLoading={isLoading} error={error}/>}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}

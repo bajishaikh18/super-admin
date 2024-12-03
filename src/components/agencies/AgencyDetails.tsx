@@ -217,7 +217,7 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                       height={16}
                       alt="mail"
                     />
-                    <a href={`${website.includes("http") ? website : `http://${website}`}`}>{website}</a>
+                    <a href={`${website?.includes("http") ? website : `http://${website}`}`}>{website}</a>
 
                   </li>
                 </ul>

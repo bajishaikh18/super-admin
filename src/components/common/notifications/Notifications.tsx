@@ -14,10 +14,12 @@ import { useRouter } from "nextjs-toploader/app";
 export const Notifications = ({
   notifications,
   isLoading,
+  handleClose,
   error,
 }: {
   notifications?: Notification[];
   isLoading: boolean;
+  handleClose: ()=>void
   error: any;
 }) => {
   const queryClient = useQueryClient();
@@ -61,6 +63,7 @@ export const Notifications = ({
         await markAsRead(notification._id);
       } catch (e) {}
       if (notification.data) {
+        handleClose();
         router.push(notification.data);
       }
     },
@@ -71,7 +74,7 @@ export const Notifications = ({
     <div className={styles.notificationPanel}>
       <div className={styles.notificationHeader}>
         <h3>Notifications</h3>
-        <a className={styles.markAllRead} href="#">
+        <a className={styles.markAllRead} href="javascript:;">
           Mark all as read
         </a>
       </div>
