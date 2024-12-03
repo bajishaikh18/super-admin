@@ -95,7 +95,7 @@ const InitialScreen: React.FC<InitialScreenProps> = ({
             <p>Upload Media</p>
         }
         </div>
-        <p className={`${uploadStyles.fileInfo} ${fileRejections.length >0 ? styles.error : ''}`}>
+        <p className={`${uploadStyles.fileInfo} ${fileRejections.length >0 ? uploadStyles.error : ''}`}>
           .jpeg, .jpg & .png are allowed. File size should not exceed 5 MB
         </p>
        
