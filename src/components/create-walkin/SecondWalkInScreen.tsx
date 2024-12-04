@@ -122,8 +122,16 @@ const createWalkInMutation = useMutation({
     setValue(`jobPositions.${index}.deleted`, "true");
     setErrorMessage("");
 
-    setJobPositions((newPositions) => newPositions.filter((_, i) => i !== index));
-    setValue("jobPositions", jobPositions.filter((_, i) => i !== index)); 
+  const newPositions = jobPositions.map((x, i) => {
+      if (i === index) {
+        return {
+          ...x,
+          deleted: "true",
+        };
+      }
+      return x;
+    });
+    setJobPositions((newPositions) => newPositions.filter((_, i) => i !== index));    setValue("jobPositions", jobPositions.filter((_, i) => i !== index)); 
   };
 
   const experienceLevels = [
