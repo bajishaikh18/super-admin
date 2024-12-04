@@ -97,10 +97,10 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     setErrorMessage("");
     const newPositions = [
       ...jobPositions,
-      { title: {value:"",label:""}, experience: "0", salary: "" },
-    ];
-    setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
+       { title: {value:"",label:""}, experience: "0", salary: "" }
+      ];
+      setJobPositions(newPositions);
+      setValue("jobPositions", newPositions); 
   };
 
   const handleRemove = (index: number) => {
@@ -119,8 +119,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       }
       return x;
     });
-    setJobPositions(newPositions);
-    // setGlobalJobPositions(newPositions);
+    setJobPositions((newPositions) => newPositions.filter((_, i) => i !== index));
+    setValue("jobPositions", jobPositions.filter((_, i) => i !== index)); 
   };
 
   const experienceLevels = [
@@ -520,15 +520,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
               Back
             </Button>
             <Button
-              type="submit"
-              className={`action-buttons ${
-                isValid ? "" : styles.disabled
-              }`}
-              disabled={!isValid}
+            type="submit"
+            className={`action-buttons ${
+            isValid ? "" : styles.disabled }`}
+            disabled={!isValid || loading}    
             >
-               {
+            {
             isEdit ? "Edit " : "Create a "
-          }
+            }
               Job
             </Button>
           </div>
