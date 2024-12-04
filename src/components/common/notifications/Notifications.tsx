@@ -1,7 +1,7 @@
 import { truncateText } from "@/helpers/common";
 import styles from "./Notifications.module.scss";
 import { useQueryClient } from "@tanstack/react-query";
-import { updateNotification } from "@/apis/notification";
+import { markNotificationAsRead, updateNotification } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 import { Loader, NotFound } from "../Feedbacks";
 import { DateTime } from "luxon";
@@ -28,9 +28,9 @@ export const Notifications = ({
   const notificationsPrev = notifications?.filter((notif) => notif.dismissed);
 
   const markAsRead = useCallback(
-    async (id: string) => {
+    async (ids: string[]) => {
       try {
-        await updateNotification(id, { dismissed: true });
+        await markNotificationAsRead({ notificationIds: ids });
         await queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey.includes('user-notifications');
@@ -45,22 +45,24 @@ export const Notifications = ({
   );
 
 
-  // const markAllAsRead = useCallback(
-  //   async () => {
-  //     try {
-  //       const ids = notificationsNew?.map(x=>x._id);
-  //       await updateNotification(ids, { dismissed: true });
-  //     } catch {
-  //       toast.error("Something went wrong while marking notification status");
-  //     }
-  //   },
-  //   [notificationsNew]
-  // );
+  const markAllAsRead = useCallback(
+    async () => {
+      try {
+        const ids = notificationsNew?.map(x=>x._id);
+        if(ids){
+          await markAsRead(ids);
+        }
+      } catch {
+        toast.error("Something went wrong while marking notification status");
+      }
+    },
+    [notificationsNew]
+  );
 
   const openNotification = useCallback(
     async (notification: Notification) => {
       try {
-        await markAsRead(notification._id);
+        await markAsRead([notification._id]);
       } catch (e) {}
       if (notification.data) {
         handleClose();
@@ -74,9 +76,12 @@ export const Notifications = ({
     <div className={styles.notificationPanel}>
       <div className={styles.notificationHeader}>
         <h3>Notifications</h3>
-        <a className={styles.markAllRead} href="javascript:;">
+        {
+          notificationsNew && notificationsNew?.length > 0 &&   <a className={styles.markAllRead} onClick={markAllAsRead}>
           Mark all as read
         </a>
+        }
+      
       </div>
       <div className={styles.notificationContentContainer}>
         {isLoading ? (

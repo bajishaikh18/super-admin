@@ -38,6 +38,17 @@ export const updateNotification = async (id:string,data:any) => {
     }
 };
 
+export const markNotificationAsRead = async (data:any) => {
+    try {
+        const response = await apiClient.patch(`${basePath}/markAsRead`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating notifications:", error);
+        throw error; 
+    }
+};
+
+
 export const getNotifications = async (
   start: number,
   fetchSize: number,
