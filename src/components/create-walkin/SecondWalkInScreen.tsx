@@ -109,9 +109,10 @@ const createWalkInMutation = useMutation({
     setErrorMessage("");
     const newPositions = [
       ...jobPositions,
-      { title: {value:"",label:""}, experience: "0", salary: "" },
-    ];
-    setJobPositions(newPositions);
+       { title: {value:"",label:""}, experience: "0", salary: "" }
+      ];
+      setJobPositions(newPositions);
+      setValue("jobPositions", newPositions); 
   };
 
   const handleRemove = (index: number) => {
@@ -121,16 +122,8 @@ const createWalkInMutation = useMutation({
     setValue(`jobPositions.${index}.deleted`, "true");
     setErrorMessage("");
 
-    const newPositions = jobPositions.map((x, i) => {
-      if (i === index) {
-        return {
-          ...x,
-          deleted: "true",
-        };
-      }
-      return x;
-    });
-    setJobPositions(newPositions);
+    setJobPositions((newPositions) => newPositions.filter((_, i) => i !== index));
+    setValue("jobPositions", jobPositions.filter((_, i) => i !== index)); 
   };
 
   const experienceLevels = [
@@ -674,8 +667,8 @@ const createWalkInMutation = useMutation({
               className={`action-buttons ${
                 isValid ? "" : styles.disabled
               }`}
-              disabled={!isValid}
-            >
+              disabled={!isValid || loading}               
+              >
                {
             isEdit ? "Edit " : "Create a "
           }
