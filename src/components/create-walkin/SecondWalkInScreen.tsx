@@ -623,7 +623,7 @@ const createWalkInMutation = useMutation({
                 <Form.Label>Latitude (Optional)</Form.Label>
                 <Form.Control
                 type="text"
-                placeholder="Enter Longitude"
+                placeholder="Enter Latitude"
                 className={styles.input}
                 defaultValue={formData?.latitude}
                 isInvalid={!!errors.latitude}
@@ -653,7 +653,7 @@ const createWalkInMutation = useMutation({
                 message: "Enter a valid numeric longitude"
                },
                validate: (value) =>
-                value === "" || (parseFloat(value) >= -90 && parseFloat(value) <= 90) || "Longitude must be between -180 and 180"
+                value === "" || (parseFloat(value) >= -180 && parseFloat(value) <= 180) || "Longitude must be between -180 and 180"
                })}
               />
           </Form.Group>
