@@ -636,6 +636,9 @@ const createWalkInMutation = useMutation({
                 value === "" || (parseFloat(value) >= -90 && parseFloat(value) <= 90) || "Latitude must be between -90 and 90"
                 })}
               />
+              {errors.latitude && (
+                  <Form.Text className="error">{errors.latitude.message}</Form.Text>
+                )}
           </Form.Group>
             </Col>
             <Col md={6}>
@@ -656,6 +659,9 @@ const createWalkInMutation = useMutation({
                 value === "" || (parseFloat(value) >= -180 && parseFloat(value) <= 180) || "Longitude must be between -180 and 180"
                })}
               />
+              {errors.longitude && (
+                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
+                )}
           </Form.Group>
             </Col>
           </Row>
