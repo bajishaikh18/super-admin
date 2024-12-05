@@ -109,9 +109,10 @@ const createWalkInMutation = useMutation({
     setErrorMessage("");
     const newPositions = [
       ...jobPositions,
-      { title: {value:"",label:""}, experience: "0", salary: "" },
-    ];
-    setJobPositions(newPositions);
+       { title: {value:"",label:""}, experience: "0", salary: "" }
+      ];
+      setJobPositions(newPositions);
+      setValue("jobPositions", newPositions); 
   };
 
   const handleRemove = (index: number) => {
@@ -130,7 +131,7 @@ const createWalkInMutation = useMutation({
       }
       return x;
     });
-    setJobPositions(newPositions);
+    setJobPositions((newPositions) => newPositions.filter((_, i) => i !== index));    setValue("jobPositions", jobPositions.filter((_, i) => i !== index)); 
   };
 
   const experienceLevels = [
@@ -621,34 +622,50 @@ const createWalkInMutation = useMutation({
             <Col md={6}>
               <Form.Group className={styles.formGroup}>
                 <Form.Label>Latitude</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Latitude"
-                  className={styles.input}
-                  defaultValue={formData?.latitude}
-                  isInvalid={!!errors.latitude}
-
-                />
-                {errors.latitude && (
-                  <Form.Text className="error">{errors.latitude.message}</Form.Text>
-                )}
-              </Form.Group>
+              <Form.Control
+                type="text"
+                placeholder="Enter Latitude"
+                className={styles.input}
+                defaultValue={formData?.latitude}
+                isInvalid={!!errors.latitude}
+                {...register("latitude", {
+                required: "Latitude is required",
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric latitude"
+               },
+               validate: (value) =>
+               parseFloat(value) >= -90 && parseFloat(value) <= 90 || "Latitude must be between -90 and 90"
+               })}
+              />
+            {errors.latitude && (
+            <Form.Text className="error">{errors.latitude.message}</Form.Text>
+            )}
+          </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className={styles.formGroup}>
                 <Form.Label>Longitude</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Longitude"
-                  className={styles.input}
-                  defaultValue={formData?.longitude}
-                  isInvalid={!!errors.longitude}
-                
-                />
-                {errors.longitude && (
-                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
-                )}
-              </Form.Group>
+                type="text"
+                placeholder="Enter Longitude"
+                className={styles.input}
+                defaultValue={formData?.longitude}
+                isInvalid={!!errors.longitude}
+                {...register("longitude", {
+                required: "Longitude is required",
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric longitude"
+               },
+               validate: (value) =>
+               parseFloat(value) >= -180 && parseFloat(value) <= 180 || "Longitude must be between -180 and 180"
+               })}
+              />
+            {errors.longitude && (
+            <Form.Text className="error">{errors.longitude.message}</Form.Text>
+            )}
+          </Form.Group>
             </Col>
           </Row>
           <Form.Group className={styles.formGroup}>
@@ -674,8 +691,8 @@ const createWalkInMutation = useMutation({
               className={`action-buttons ${
                 isValid ? "" : styles.disabled
               }`}
-              disabled={!isValid}
-            >
+              disabled={!isValid || loading}               
+              >
                {
             isEdit ? "Edit " : "Create a "
           }
