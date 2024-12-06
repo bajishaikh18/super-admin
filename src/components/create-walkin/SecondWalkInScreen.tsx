@@ -438,11 +438,6 @@ const createWalkInMutation = useMutation({
                           className={styles.input}
                           defaultValue={formData?.jobPositions?.[index]?.salary}
                           {...register(`jobPositions.${index}.salary`, {
-                            validate: (value) => {
-                              if (!value) return true; 
-                              const isValidNumeric = /^\d+(-\d+)?$/.test(value); 
-                              return isValidNumeric || "Salary must be a valid number";
-                            },
                           })}
                         />
                       </td>
