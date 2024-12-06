@@ -631,35 +631,49 @@ const createWalkInMutation = useMutation({
         <Row>
             <Col md={6}>
               <Form.Group className={styles.formGroup}>
-                <Form.Label>Latitude</Form.Label>
+                <Form.Label>Latitude (Optional)</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Latitude"
-                  className={styles.input}
-                  defaultValue={formData?.latitude}
-                  isInvalid={!!errors.latitude}
-
-                />
-                {errors.latitude && (
+                type="text"
+                placeholder="Enter Latitude"
+                className={styles.input}
+                defaultValue={formData?.latitude}
+                isInvalid={!!errors.latitude}
+                {...register("latitude", {
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric latitude"
+                },
+                validate: (value) =>
+                value === "" || (parseFloat(value) >= -90 && parseFloat(value) <= 90) || "Latitude must be between -90 and 90"
+                })}
+              />
+              {errors.latitude && (
                   <Form.Text className="error">{errors.latitude.message}</Form.Text>
                 )}
-              </Form.Group>
+          </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className={styles.formGroup}>
-                <Form.Label>Longitude</Form.Label>
+                <Form.Label>Longitude (Optional)</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Longitude"
-                  className={styles.input}
-                  defaultValue={formData?.longitude}
-                  isInvalid={!!errors.longitude}
-                
-                />
-                {errors.longitude && (
+                type="text"
+                placeholder="Enter Longitude"
+                className={styles.input}
+                defaultValue={formData?.longitude}
+                isInvalid={!!errors.longitude}
+                {...register("longitude", {
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric longitude"
+               },
+               validate: (value) =>
+                value === "" || (parseFloat(value) >= -180 && parseFloat(value) <= 180) || "Longitude must be between -180 and 180"
+               })}
+              />
+              {errors.longitude && (
                   <Form.Text className="error">{errors.longitude.message}</Form.Text>
                 )}
-              </Form.Group>
+          </Form.Group>
             </Col>
           </Row>
           <Form.Group className={styles.formGroup}>
@@ -685,12 +699,12 @@ const createWalkInMutation = useMutation({
               className={`action-buttons ${
                 isValid ? "" : styles.disabled
               }`}
-              disabled={!isValid}
-            >
+              disabled={!isValid || loading}               
+              >
                {
             isEdit ? "Edit " : "Create a "
           }
-              Walkin
+             Walkin
             </Button>
           </div>
         </Form>
