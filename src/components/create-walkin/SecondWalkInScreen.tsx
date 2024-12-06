@@ -115,6 +115,15 @@ const createWalkInMutation = useMutation({
   };
 
   const handleRemove = (index: number) => {
+    if(index === jobPositions.length-1){
+      const pos = jobPositions.slice(0,-1);
+      setJobPositions(pos);
+      unregister(`jobPositions.${index}.title`);
+      unregister(`jobPositions.${index}.experience`);
+      unregister(`jobPositions.${index}.salary`);
+      unregister(`jobPositions.${index}.deleted`);
+    }else{
+
     setValue(`jobPositions.${index}.title`, {"value":"","label":""});
     setValue(`jobPositions.${index}.experience`, "");
     setValue(`jobPositions.${index}.salary`, "");
@@ -131,7 +140,8 @@ const createWalkInMutation = useMutation({
       return x;
     });
     setJobPositions(newPositions);
-    };
+    }
+  };
 
   const experienceLevels = [
     { value: "0", label: "0 Years" },
@@ -146,6 +156,7 @@ const createWalkInMutation = useMutation({
     getValues,
     control,
     setValue,
+    unregister,
     watch,
     reset,
     formState: { errors,isValid },
@@ -369,7 +380,7 @@ const createWalkInMutation = useMutation({
               </thead>
               <tbody>
                 {jobPositions.map((position, index) => {
-                  if (position.deleted) {
+                  if (position?.deleted) {
                     return null;
                   }
                   return (

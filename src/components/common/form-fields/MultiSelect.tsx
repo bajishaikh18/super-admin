@@ -153,6 +153,7 @@ export const MultiSelectAsync = ({
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
             placeholder={placeHolder || "Select..."}
+            noOptionsMessage={() => null}
             theme={(theme) => ({
               ...theme,
               borderRadius: 0,

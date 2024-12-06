@@ -104,22 +104,30 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   };
 
   const handleRemove = (index: number) => {
-    setValue(`jobPositions.${index}.title`, {"value":"","label":""});
-    setValue(`jobPositions.${index}.experience`, "");
-    setValue(`jobPositions.${index}.salary`, "");
-    setValue(`jobPositions.${index}.deleted`, "true");
     setErrorMessage("");
-
-    const newPositions = jobPositions.map((x, i) => {
-      if (i === index) {
-        return {
-          ...x,
-          deleted: "true",
-        };
-      }
-      return x;
-    });
-    setJobPositions(newPositions);
+    if(index === jobPositions.length-1){
+      const pos = jobPositions.slice(0,-1);
+      setJobPositions(pos);
+      unregister(`jobPositions.${index}.title`);
+      unregister(`jobPositions.${index}.experience`);
+      unregister(`jobPositions.${index}.salary`);
+      unregister(`jobPositions.${index}.deleted`);
+    }else{
+      setValue(`jobPositions.${index}.title`, {"value":"","label":""});
+      setValue(`jobPositions.${index}.experience`, "");
+      setValue(`jobPositions.${index}.salary`, "");
+      setValue(`jobPositions.${index}.deleted`, "true");
+      const newPositions = jobPositions.map((x, i) => {
+        if (i === index) {
+          return {
+            ...x,
+            deleted: "true",
+          };
+        }
+        return x;
+      });
+      setJobPositions(newPositions);
+    }
     // setGlobalJobPositions(newPositions);
   };
 
@@ -136,6 +144,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     getValues,
     control,
     setValue,
+    unregister,
     reset,
     formState: { errors,isValid },
   } = useForm<FormValues>({
@@ -320,7 +329,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                 </thead>
                 <tbody>
                   {jobPositions.map((position, index) => {
-                    if (position.deleted) {
+                    if (position?.deleted) {
                       return null;
                     }
                     return (
