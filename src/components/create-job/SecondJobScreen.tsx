@@ -323,7 +323,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                   <tr>
                     <th className="w-50">Job Title</th>
                     <th className="w-30">Exp Required</th>
-                    <th className="w-20">Salary</th>
+                    <th className="w-20">Salary (Optional)</th>
                     <th></th>
                   </tr>
                 </thead>
