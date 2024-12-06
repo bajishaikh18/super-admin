@@ -381,19 +381,14 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
                           />
                         </td>
                         <td>
-                          <Form.Control
-                            type="text"
-                            placeholder="0-0"
-                            className={styles.input}
-                            defaultValue={formData?.jobPositions?.[index]?.salary}
-                            {...register(`jobPositions.${index}.salary`, {
-                              validate: (value) => {
-                                if (!value) return true; 
-                                const isValidNumeric = /^\d+(-\d+)?$/.test(value); 
-                                return isValidNumeric || "Salary must be a valid number";
-                              },
-                            })}
-                          />
+                        <Form.Control
+                          type="text"
+                          placeholder="0-0"
+                          className={styles.input}
+                          defaultValue={formData?.jobPositions?.[index]?.salary}
+                          {...register(`jobPositions.${index}.salary`, {
+                          })}
+                        />
                         </td>
                         <td>
                           {index != 0 && (
