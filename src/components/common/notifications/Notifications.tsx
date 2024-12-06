@@ -146,7 +146,8 @@ export const Notifications = ({
                           {truncateText(notification.description, 30)}
                         </p>
                       </div>
-                      <time className={styles.notificationTime}>2 mins</time>
+                      <time className={styles.notificationTime}>                        {DateTime.fromISO(notification.createdAt).toRelative()}
+                      </time>
                     </div>
                   </div>
                 );
