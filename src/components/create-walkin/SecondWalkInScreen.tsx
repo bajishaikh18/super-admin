@@ -374,7 +374,7 @@ const createWalkInMutation = useMutation({
                 <tr>
                   <th className="w-50">Job Title</th>
                   <th className="w-30">Exp Required</th>
-                  <th className="w-20">Salary</th>
+                  <th className="w-20">Salary (Optional)</th>
                   <th></th>
                 </tr>
               </thead>
@@ -437,7 +437,8 @@ const createWalkInMutation = useMutation({
                           placeholder="0-0"
                           className={styles.input}
                           defaultValue={formData?.jobPositions?.[index]?.salary}
-                          {...register(`jobPositions.${index}.salary`, {})}
+                          {...register(`jobPositions.${index}.salary`, {
+                          })}
                         />
                       </td>
                       <td>
