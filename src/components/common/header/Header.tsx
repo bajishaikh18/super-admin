@@ -257,7 +257,7 @@ const Header: React.FC<HeaderProps> = () => {
             <Nav.Link href="javascript:;" id='notification-menu' ref={ref} onClick={() => {setShowNotification(true)}} className={styles.notificationTrigger}>
               <Image src="/bell.png" alt="bell" width={16} height={19} />
               {!!unReadCount && <Badge className={styles.notificationBadge}>{unReadCount}</Badge>}
-              {showNotification && <Notifications notifications={notifications} handleClose={() => {setShowNotification(false)}} isLoading={isLoading} error={error}/>}
+              {showNotification && <Notifications notifications={notifications} handleClose={(e) => {e.stopPropagation();setShowNotification(false)}} isLoading={isLoading} error={error}/>}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}

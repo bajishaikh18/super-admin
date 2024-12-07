@@ -19,7 +19,7 @@ export const Notifications = ({
 }: {
   notifications?: Notification[];
   isLoading: boolean;
-  handleClose: ()=>void
+  handleClose: (e:any)=>void
   error: any;
 }) => {
   const queryClient = useQueryClient();
@@ -60,18 +60,22 @@ export const Notifications = ({
   );
 
   const openNotification = useCallback(
-    async (notification: Notification) => {
+    async (notification: Notification,e:any) => {
       try {
         await markAsRead([notification._id]);
       } catch (e) {}
       if (notification.data) {
-        handleClose();
+        handleClose(e);
         router.push(notification.data);
       }
     },
     [markAsRead]
   );
 
+  const openCustomNotificaion = useCallback((e:any)=>{
+    handleClose(e);
+    router.push("/notifications")
+  },[])
   return (
     <div className={styles.notificationPanel}>
       <div className={styles.notificationHeader}>
@@ -96,9 +100,9 @@ export const Notifications = ({
                   {notificationsNew && notificationsNew?.length > 0 && (
                     <h4>New ({notificationsNew.length})</h4>
                   )}
-                  <Link href="/notifications">
+                  <a  onClick={openCustomNotificaion}>
                     <FaPlus fontSize={12} /> Create custom
-                  </Link>
+                  </a>
                 </div>
               }
               {notificationsNew?.map((notification) => {
@@ -106,7 +110,7 @@ export const Notifications = ({
                   <div
                     key={notification._id}
                     className={styles.notificationItem}
-                    onClick={() => openNotification(notification)}
+                    onClick={(e) => openNotification(notification,e)}
                   >
                     <div className={styles.notificationContent}>
                       <div>
@@ -137,7 +141,7 @@ export const Notifications = ({
                   <div
                   key={notification._id}
                     className={styles.notificationItem}
-                    onClick={() => openNotification(notification)}
+                    onClick={(e) => openNotification(notification,e)}
                   >
                     <div className={styles.notificationContent}>
                       <div>

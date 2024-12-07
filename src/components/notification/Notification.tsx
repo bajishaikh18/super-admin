@@ -76,6 +76,9 @@ const Notification: React.FC = () => {
         header: "Target",
         cell: (info) =>
           info.getValue()?.length > 0 ? info.getValue().join(",") : "N/A",
+        meta: {
+          classes: "capitalize"
+        }
       }),
       columnHelper.accessor("createdAt", {
         header: "Created Date",
