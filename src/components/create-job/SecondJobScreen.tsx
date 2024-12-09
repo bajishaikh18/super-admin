@@ -137,8 +137,8 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     const start = i * rangeStep;
     const end = start + rangeStep;
     yearsOfExperience.push({
-      value: `${start}-${end}`,
-      label: `${start}-${end} Years`,
+      value: `${start},${end}`,
+      label: `${start},${end} Years`,
     });
   }
   

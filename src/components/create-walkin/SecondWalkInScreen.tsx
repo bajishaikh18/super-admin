@@ -149,8 +149,8 @@ for (let i = 0; i < 10; i++) {
   const start = i * rangeStep;
   const end = start + rangeStep;
   yearsOfExperience.push({
-    value: `${start}-${end}`,
-    label: `${start}-${end} Years`,
+    value: `${start},${end}`,
+    label: `${start},${end} Years`,
   });
 }
 
