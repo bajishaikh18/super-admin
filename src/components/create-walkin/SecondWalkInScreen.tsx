@@ -143,12 +143,19 @@ const createWalkInMutation = useMutation({
     }
   };
 
-  const experienceLevels = [
-    { value: "0", label: "0 Years" },
-    { value: "1", label: "0-1 Year" },
-    { value: "2", label: "1-2 Years" },
-    { value: "3", label: "3-4 Years" },
-  ];
+  const yearsOfExperience: any = [];
+const rangeStep = 10; 
+for (let i = 0; i < 10; i++) {
+  const start = i * rangeStep;
+  const end = start + rangeStep;
+  yearsOfExperience.push({
+    value: `${start}-${end}`,
+    label: `${start}-${end} Years`,
+  });
+}
+
+
+
 
   const {
     register,
@@ -414,7 +421,7 @@ const createWalkInMutation = useMutation({
                           control={control}
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.experience`]}
-                          options={experienceLevels}
+                          options={yearsOfExperience}
                           defaultValue={
                             formData?.jobPositions?.[index]?.experience
                           }
