@@ -143,11 +143,9 @@ const createWalkInMutation = useMutation({
     setJobPositions(newPositions);
     }
   };
-
-  const rangeStep = 10;
-  const steps = 10;
+  const rangeStep = 1;  
+  const steps = 11;  
   const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
-
 
 
 

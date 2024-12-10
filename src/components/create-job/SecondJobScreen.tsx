@@ -131,9 +131,9 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     // setGlobalJobPositions(newPositions);
   };
 
-const rangeStep = 10;
-const steps = 10;
-const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
+  const rangeStep = 1;  
+  const steps = 11;  
+  const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
 
 
  
