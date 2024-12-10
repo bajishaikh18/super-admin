@@ -11,6 +11,7 @@ import {
   COUNTRIES,
   FACILITIES_IMAGES,
   IMAGE_BASE_URL,
+  YEARS_OF_EXPERIENCE_LABELS,
 } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
@@ -139,7 +140,7 @@ const WalkInPostingImage = ({
                               backgroundColor: "#ffffff",
                             }}
                           >
-                            {position.experience} years Exp
+                            {YEARS_OF_EXPERIENCE_LABELS?.find(yoe=>yoe?.value == position?.experience)?.label}
                           </td>
                           <td
                             style={{
@@ -435,6 +436,9 @@ const WalkInPostingImage = ({
                     >
                       {formData?.countryCode}
                       {formData?.contactNumber}{" "}
+                      {
+                        formData?.altContactNumber && <> 
+                      
                       <span
                         style={{
                           fontWeight: 400,
@@ -446,6 +450,8 @@ const WalkInPostingImage = ({
                       </span>{" "}
                       {formData?.altCountryCode}
                       {formData?.altContactNumber}
+                        </>
+                      }
                     </p>
                   </div>
                   <div

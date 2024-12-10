@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import html2canvas from "html2canvas";
 import styles from "./CreateJob.module.scss";
 import Image from "next/image";
-import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai";
 import usePostJobStore, { PostJobFormData } from "@/stores/usePostJobStore";
-import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
+import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
-import { createJob, updateJob } from "@/apis/job";
+import { updateJob } from "@/apis/job";
 import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
@@ -129,7 +129,7 @@ const JobPostingImage = ({
                             backgroundColor: "#ffffff",
                           }}
                         >
-                          {position.experience} years Exp
+                          {YEARS_OF_EXPERIENCE_LABELS?.find(yoe=>yoe?.value == position?.experience)?.label}
                         </td>
                         <td
                           style={{
@@ -357,7 +357,8 @@ const JobPostingImage = ({
                     >
                       {formData?.countryCode}
                       {formData?.contactNumber}{" "}
-                      <span
+                      {
+                        formData?.altContactNumber && <> <span
                         style={{
                           fontWeight: 400,
                           color: "rgba(189, 189, 189, 1)",
@@ -367,7 +368,9 @@ const JobPostingImage = ({
                         |
                       </span>{" "}
                       {formData?.altCountryCode}
-                      {formData?.altContactNumber}
+                      {formData?.altContactNumber}</>
+                      }
+                     
                     </p>
                   </div>
                   <div

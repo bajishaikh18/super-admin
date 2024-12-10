@@ -1,3 +1,5 @@
+import { generateExperienceRanges } from "./experience";
+
 // export const BASE_URL = 'https://ec2-3-110-104-29.ap-south-1.compute.amazonaws.com:3030';
 export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -45,7 +47,7 @@ export const ROLE = {
   user: 4,
 };
 
-
+export const YEARS_OF_EXPERIENCE_LABELS = generateExperienceRanges(1,10);
 export const DURATION_OPTIONS: {
   value: string;
   label: string;
