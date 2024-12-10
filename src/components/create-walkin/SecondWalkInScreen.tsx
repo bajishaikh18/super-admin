@@ -13,6 +13,7 @@ import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
+import { generateExperienceRanges } from"@/helpers//experience";
 import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
 import { DateTime } from "luxon";
 import {
@@ -142,13 +143,11 @@ const createWalkInMutation = useMutation({
     setJobPositions(newPositions);
     }
   };
+  const rangeStep = 1;  
+  const steps = 11;  
+  const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
 
-  const experienceLevels = [
-    { value: "0", label: "0 Years" },
-    { value: "1", label: "0-1 Year" },
-    { value: "2", label: "1-2 Years" },
-    { value: "3", label: "3-4 Years" },
-  ];
+
 
   const {
     register,
@@ -414,7 +413,7 @@ const createWalkInMutation = useMutation({
                           control={control}
                           // @ts-ignore
                           error={errors[`jobPositions.${index}.experience`]}
-                          options={experienceLevels}
+                          options={yearsOfExperience}
                           defaultValue={
                             formData?.jobPositions?.[index]?.experience
                           }
