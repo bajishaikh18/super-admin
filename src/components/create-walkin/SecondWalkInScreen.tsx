@@ -13,6 +13,7 @@ import { COUNTRIES } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
+import { generateExperienceRanges } from"@/helpers//experience";
 import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
 import { DateTime } from "luxon";
 import {
@@ -143,16 +144,9 @@ const createWalkInMutation = useMutation({
     }
   };
 
-  const yearsOfExperience: any = [];
-const rangeStep = 10; 
-for (let i = 0; i < 10; i++) {
-  const start = i * rangeStep;
-  const end = start + rangeStep;
-  yearsOfExperience.push({
-    value: `${start},${end}`,
-    label: `${start},${end} Years`,
-  });
-}
+  const rangeStep = 10;
+  const steps = 10;
+  const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
 
 
 

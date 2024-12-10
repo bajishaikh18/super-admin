@@ -15,7 +15,7 @@ import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
 import { UploadPositions } from "../common/UploadPositions";
 import { FaPlus } from "react-icons/fa6";
-
+import { generateExperienceRanges } from"@/helpers//experience";
 interface JobPosition {
   title: {
     value:string,
@@ -131,17 +131,11 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
     // setGlobalJobPositions(newPositions);
   };
 
-  const yearsOfExperience: any = [];
-  const rangeStep = 10; 
-   for (let i = 0; i < 10; i++) {
-    const start = i * rangeStep;
-    const end = start + rangeStep;
-    yearsOfExperience.push({
-      value: `${start},${end}`,
-      label: `${start},${end} Years`,
-    });
-  }
-  
+const rangeStep = 10;
+const steps = 10;
+const yearsOfExperience = generateExperienceRanges(rangeStep, steps);
+
+
  
 
   const {
