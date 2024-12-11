@@ -271,7 +271,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
           )}
         </Form.Group>
         <Form.Group className={styles.formGroup}>
-          <Form.Label>Website</Form.Label>
+          <Form.Label>Website (Optional)</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter website"
@@ -279,7 +279,6 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
             defaultValue={formData?.website}
             isInvalid={!!errors.website}
             {...register("website", {
-              required: "Website is required",
               pattern: {
                 value:
                   /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi,

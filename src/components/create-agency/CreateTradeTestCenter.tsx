@@ -2,12 +2,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
-import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
-import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
-import CreateAgencyScreen from "./CreateAgencyScreen";
+import { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
 
 
-function CreateAgency({
+function CreateTradeTestCenter({
   handleModalClose,
   agencyDetails,
 }: {
@@ -51,35 +49,10 @@ function CreateAgency({
   };
   return (
     <div className={styles.modalContainer}>
-      {
-        {
-          0: (
-            <InitialAgencyScreen
-              isEdit={isEdit}
-              handleFileChange={handleFileChange}
-              fileInputRef={fileInputRef}
-              selectedFile={selectedFile}
-              handleClose={handleClose}
-              handleCreateNowClick={() => {
-                setScreen(1);
-              }}
-            />
-          ),
-          1: (
-            <CreateAgencyScreen
-              isEdit={isEdit}
-              handleClose={handleClose}
-              handleContinueClick={() => {
-                reset();
-                handleClose();
-              }}
-              handleBackToPostJobClick={() => setScreen(0)}
-            />
-          ),
-        }[screen]
-      }
+           Trade test center
+         
     </div>
   );
 }
 
-export default CreateAgency;
+export default CreateTradeTestCenter;

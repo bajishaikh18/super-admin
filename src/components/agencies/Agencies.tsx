@@ -1,14 +1,11 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import useAgencyStore, { AgencyType } from "@/stores/useAgencyStore";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
-import {
-  useInfiniteQuery,
-  keepPreviousData,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import Link from "next/link";
 import { DataTable } from "../common/table/DataTable";
 import { DateTime } from "luxon";
@@ -17,53 +14,104 @@ import { getAgencies } from "@/apis/agency";
 import Image from "next/image";
 import { IMAGE_BASE_URL } from "@/helpers/constants";
 import agencyStyles from "./Agency.module.scss";
+import { getTradeTestCenters } from "@/apis/trade-test-center";
+import { INDIAN_STATES } from "@/helpers/stateList";
+import CreateTradeTestCenter from "../create-agency/CreateTradeTestCenter";
 
 const fetchSize = 100;
 
 type AgencyResponse = {
-  agencies: AgencyType[],
-  totalCount: number
-}
+  agencies: AgencyType[];
+  totalCount: number;
+};
+type TabType = "agency" | "trade";
 const Agencies: React.FC = () => {
   const [field, setField] = useState<SelectOption>({
     value: "agencyId",
     label: "Agency Id",
   } as SelectOption);
+  const [tradeField, setTradeField] = useState<SelectOption>({
+    value: "tradeId",
+    label: "Trade Test Center Id",
+  } as SelectOption);
   const [search, setSearch] = React.useState<string>("");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const debouncedSearchTerm = useDebounce(search, 300);
+  const [tradeSearch, setTradeSearch] = React.useState<string>("");
+  const [activeTab, setActiveTab] = useState<TabType>("agency");
 
-  const { data, fetchNextPage, isFetching, isLoading } = useInfiniteQuery<
-  AgencyResponse
-  >({
-    queryKey: ["agencies", search, field, debouncedSearchTerm],
-    queryFn: async ({ pageParam = 0 }) => {
-      const start = pageParam as number;
-      const fetchedData = await getAgencies('all',start,fetchSize,field.value,search);
-      return fetchedData;
-    },
-    retry: 3,
-    initialPageParam: 0,
-    staleTime: 0,
-    getNextPageParam: (_lastGroup, groups) => groups.length,
-    refetchOnMount: true,
-    placeholderData: keepPreviousData,
-  });
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [tradeSorting, tradeSetSorting] = React.useState<SortingState>([]);
+  const [showCreateTrade,setShowCreateTrade] = useState(false);
+  const debouncedSearchTerm = useDebounce(search, 300);
+  const debouncedTradeSearchTerm = useDebounce(tradeSearch, 300);
+
+  const { data, fetchNextPage, isFetching, isLoading } =
+    useInfiniteQuery<AgencyResponse>({
+      queryKey: ["agencies", search, field, debouncedSearchTerm],
+      queryFn: async ({ pageParam = 0 }) => {
+        const start = pageParam as number;
+        const fetchedData = await getAgencies(
+          "all",
+          start,
+          fetchSize,
+          field.value,
+          search
+        );
+        return fetchedData;
+      },
+      retry: 3,
+      initialPageParam: 0,
+      staleTime: 0,
+      getNextPageParam: (_lastGroup, groups) => groups.length,
+      refetchOnMount: true,
+      placeholderData: keepPreviousData,
+    });
+    const { data:tradeData, fetchNextPage:tradeFetchNextPage, isFetching:tradeIsFetching, isLoading:tradeIsLoading } =
+    useInfiniteQuery<AgencyResponse>({
+      queryKey: ["testCenters", tradeSearch, tradeField, debouncedTradeSearchTerm],
+      queryFn: async ({ pageParam = 0 }) => {
+        const start = pageParam as number;
+        const fetchedData = await getTradeTestCenters(
+          "all",
+          start,
+          fetchSize,
+          tradeField.value,
+          tradeSearch
+        );
+        return fetchedData;
+      },
+      retry: 3,
+      initialPageParam: 0,
+      staleTime: 0,
+      getNextPageParam: (_lastGroup, groups) => groups.length,
+      refetchOnMount: true,
+      placeholderData: keepPreviousData,
+    });
+
   const flatData = React.useMemo(
     () => data?.pages?.flatMap((page: any) => page?.agencies) ?? [],
     [data]
   );
+
   const totalCount = data?.pages?.[0]?.totalCount || 0;
-  console.log(totalCount)
+
+  const tradeFlatData = React.useMemo(
+    () => tradeData?.pages?.flatMap((page: any) => page?.trades) ?? [],
+    [tradeData]
+  );
+
+  const tradeTotalCount = tradeData?.pages?.[0]?.totalCount || 0;
+
   const columnHelper = createColumnHelper<AgencyType>();
   const columns = useMemo(
     () => [
       columnHelper.accessor("agencyId", {
         header: "Agency#",
         cell: (info) => {
-          return <Link href={`/agency/${info.renderValue()}`}>
-            {info.renderValue()}
-          </Link>;
+          return (
+            <Link href={`/agency/${info.renderValue()}`}>
+              {info.renderValue()}
+            </Link>
+          );
         },
         meta: {
           classes: "f-3",
@@ -72,22 +120,27 @@ const Agencies: React.FC = () => {
       columnHelper.accessor("name", {
         header: "Agency Name",
         cell: (info) => {
-          return <div className={agencyStyles.tableAgencyName}>
-           <Image
-              src={`${info.row.original.profilePic ? `${IMAGE_BASE_URL}/${info.row.original.profilePic}`: '/no_image.jpg'}`}
-              width={24}
-              height={24}
-              alt="agency-logo"
-            />
+          return (
+            <div className={agencyStyles.tableAgencyName}>
+              <Image
+                src={`${
+                  info.row.original.profilePic
+                    ? `${IMAGE_BASE_URL}/${info.row.original.profilePic}`
+                    : "/no_image.jpg"
+                }`}
+                width={24}
+                height={24}
+                alt="agency-logo"
+              />
               {info.renderValue() || "N/A"}
-          </div>
-        }
-       ,
+            </div>
+          );
+        },
       }),
       columnHelper.accessor("email", {
         header: "Email",
         cell: (info) => {
-          return  info.renderValue() || "N/A"
+          return info.renderValue() || "N/A";
         },
       }),
       columnHelper.accessor("phone", {
@@ -99,7 +152,7 @@ const Agencies: React.FC = () => {
       }),
       columnHelper.accessor("postedJobs", {
         header: "Job Posts",
-        cell: (info) => info.renderValue()  || 0,
+        cell: (info) => info.renderValue() || 0,
         meta: {
           classes: "f-5",
         },
@@ -110,9 +163,9 @@ const Agencies: React.FC = () => {
       }),
       columnHelper.accessor("approved", {
         header: "MEA Approved",
-        cell: (info) => info.renderValue() ? <span className="success">Approved</span> : "",
-        meta: { filter: false,classes: "f-5"
-        },
+        cell: (info) =>
+          info.renderValue() ? <span className="success">Approved</span> : "",
+        meta: { filter: false, classes: "f-5" },
       }),
       columnHelper.accessor("createdAt", {
         header: "Created Date",
@@ -120,7 +173,7 @@ const Agencies: React.FC = () => {
           info.renderValue()
             ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
             : "N/A",
-        meta: { filterType: "date",classes:'f-5' },
+        meta: { filterType: "date", classes: "f-5" },
       }),
       columnHelper.accessor("status", {
         header: "Status",
@@ -133,12 +186,73 @@ const Agencies: React.FC = () => {
             <div className="status-cont">{info.renderValue() || "N/A"}</div>
           );
         },
-        
-      })
+      }),
     ],
     []
   );
-  const {setShowCreateAgency} = useAgencyStore();
+  const tradeTestCenterColumn = useMemo(
+    () => [
+      columnHelper.accessor("tradeId", {
+        header: "Trade #",
+        cell: (info) => {
+          return info.renderValue();
+        },
+        meta: {
+          classes: "f-3",
+        },
+      }),
+      columnHelper.accessor("name", {
+        header: "Trade Test Center Name",
+        cell: (info) => {
+          return (
+            <div className={agencyStyles.tableAgencyName}>
+              {info.renderValue() || "N/A"}
+            </div>
+          );
+        },
+      }),
+     
+
+      columnHelper.accessor("address", {
+        header: "Address",
+        cell: (info) => info.renderValue() || "N/A",
+      }),
+      columnHelper.accessor("state", {
+        header: "State",
+        cell: (info) =>
+          INDIAN_STATES.find((state) => state.state_code === info.getValue()?.toUpperCase())
+            ?.name ||
+          info.renderValue() ||
+          "N/A",
+        meta: {
+          classes: "f-4",
+          filterType: "select",
+          selectOptions: INDIAN_STATES.map((val) => ({
+            label: val.name,
+            value: val.state_code,
+          })),
+        },
+      }),
+      columnHelper.accessor("city", {
+        header: "City",
+        cell: (info) => info.renderValue(),
+        meta: { classes: "f-5" },
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "Created Date",
+        cell: (info) =>
+          info.renderValue()
+            ? DateTime.fromISO(info.renderValue()!).toFormat("dd MMM yyyy")
+            : "N/A",
+        meta: { filterType: "date", classes: "f-5" },
+      }),
+    ],
+    []
+  );
+  const { setShowCreateAgency } = useAgencyStore();
+  const handleTabClick = (tab: TabType) => {
+    setActiveTab(tab);
+  };
 
   return (
     <main className="main-section">
@@ -146,33 +260,108 @@ const Agencies: React.FC = () => {
         <div className="page-title">
           <h3 className="section-heading">Registered Agencies</h3>
           <div className="filter-container">
-            <TableFilter
-              search={search}
-              field={field}
-              handleChange={(e) => setSearch(e)}
-              handleFilterChange={(newField) => setField(newField)}
-              columnsHeaders={columns}
-            />
-            <Button className="btn-img" onClick={()=>setShowCreateAgency(true)}>
+            {
+              {
+                agency: (
+                  <> <TableFilter
+                  search={search}
+                  field={field}
+                  handleChange={(e) => setSearch(e)}
+                  handleFilterChange={(newField) => setField(newField)}
+                  columnsHeaders={columns}
+                />
+                      <Button
+              className="btn-img"
+              onClick={() => setShowCreateAgency(true)}
+            >
               + Create Agency
             </Button>
+                  </>
+                 
+                ),
+                trade: (
+                  <>
+                  <TableFilter
+                    search={tradeSearch}
+                    field={tradeField}
+                    handleChange={(e) => setTradeSearch(e)}
+                    handleFilterChange={(newField) => setTradeField(newField)}
+                    columnsHeaders={tradeTestCenterColumn}
+                  />
+                   <Button
+              className="btn-img"
+              onClick={() => setShowCreateTrade(true)}
+            >
+              + Create Trade Test Center
+            </Button>
+            <Modal show={showCreateTrade} onHide={()=>setShowCreateTrade(false)} centered backdrop="static">
+              <CreateTradeTestCenter handleModalClose={()=>setShowCreateTrade(false)} />
+            </Modal>
+                  </>
+                ),
+              }[activeTab]
+            }
+
+          
           </div>
         </div>
         <Card>
-          <DataTable
-            totalCount={totalCount}
-            columns={columns}
-            sorting={sorting}
-            sortingChanged={(updater: any) => {
-              setSorting(updater);
-            }}
-            data={flatData}
-            tableHeight={"75vh"}
-            isSearch={!!search}
-            fetchNextPage={fetchNextPage}
-            isLoading={isLoading}
-            isFetching={isFetching}
-          />
+          <div className={"header-row"}>
+            <div className={"tab-container"}>
+              <button
+                className={`tab-button ${
+                  activeTab === "agency" ? "active" : ""
+                }`}
+                onClick={() => handleTabClick("agency")}
+              >
+                Agencies ({totalCount || 0})
+              </button>
+              <button
+                className={`tab-button ${
+                  activeTab === "trade" ? "active" : ""
+                }`}
+                onClick={() => handleTabClick("trade")}
+              >
+                Trade Test Centers ({tradeTotalCount || 0})
+              </button>
+            </div>
+          </div>
+          {
+            {
+              agency: (
+                <DataTable
+                  totalCount={totalCount}
+                  columns={columns}
+                  sorting={sorting}
+                  sortingChanged={(updater: any) => {
+                    setSorting(updater);
+                  }}
+                  data={flatData}
+                  tableHeight={"75vh"}
+                  isSearch={!!search}
+                  fetchNextPage={fetchNextPage}
+                  isLoading={isLoading}
+                  isFetching={isFetching}
+                />
+              ),
+              trade: (
+                <DataTable
+                  totalCount={tradeTotalCount}
+                  columns={tradeTestCenterColumn}
+                  sorting={tradeSorting}
+                  sortingChanged={(updater: any) => {
+                    tradeSetSorting(updater);
+                  }}
+                  data={tradeFlatData}
+                  tableHeight={"75vh"}
+                  isSearch={!!tradeSearch}
+                  fetchNextPage={tradeFetchNextPage}
+                  isLoading={tradeIsLoading}
+                  isFetching={tradeIsFetching}
+                />
+              ),
+            }[activeTab]
+          }
         </Card>
       </div>
     </main>

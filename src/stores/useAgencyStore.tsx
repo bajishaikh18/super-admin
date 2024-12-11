@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export type AgencyType = {
   _id: string;
+  tradeId?:string;
   name: string;
   regNo: string;
   agencyId: string;
