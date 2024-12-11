@@ -148,6 +148,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
                   className={styles.input}
                   {...register("firstName", {
                     required: "First name is required",
+                    pattern: {
+                      value: /^[A-Za-z\s]+$/,
+                      message: 'Only alphabetical characters are allowed',
+                    },
                     onChange: () => trigger("firstName"),
                   })}
                 />
@@ -168,6 +172,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onCancel }) => {
                   className={styles.input}
                   {...register("lastName", {
                     required: "Last name is required",
+                    pattern: {
+                      value: /^[A-Za-z\s]+$/,
+                      message: 'Only alphabetical characters are allowed',
+                    },
                     onChange: () => trigger("lastName"),
                   })}
                 />
