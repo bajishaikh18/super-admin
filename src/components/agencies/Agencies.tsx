@@ -86,7 +86,8 @@ const Agencies: React.FC = () => {
       refetchOnMount: true,
       placeholderData: keepPreviousData,
     });
-
+   
+  
   const flatData = React.useMemo(
     () => data?.pages?.flatMap((page: any) => page?.agencies) ?? [],
     [data]
@@ -191,6 +192,7 @@ const Agencies: React.FC = () => {
     []
   );
   const tradeTestCenterColumn = useMemo(
+  
     () => [
       columnHelper.accessor("tradeId", {
         header: "Trade #",
@@ -246,13 +248,33 @@ const Agencies: React.FC = () => {
             : "N/A",
         meta: { filterType: "date", classes: "f-5" },
       }),
+      columnHelper.display({
+        id: "edit",
+        header: "Edit",
+        cell: (info) => {
+          const tradeId = info.row.original.tradeId || ""; 
+          return (
+            <span
+              style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
+              onClick={() => handleEdit(tradeId)} 
+            >
+              Edit
+            </span>
+          );
+        },
+        meta: { classes: "f-3" },
+      }),
+      
     ],
     []
   );
+   const handleEdit = (tradeId: string) => {
+   
+  };
   const { setShowCreateAgency } = useAgencyStore();
   const handleTabClick = (tab: TabType) => {
-    setActiveTab(tab);
-  };
+  setActiveTab(tab);
+};
 
   return (
     <main className="main-section">

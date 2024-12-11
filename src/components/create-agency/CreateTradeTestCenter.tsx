@@ -2,10 +2,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
-import { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
+import InitialTradeScreen from "./IntialTradeScreen";
+import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
+import CreateTradeScreen from "./CreateTradeScreen";
 
 
-function CreateTradeTestCenter({
+function CreateAgency({
   handleModalClose,
   agencyDetails,
 }: {
@@ -33,7 +35,8 @@ function CreateTradeTestCenter({
       const agencyData = {
         ...agencyDetails,
         countryCode,
-        contactNumber
+        contactNumber,
+        
       }
       setFormData(agencyData);
     }
@@ -49,10 +52,35 @@ function CreateTradeTestCenter({
   };
   return (
     <div className={styles.modalContainer}>
-           Trade test center
-         
+      {
+        {
+          0: (
+            <InitialTradeScreen
+              isEdit={isEdit}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              selectedFile={selectedFile}
+              handleClose={handleClose}
+              handleCreateNowClick={() => {
+                setScreen(1);
+              }}
+            />
+          ),
+          1: (
+            <CreateTradeScreen
+              isEdit={isEdit}
+              handleClose={handleClose}
+              handleContinueClick={() => {
+                reset();
+                handleClose();
+              }}
+              handleBackToPostJobClick={() => setScreen(0)}
+            />
+          ),
+        }[screen]
+      }
     </div>
   );
 }
 
-export default CreateTradeTestCenter;
+export default CreateAgency;
