@@ -22,7 +22,7 @@ import {
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { BsThreeDots } from "react-icons/bs";
-import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL } from "@/helpers/constants";
+import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
 import CreateJob from "../create-job/CreateJob";
@@ -314,7 +314,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                         ) => (
                           <tr key={position.jobTitleId}>
                             <td className={styles.title}>{position.title}</td>
-                            <td>{position.experience} Years</td>
+                            <td>{YEARS_OF_EXPERIENCE_LABELS?.find(yoe=>yoe?.value == position?.experience)?.label}</td>
                             <td>{position.salary}</td>
                           </tr>
                         )
