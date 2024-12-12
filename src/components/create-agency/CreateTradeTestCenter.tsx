@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
-import InitialTradeScreen from "./IntialTradeScreen";
-import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
+import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; 
 import CreateTradeScreen from "./CreateTradeScreen";
-
 
 function CreateAgency({
   handleModalClose,
@@ -14,71 +12,50 @@ function CreateAgency({
   handleModalClose: () => void;
   agencyDetails?: Agency;
 }) {
-  const [screen, setScreen] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
-  const { selectedFile, handleFileChange, resetData,setFormData } = useAgencyStore();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { setFormData, resetData } = useAgencyStore();
 
-  useEffect(()=>{
-    console.log("AGENCY",agencyDetails);
-    if(agencyDetails){
+  useEffect(() => {
+    console.log("AGENCY DETAILS:", agencyDetails);
+    if (agencyDetails) {
       let countryCode, contactNumber;
-      if(agencyDetails.phone.includes("-")){
-        let [cc, cn] =  agencyDetails.phone?.split("-");
+
+    
+      if (agencyDetails.phone.includes("-")) {
+        const [cc, cn] = agencyDetails.phone.split("-");
         countryCode = cc;
         contactNumber = cn;
-      }else{
-        contactNumber = agencyDetails.phone;
+      } else {
         countryCode = "+91";
+        contactNumber = agencyDetails.phone;
       }
-      setIsEdit(true)
-      const agencyData = {
+
+     
+      setIsEdit(true);
+      setFormData({
         ...agencyDetails,
         countryCode,
         contactNumber,
-        
-      }
-      setFormData(agencyData);
+      });
     }
-  },[agencyDetails])
- 
- 
+  }, [agencyDetails, setFormData]);
+
   const handleClose = () => {
-    reset();
+    resetData(); 
     handleModalClose();
   };
-  const reset = () => {
-    resetData();
-  };
+
   return (
     <div className={styles.modalContainer}>
-      {
-        {
-          0: (
-            <InitialTradeScreen
-              isEdit={isEdit}
-              handleFileChange={handleFileChange}
-              fileInputRef={fileInputRef}
-              selectedFile={selectedFile}
-              handleClose={handleClose}
-              handleCreateNowClick={() => {
-                setScreen(1);
-              }}
-            />
-          ),
-          1: (
-            <CreateTradeScreen
-              isEdit={isEdit}
-              handleClose={handleClose}
-              handleContinueClick={() => {
-                reset();
-                handleClose();
-              }}
-              handleBackToPostJobClick={() => setScreen(0)}
-            />
-          ),
-        }[screen]
-      }
+      <CreateTradeScreen
+        isEdit={isEdit}
+        handleClose={handleClose}
+        handleContinueClick={() => {
+          resetData();
+          handleClose();
+        }}
+        handleBackToPostJobClick={() => {}}
+      />
     </div>
   );
 }
