@@ -28,6 +28,7 @@ import { AgencyJobPostings } from "./AgencyJobPostings";
 import CreateAgency from "../create-agency/CreateAgency";
 import { IMAGE_BASE_URL } from "@/helpers/constants";
 import { INDIAN_STATES } from "@/helpers/stateList";
+import { MapView } from "../common/MapView";
 
 
 type PostedJobDetailsProps = {
@@ -50,13 +51,15 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
     enabled: !!agencyId,
   });
 
-  const { _id, regNo, name, address,phone,postedJobs,profilePic,city,state, website, email, status,activeJobCount,expiredJobCount } =
+  const { _id, regNo, name,latitude,longitude, address,phone,postedJobs,profilePic,city,state, website, email, status,activeJobCount,expiredJobCount } =
     (data?.agency as AgencyType) || {};
 
   const goBack = () => {
     router.back();
   };
-  console.log(profilePic);
+
+  
+
   const changePostStatus = useCallback(async () => {
     try {
       let newStatus;
@@ -179,13 +182,9 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                 <div className={agencyStyles.addressSection}>
                     <h3>Address</h3>
                     <p>{address}, {city || ""}, {INDIAN_STATES.find(x=>x.state_code===state)?.name || state || ""}</p>
-
-                    <iframe
-                        height="216"
-                        style={{border:0,width:"100%"}}
-                        loading="lazy"
-                        src="https://www.google.com/maps/place/Splitbit+Innovative+Solutions/@17.4449405,78.3856523,15z/data=!4m6!3m5!1s0x3bcb934575864743:0x4e49a96c37440063!8m2!3d17.4449405!4d78.3856523!16s%2Fg%2F11pw8r8w2c?entry=ttu&g_ep=EgoyMDI0MTAxMy4wIKXMDSoASAFQAw%3D%3D">
-                        </iframe>
+                    {
+                    address && <MapView address={address} latitude={latitude} longitude={longitude} />
+                    }
                 </div>
                 <div className={agencyStyles.contactSection}>
                     <h3>Contact</h3>

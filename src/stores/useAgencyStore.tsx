@@ -14,6 +14,8 @@ export type AgencyType = {
   profilePic: string;
   state: string;
   city: string;
+  latitude:string,
+  longitude:string,
   postedJobs: number;
   website: string;
   activeJobCount: number;
