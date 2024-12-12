@@ -2,43 +2,37 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
-import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore"; 
+import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore";
 import CreateTradeScreen from "./CreateTradeScreen";
 
-function CreateAgency({
+
+function CreateTradeCenter({
   handleModalClose,
-  agencyDetails,
+  tradeCenterDetails,
 }: {
   handleModalClose: () => void;
-  agencyDetails?: Agency;
+  tradeCenterDetails?: Agency; 
 }) {
   const [isEdit, setIsEdit] = useState(false);
-  const { setFormData, resetData } = useAgencyStore();
+  const { resetData, setFormData } = useAgencyStore(); 
 
   useEffect(() => {
-    console.log("AGENCY DETAILS:", agencyDetails);
-    if (agencyDetails) {
-      let countryCode, contactNumber;
+    if (tradeCenterDetails) {
+      let countryCode = "+91", contactNumber = tradeCenterDetails.phone;
 
-    
-      if (agencyDetails.phone.includes("-")) {
-        const [cc, cn] = agencyDetails.phone.split("-");
-        countryCode = cc;
-        contactNumber = cn;
-      } else {
-        countryCode = "+91";
-        contactNumber = agencyDetails.phone;
+      
+      if (tradeCenterDetails.phone.includes("-")) {
+        [countryCode, contactNumber] = tradeCenterDetails.phone.split("-");
       }
 
-     
       setIsEdit(true);
       setFormData({
-        ...agencyDetails,
+        ...tradeCenterDetails,
         countryCode,
         contactNumber,
       });
     }
-  }, [agencyDetails, setFormData]);
+  }, [tradeCenterDetails]);
 
   const handleClose = () => {
     resetData(); 
@@ -60,4 +54,5 @@ function CreateAgency({
   );
 }
 
-export default CreateAgency;
+
+export default CreateTradeCenter; 

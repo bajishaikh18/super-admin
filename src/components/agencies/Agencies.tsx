@@ -17,6 +17,7 @@ import agencyStyles from "./Agency.module.scss";
 import { getTradeTestCenters } from "@/apis/trade-test-center";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import CreateTradeTestCenter from "../create-agency/CreateTradeTestCenter";
+import CreateTradeScreen from "../create-agency/CreateTradeScreen";
 
 const fetchSize = 100;
 
@@ -37,7 +38,7 @@ const Agencies: React.FC = () => {
   const [search, setSearch] = React.useState<string>("");
   const [tradeSearch, setTradeSearch] = React.useState<string>("");
   const [activeTab, setActiveTab] = useState<TabType>("agency");
-
+  const [openEdit, setOpenEdit] = useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [tradeSorting, tradeSetSorting] = React.useState<SortingState>([]);
   const [showCreateTrade,setShowCreateTrade] = useState(false);
@@ -256,8 +257,8 @@ const Agencies: React.FC = () => {
           return (
             <span
               style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
-              onClick={() => handleEdit(tradeId)} 
-            >
+              onClick={() => setOpenEdit(true)}
+                  >
               Edit
             </span>
           );
@@ -384,6 +385,19 @@ const Agencies: React.FC = () => {
               ),
             }[activeTab]
           }
+           <Modal
+        show={openEdit}
+        onHide={() => setOpenEdit(false)}
+        centered
+        backdrop="static"
+      >
+        {openEdit && (
+          <CreateTradeScreen
+            handleModalClose={() => setOpenEdit(false)}
+            tradeCenterDetails={data?.agency}
+          />
+        )}
+      </Modal>
         </Card>
       </div>
     </main>
