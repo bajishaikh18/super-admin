@@ -10,17 +10,17 @@ import {
 import { IoClose } from "react-icons/io5";
 
 interface CreateTradeScreenProps {
-  countries?: string[]; // Make the countries prop optional
+  countries?: string[]; 
   isEdit?: boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
   handleBackToPostJobClick: () => void;
-  latitude?: string;  // or number, depending on the expected type
+  latitude?: string;
   longitude?: string; 
  
 }
 import { COUNTRIES } from "@/helpers/constants";
-import useAgencyStore, { CreateAgencyFormData } from "@/stores/useAgencyStore";
+import useAgencyStore, {CreateTradeFormData } from "@/stores/useAgencyStore";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import { createTradeTestCenter,updateTradeTestCenter } from "@/apis/trade-test-center";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -39,7 +39,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
   handleClose,
   handleBackToPostJobClick,
 }) => {
-  const { formData, setFormData, selectedFile } = useAgencyStore();
+  const { TradeFormData, setTradeFormData} = useAgencyStore();
   const [loading, setLoading] = useState(false);
   const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
@@ -49,7 +49,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
     handleSubmit,
     formState: { errors, isValid },
     control
-  } = useForm<CreateAgencyFormData>({
+  } = useForm<CreateTradeFormData>({
     mode: "all",
   });
 
@@ -87,7 +87,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
     retry: 3,
   });
 
-  const onSubmit = async (data: CreateAgencyFormData) => {
+  const onSubmit = async (data: CreateTradeFormData) => {
     try {
       let resp;
       setLoading(true);
@@ -99,10 +99,10 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
         approved: true
       };
       let res;
-      if (isEdit && formData?._id) {
-        res = await updateTradeTestCenter(formData?._id,payload);
+      if (isEdit && TradeFormData?._id) {
+        res = await updateTradeTestCenter(TradeFormData?._id,payload);
         await queryClient.invalidateQueries({
-            queryKey:["agencyDetails",formData?.agencyId?.toString()],
+            queryKey:["TradeCenterDetails",TradeFormData?.tradeId?.toString()],
             refetchType:'all'
         })
       } else {
@@ -115,13 +115,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
         });
       }
       
-      if (selectedFile) {
-        resp = await getSignedUrl("agencyImage", selectedFile?.type!,"agencyId", res.agency?._id || formData?._id!);
-        if (resp) {
-          await uploadFile(resp.uploadurl, selectedFile!);
-        }
-        await updateTradeTestCenter(res?.agency?._id! || formData?._id!, {profilePic: resp?.keyName});
-      }
+     
       toast.success(`Trade Center ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
@@ -136,7 +130,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
       <div className={styles.modalHeader}>
         <h2>
           {isEdit ? "Edit " : "Create "}
-          Trade Center (2/2)
+          Trade Center 
         </h2>
 
         <IoClose className={styles.closeButton} onClick={handleClose}></IoClose>
@@ -156,7 +150,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter name"
             className={styles.input}
-            defaultValue={formData?.name}
+            defaultValue={TradeFormData?.name}
             isInvalid={!!errors.name}
             {...register("name", {
               required: "Name is required",
@@ -166,22 +160,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             <Form.Text className="error">{errors.name.message}</Form.Text>
           )}
         </Form.Group>
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Registration Number</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter registration no."
-            className={styles.input}
-            defaultValue={formData?.regNo}
-            isInvalid={!!errors.regNo}
-            {...register("regNo", {
-              required: "Registration No. is required",
-            })}
-          />
-          {errors.regNo && (
-            <Form.Text className="error">{errors.regNo.message}</Form.Text>
-          )}
-        </Form.Group>
+        
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Contact Mobile Number</Form.Label>
@@ -191,7 +170,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
               {...register("countryCode", {
                 required: "Country code is required",
               })}
-              defaultValue={formData?.countryCode}
+              defaultValue={TradeFormData?.countryCode}
             >
               {Object.values(COUNTRIES).map((country) => {
                 return (
@@ -202,7 +181,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
               })}
             </Form.Select>
             <Form.Control
-              defaultValue={formData?.contactNumber}
+              defaultValue={TradeFormData?.contactNumber}
               aria-label="Contact number"
               {...register("contactNumber", {
                 required: "Contact number is required",
@@ -259,7 +238,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter email Id"
             className={styles.input}
-            defaultValue={formData?.email}
+            defaultValue={TradeFormData?.email}
             isInvalid={!!errors.email}
             {...register("email", {
               required: "Email is required",
@@ -279,7 +258,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter website"
             className={styles.input}
-            defaultValue={formData?.website}
+            defaultValue={TradeFormData?.website}
             isInvalid={!!errors.website}
             {...register("website", {
               pattern: {
@@ -298,7 +277,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
           <Form.Control
             as="textarea"
             rows={3}
-            defaultValue={formData?.address}
+            defaultValue={TradeFormData?.address}
             {...register("address", { required: true })}
           />
           {errors.address && (
@@ -306,28 +285,60 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
           )}
         </Form.Group>
         <Row>
-               <Col md={6}>
+            <Col md={6}>
+            <Form.Group className={styles.formGroup}>
+  <Form.Label>Latitude (Optional)</Form.Label>
+  <Form.Control
+    type="text"
+    placeholder="Enter Latitude"
+    className={styles.input}
+    defaultValue={TradeFormData?.latitude ?? "" as string}  
+    isInvalid={!!errors.latitude}
+    {...register("latitude", {
+      pattern: {
+        value: /^-?\d+(\.\d+)?$/, 
+        message: "Enter a valid numeric latitude"
+      },
+      validate: (value) =>
+        value === "" || 
+        (Number(value) >= -90 && Number(value) <= 90) ||  
+        "Latitude must be between -90 and 90"
+    })}
+  />
+  {errors.latitude && (
+    <Form.Text className="error">{errors.latitude.message}</Form.Text>
+  )}
+</Form.Group>
+</Col>
+            <Col md={6}>
               <Form.Group className={styles.formGroup}>
-               <Form.Label>Latitude (Optional)</Form.Label>
-               <Form.Control
-              type="text"
-              placeholder="Enter Latitude"
-            className={styles.input}
-          />
-            </Form.Group>
-             </Col>
-         <Col md={6}>
-       <Form.Group className={styles.formGroup}>
-      <Form.Label>Longitude (Optional)</Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Enter Longitude"
-        className={styles.input}
-       
-      />
-    </Form.Group>
-  </Col>
-</Row>
+                <Form.Label>Longitude (Optional)</Form.Label>
+                <Form.Control
+                type="text"
+                placeholder="Enter Longitude"
+                className={styles.input}
+                defaultValue={TradeFormData?.longitude}
+                isInvalid={!!errors.longitude}
+                {...register("longitude", {
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric longitude"
+               },
+               
+                validate: (value) =>
+                  value === "" || 
+                  (Number(value) >= -180 && Number(value) <= 180) ||  
+                  "Longitude must be between -180 and 180"
+              })}
+              />
+              {errors.longitude && (
+                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
+                )}
+          </Form.Group>
+
+
+            </Col>
+          </Row>
 
         <Row>
             <Col md={6}>
@@ -341,7 +352,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={formData?.state}
+                    defaultValue={TradeFormData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -362,7 +373,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
                     error={errors[`city`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={formData?.city}
+                    defaultValue={TradeFormData?.city}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement

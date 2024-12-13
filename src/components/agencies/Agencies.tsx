@@ -1,14 +1,15 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import useAgencyStore, { AgencyType } from "@/stores/useAgencyStore";
+import React, { useState, useMemo,useCallback } from "react";
+import useAgencyStore, { AgencyType,TradeType } from "@/stores/useAgencyStore";
 import { Button, Card, Modal } from "react-bootstrap";
 import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
-import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
+import { QueryClient,useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import Link from "next/link";
 import { DataTable } from "../common/table/DataTable";
 import { DateTime } from "luxon";
+import toast from "react-hot-toast";
 import { useDebounce } from "@uidotdev/usehooks";
 import { getAgencies } from "@/apis/agency";
 import Image from "next/image";
@@ -18,12 +19,24 @@ import { getTradeTestCenters } from "@/apis/trade-test-center";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import CreateTradeTestCenter from "../create-agency/CreateTradeTestCenter";
 import CreateTradeScreen from "../create-agency/CreateTradeScreen";
-
+import { deleteTradeTestCenterAPI } from "@/apis/trade-test-center";
+const queryClient = new QueryClient();
 const fetchSize = 100;
+
+interface CreateTradeScreenProps {
+  handleModalClose: () => void;
+  tradeCenterDetails?: any;
+}
 
 type AgencyResponse = {
   agencies: AgencyType[];
   totalCount: number;
+};
+
+type TradeCenterResponse = {
+  trade: TradeType[];
+  totalCount: number;
+ 
 };
 type TabType = "agency" | "trade";
 const Agencies: React.FC = () => {
@@ -66,10 +79,11 @@ const Agencies: React.FC = () => {
       refetchOnMount: true,
       placeholderData: keepPreviousData,
     });
+
     const { data:tradeData, fetchNextPage:tradeFetchNextPage, isFetching:tradeIsFetching, isLoading:tradeIsLoading } =
-    useInfiniteQuery<AgencyResponse>({
+    useInfiniteQuery<TradeCenterResponse>({
       queryKey: ["testCenters", tradeSearch, tradeField, debouncedTradeSearchTerm],
-      queryFn: async ({ pageParam = 0 }) => {
+     queryFn: async ({ pageParam = 0 }) => {
         const start = pageParam as number;
         const fetchedData = await getTradeTestCenters(
           "all",
@@ -77,6 +91,7 @@ const Agencies: React.FC = () => {
           fetchSize,
           tradeField.value,
           tradeSearch
+          
         );
         return fetchedData;
       },
@@ -86,9 +101,25 @@ const Agencies: React.FC = () => {
       getNextPageParam: (_lastGroup, groups) => groups.length,
       refetchOnMount: true,
       placeholderData: keepPreviousData,
-    });
-   
-  
+    }); 
+    const { _id,tradeId } = (data?.Trade as TradeType) || {};
+
+    const deleteTradeTestCenter = useCallback(async (_id: string, data: { isDeleted: boolean }) => {
+      try {
+        await deleteTradeTestCenterAPI(_id, data);
+         await queryClient.invalidateQueries({
+          queryKey: ["TradeCenterDetails", tradeId],
+          refetchType: "all",
+        });
+        toast.success("TradeCenter deleted successfully");
+      } catch (e) {
+        toast.error("Error while deleting TradeCenter. Please try again");
+        return;
+      }
+    }, [tradeId, _id]);
+    
+ 
+
   const flatData = React.useMemo(
     () => data?.pages?.flatMap((page: any) => page?.agencies) ?? [],
     [data]
@@ -265,10 +296,31 @@ const Agencies: React.FC = () => {
         },
         meta: { classes: "f-3" },
       }),
+
+      columnHelper.display({
+        id: "delete",
+        header: "Delete",
+        cell: (info) => {
+          const tradeId = info.row.original.tradeId; 
+      
+          return (
+            <span
+              style={{ color: "red", cursor: "pointer", textDecoration: "underline" }}
+              onClick={() => deleteTradeTestCenter(tradeId)} 
+            >
+              Delete
+            </span>
+          );
+        },
+        meta: { classes: "f-3" },
+      }),
+      
+      
       
     ],
     []
   );
+
    const handleEdit = (tradeId: string) => {
    
   };
@@ -393,8 +445,8 @@ const Agencies: React.FC = () => {
       >
         {openEdit && (
           <CreateTradeScreen
-            handleModalClose={() => setOpenEdit(false)}
-            tradeCenterDetails={data?.agency}
+          handleClose={() => setOpenEdit(false)}
+            tradeCenterDetails={data?.Trade}
           />
         )}
       </Modal>

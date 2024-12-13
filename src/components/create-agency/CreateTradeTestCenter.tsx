@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./CreateAgency.module.scss";
-import useStore, { Agency, useAgencyStore } from "@/stores/useAgencyStore";
+import { Trade, useAgencyStore } from "@/stores/useAgencyStore";
 import CreateTradeScreen from "./CreateTradeScreen";
 
 
@@ -11,10 +11,10 @@ function CreateTradeCenter({
   tradeCenterDetails,
 }: {
   handleModalClose: () => void;
-  tradeCenterDetails?: Agency; 
+  tradeCenterDetails?: Trade; 
 }) {
   const [isEdit, setIsEdit] = useState(false);
-  const { resetData, setFormData } = useAgencyStore(); 
+  const { resetData, setTradeFormData } = useAgencyStore(); 
 
   useEffect(() => {
     if (tradeCenterDetails) {
@@ -26,14 +26,13 @@ function CreateTradeCenter({
       }
 
       setIsEdit(true);
-      setFormData({
+      setTradeFormData({
         ...tradeCenterDetails,
         countryCode,
         contactNumber,
       });
     }
   }, [tradeCenterDetails]);
-
   const handleClose = () => {
     resetData(); 
     handleModalClose();
