@@ -35,9 +35,7 @@ type TradeCenterResponse = {
   pages: AgencyResponse[]; 
   totalCount: number;
   trade: string;
- 
- 
-};
+ };
 
 type TabType = "agency" | "trade";
 const Agencies: React.FC = () => {
@@ -285,8 +283,8 @@ const Agencies: React.FC = () => {
         meta: { filterType: "date", classes: "f-5" },
       }),
       columnHelper.display({
-        id: "edit",
-        header: "Edit",
+        id: "Action",
+        header: "Action",
         cell: (info) => {
           const tradeId = info.row.original.tradeId || ""; 
           return (
@@ -309,7 +307,7 @@ const Agencies: React.FC = () => {
       
           return (
             <span
-              style={{ color: "red", cursor: "pointer", textDecoration: "underline" }}
+              style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
               onClick={() =>
                 deleteTradeTestCenter(tradeId as string, { isDeleted: true })
 
