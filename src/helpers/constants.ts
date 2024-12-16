@@ -47,7 +47,7 @@ export const ROLE = {
   user: 4,
 };
 
-export const YEARS_OF_EXPERIENCE_LABELS = generateExperienceRanges(1,10);
+export const YEARS_OF_EXPERIENCE_LABELS = generateExperienceRanges(1,11);
 export const DURATION_OPTIONS: {
   value: string;
   label: string;
