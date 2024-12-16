@@ -108,6 +108,7 @@ export type CreateTradeFormData = {
   email?: string;
   latitude?:string;
   longitude?:string;
+  tradeId?: string; 
 };
 
 interface AgencyStoreState {
@@ -131,7 +132,8 @@ export const useAgencyStore = create<AgencyStoreState>((set) => ({
   handleFileChange: (file) => {
     set({ selectedFile: file });
   },
-
+ 
+  
   resetData: () => {
     set({ formData: null, tradeFormData: null, selectedFile: null });
   },
@@ -146,7 +148,7 @@ export const useAgencyStore = create<AgencyStoreState>((set) => ({
       formData: { ...state.formData, ...formData },
     }));
   },
- 
+
   tradeFormData: null,
   setTradeFormData: (formData) => {
    

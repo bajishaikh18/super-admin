@@ -11,17 +11,19 @@ import { IoClose } from "react-icons/io5";
 
 interface CreateTradeScreenProps {
   countries?: string[]; 
+  
   isEdit?: boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
   handleBackToPostJobClick: () => void;
   latitude?: string;
   longitude?: string; 
+  
  
 }
 import { COUNTRIES } from "@/helpers/constants";
 import useAgencyStore, {CreateTradeFormData } from "@/stores/useAgencyStore";
-import { getSignedUrl, uploadFile } from "@/apis/common";
+
 import { createTradeTestCenter,updateTradeTestCenter } from "@/apis/trade-test-center";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -35,11 +37,12 @@ const phoneRegex = /^[0-9]{10}$/;
 const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
   countries = [], // Provide a default value of an empty array
   isEdit,
+ 
   handleContinueClick,
   handleClose,
   handleBackToPostJobClick,
 }) => {
-  const { TradeFormData, setTradeFormData} = useAgencyStore();
+  const { tradeFormData, setTradeFormData} = useAgencyStore();
   const [loading, setLoading] = useState(false);
   const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
@@ -99,10 +102,10 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
         approved: true
       };
       let res;
-      if (isEdit && TradeFormData?._id) {
-        res = await updateTradeTestCenter(TradeFormData?._id,payload);
+      if (isEdit && tradeFormData?._id) {
+        res = await updateTradeTestCenter(tradeFormData?._id,payload);
         await queryClient.invalidateQueries({
-            queryKey:["TradeCenterDetails",TradeFormData?.tradeId?.toString()],
+            queryKey:["TradeCenterDetails",tradeFormData?.tradeId?.toString()],
             refetchType:'all'
         })
       } else {
@@ -150,7 +153,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter name"
             className={styles.input}
-            defaultValue={TradeFormData?.name}
+            defaultValue={tradeFormData?.name}
             isInvalid={!!errors.name}
             {...register("name", {
               required: "Name is required",
@@ -170,7 +173,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
               {...register("countryCode", {
                 required: "Country code is required",
               })}
-              defaultValue={TradeFormData?.countryCode}
+              defaultValue={tradeFormData?.countryCode}
             >
               {Object.values(COUNTRIES).map((country) => {
                 return (
@@ -181,7 +184,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
               })}
             </Form.Select>
             <Form.Control
-              defaultValue={TradeFormData?.contactNumber}
+              defaultValue={tradeFormData?.contactNumber}
               aria-label="Contact number"
               {...register("contactNumber", {
                 required: "Contact number is required",
@@ -238,7 +241,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter email Id"
             className={styles.input}
-            defaultValue={TradeFormData?.email}
+            defaultValue={tradeFormData?.email}
             isInvalid={!!errors.email}
             {...register("email", {
               required: "Email is required",
@@ -258,7 +261,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
             type="text"
             placeholder="Enter website"
             className={styles.input}
-            defaultValue={TradeFormData?.website}
+            defaultValue={tradeFormData?.website}
             isInvalid={!!errors.website}
             {...register("website", {
               pattern: {
@@ -277,7 +280,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
           <Form.Control
             as="textarea"
             rows={3}
-            defaultValue={TradeFormData?.address}
+            defaultValue={tradeFormData?.address}
             {...register("address", { required: true })}
           />
           {errors.address && (
@@ -292,7 +295,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
     type="text"
     placeholder="Enter Latitude"
     className={styles.input}
-    defaultValue={TradeFormData?.latitude ?? "" as string}  
+    defaultValue={tradeFormData?.latitude ?? "" as string}  
     isInvalid={!!errors.latitude}
     {...register("latitude", {
       pattern: {
@@ -317,7 +320,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
                 type="text"
                 placeholder="Enter Longitude"
                 className={styles.input}
-                defaultValue={TradeFormData?.longitude}
+                defaultValue={tradeFormData?.longitude}
                 isInvalid={!!errors.longitude}
                 {...register("longitude", {
                 pattern: {
@@ -352,7 +355,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={TradeFormData?.state}
+                    defaultValue={tradeFormData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -373,7 +376,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
                     error={errors[`city`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={TradeFormData?.city}
+                    defaultValue={tradeFormData?.city}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement

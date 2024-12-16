@@ -23,21 +23,22 @@ import { deleteTradeTestCenterAPI } from "@/apis/trade-test-center";
 const queryClient = new QueryClient();
 const fetchSize = 100;
 
-interface CreateTradeScreenProps {
-  handleModalClose: () => void;
-  tradeCenterDetails?: any;
-}
+
 
 type AgencyResponse = {
   agencies: AgencyType[];
   totalCount: number;
+  trade: any[];
 };
 
 type TradeCenterResponse = {
-  trade: TradeType[];
+  pages: AgencyResponse[]; 
   totalCount: number;
+  trade: string;
+ 
  
 };
+
 type TabType = "agency" | "trade";
 const Agencies: React.FC = () => {
   const [field, setField] = useState<SelectOption>({
@@ -102,21 +103,24 @@ const Agencies: React.FC = () => {
       refetchOnMount: true,
       placeholderData: keepPreviousData,
     }); 
-    const { _id,tradeId } = (data?.Trade as TradeType) || {};
+   
 
-    const deleteTradeTestCenter = useCallback(async (_id: string, data: { isDeleted: boolean }) => {
-      try {
-        await deleteTradeTestCenterAPI(_id, data);
-         await queryClient.invalidateQueries({
-          queryKey: ["TradeCenterDetails", tradeId],
-          refetchType: "all",
-        });
-        toast.success("TradeCenter deleted successfully");
-      } catch (e) {
-        toast.error("Error while deleting TradeCenter. Please try again");
-        return;
-      }
-    }, [tradeId, _id]);
+    const deleteTradeTestCenter = useCallback(
+      async (_id: string, data: { isDeleted: boolean }) => {
+        try {
+          await deleteTradeTestCenterAPI(_id, data);
+          await queryClient.invalidateQueries({
+            queryKey: ["testCenters"],
+            refetchType: "all",
+          });
+          toast.success("TradeCenter deleted successfully");
+        } catch (e) {
+          toast.error("Error while deleting TradeCenter. Please try again");
+        }
+      },
+      []
+    );
+    
     
  
 
@@ -306,7 +310,10 @@ const Agencies: React.FC = () => {
           return (
             <span
               style={{ color: "red", cursor: "pointer", textDecoration: "underline" }}
-              onClick={() => deleteTradeTestCenter(tradeId)} 
+              onClick={() =>
+                deleteTradeTestCenter(tradeId as string, { isDeleted: true })
+
+              }
             >
               Delete
             </span>
@@ -321,9 +328,7 @@ const Agencies: React.FC = () => {
     []
   );
 
-   const handleEdit = (tradeId: string) => {
-   
-  };
+  
   const { setShowCreateAgency } = useAgencyStore();
   const handleTabClick = (tab: TabType) => {
   setActiveTab(tab);
@@ -437,22 +442,24 @@ const Agencies: React.FC = () => {
               ),
             }[activeTab]
           }
-           <Modal
+            <Modal
         show={openEdit}
         onHide={() => setOpenEdit(false)}
         centered
         backdrop="static"
       >
-        {openEdit && (
+         {openEdit && (
           <CreateTradeScreen
           handleClose={() => setOpenEdit(false)}
-            tradeCenterDetails={data?.Trade}
+            tradeCenterDetails={tradeFlatData}
           />
         )}
       </Modal>
+
         </Card>
       </div>
     </main>
   );
+
 };
 export default Agencies;
