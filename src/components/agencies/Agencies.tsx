@@ -242,7 +242,11 @@ const Agencies: React.FC = () => {
         header: "Status",
         meta: {
           classes: "capitalize f-4",
-          filter: false,
+          filterType: "select",
+          selectOptions: [
+            { value: "active", label: "Active" },
+            { value: "inactive", label: "InActive" },
+          ],
         },
         cell: (info) => {
           return (
