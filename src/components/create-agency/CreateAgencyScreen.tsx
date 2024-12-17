@@ -217,39 +217,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
             </Form.Text>
           )}
         </Form.Group>
-        {/* <Form.Group className={styles.formGroup}>
-            <Form.Label>Alternate Contact Mobile Number (Optional)</Form.Label>
-            <InputGroup className={`contact-field`}>
-              <Form.Select
-                className={styles.input}
-                {...register("altCountryCode")}
-                defaultValue={formData?.altCountryCode}
-              >
-                {
-                  Object.values(COUNTRIES).map(country=>{
-                    return  <option value={country.isdCode} key={country.isdCode}>{country.isdCode}</option>
-                  })
-                }
-              </Form.Select>
-              <Form.Control
-                defaultValue={formData?.altContactNumber}
-                aria-label="Alternate Contact number"
-                isInvalid={!!errors.altContactNumber}
-                {...register("altContactNumber",{
-                  maxLength:10,
-                  pattern: {
-                    value: phoneRegex,
-                    message: "Enter a valid contact number "
-                  }
-                })}
-              />
-            </InputGroup>
-            {errors.altContactNumber && (
-              <Form.Text className="error">
-                {errors.altContactNumber.message}
-              </Form.Text>
-            )}
-          </Form.Group> */}
+        
         <Form.Group className={styles.formGroup}>
           <Form.Label>Contact Email Address</Form.Label>
           <Form.Control

@@ -54,7 +54,7 @@ const Agencies: React.FC = () => {
   } as SelectOption);
   const [tradeField, setTradeField] = useState<SelectOption>({
     value: "tradeId",
-    label: "Trade Test Center Id",
+    label: "Trade #",
   } as SelectOption);
   const queryClient = useQueryClient();
   const [search, setSearch] = React.useState<string>("");
@@ -311,6 +311,7 @@ const Agencies: React.FC = () => {
       }),
       columnHelper.accessor("_id", {
         header: "Action",
+    
         cell: (info) => {
           const tradeId = info.getValue() || "";
           return (
@@ -332,7 +333,7 @@ const Agencies: React.FC = () => {
             </div>
           );
         },
-        meta: { classes: "f-3" },
+        meta: { classes: "f-3", filter: false},
       }),
     ],
     []
