@@ -49,12 +49,17 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
     }, 500),
     []
   );
-  const workLocations = Object.entries(COUNTRIES).map(([key, val]) => {
-    return {
+  const workLocations = Object.entries(COUNTRIES)
+      .filter(([key]) => key.toUpperCase() !== "IN") 
+      .map(([key, val]) => ({
+        label: val.label,
+        value: key,
+      }));
+  
+    const targetCountries = Object.entries(COUNTRIES).map(([key, val]) => ({
       label: val.label,
       value: key,
-    };
-  });
+    }));
   const {
     control,
     register,
@@ -129,7 +134,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
             name="country"
             control={control}
             error={errors.country}
-            options={workLocations}
+            options={targetCountries}
             rules={{ required: "Target country is required" }}
             customStyles={{}}
             defaultValue={formData?.country}
