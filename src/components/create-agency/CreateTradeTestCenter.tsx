@@ -20,9 +20,9 @@ function CreateTradeCenter({
     if (tradeCenterDetails) {
       let countryCode = "+91", contactNumber = tradeCenterDetails.phone;
 
-      
-      if (tradeCenterDetails.phone.includes("-")) {
-        [countryCode, contactNumber] = tradeCenterDetails.phone.split("-");
+
+      if (tradeCenterDetails?.phone?.includes("-")) {
+        [countryCode, contactNumber] = tradeCenterDetails?.phone?.split("-");
       }
 
       setIsEdit(true);
@@ -47,7 +47,6 @@ function CreateTradeCenter({
           resetData();
           handleClose();
         }}
-        handleBackToPostJobClick={() => {}}
       />
     </div>
   );
