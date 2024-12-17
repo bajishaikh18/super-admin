@@ -22,7 +22,15 @@ function CreateAgency({
   useEffect(()=>{
     console.log("AGENCY",agencyDetails);
     if(agencyDetails){
-      const [countryCode, contactNumber] =  agencyDetails.phone?.split("-");
+      let countryCode, contactNumber;
+      if(agencyDetails.phone.includes("-")){
+        let [cc, cn] =  agencyDetails.phone?.split("-");
+        countryCode = cc;
+        contactNumber = cn;
+      }else{
+        contactNumber = agencyDetails.phone;
+        countryCode = "+91";
+      }
       setIsEdit(true)
       const agencyData = {
         ...agencyDetails,

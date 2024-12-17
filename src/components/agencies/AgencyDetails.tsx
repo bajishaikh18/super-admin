@@ -209,7 +209,8 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                     <a href={`mailto:${email}`}>{email}</a>
 
                   </li>
-                  <li>
+                  {
+                    website &&<li>
                     <Image
                       src={"/globe.svg"}
                       width={16}
@@ -219,6 +220,8 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                     <a href={`${website?.includes("http") ? website : `http://${website}`}`}>{website}</a>
 
                   </li>
+                  }
+                  
                 </ul>
                 </div>
               </CardBody>

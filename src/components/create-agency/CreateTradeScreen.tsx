@@ -9,17 +9,21 @@ import {
 } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
-interface CreateAgencyScreenProps {
-  countries?: string[]; // Make the countries prop optional
+interface CreateTradeScreenProps {
+  countries?: string[]; 
+  
   isEdit?: boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
-  handleBackToPostJobClick: () => void;
+  latitude?: string;
+  longitude?: string; 
+  
+ 
 }
 import { COUNTRIES } from "@/helpers/constants";
-import useAgencyStore, { CreateAgencyFormData } from "@/stores/useAgencyStore";
-import { getSignedUrl, uploadFile } from "@/apis/common";
-import { createAgency, updateAgency } from "@/apis/agency";
+import useAgencyStore, {CreateTradeFormData } from "@/stores/useAgencyStore";
+
+import { createTradeTestCenter,updateTradeTestCenter } from "@/apis/trade-test-center";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -29,24 +33,25 @@ import { CITIES } from "@/helpers/stateList";
 
 const phoneRegex = /^[0-9]{10}$/;
 
-const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
+const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
   countries = [], // Provide a default value of an empty array
   isEdit,
+ 
   handleContinueClick,
   handleClose,
-  handleBackToPostJobClick,
 }) => {
-  const { formData, setFormData, selectedFile } = useAgencyStore();
+  const { tradeFormData, setTradeFormData} = useAgencyStore();
   const [loading, setLoading] = useState(false);
   const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
   const {
     watch,
     register,
+    reset,
     handleSubmit,
     formState: { errors, isValid },
     control
-  } = useForm<CreateAgencyFormData>({
+  } = useForm<CreateTradeFormData>({
     mode: "all",
   });
 
@@ -84,7 +89,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     retry: 3,
   });
 
-  const onSubmit = async (data: CreateAgencyFormData) => {
+  const onSubmit = async (data: CreateTradeFormData) => {
     try {
       let resp;
       setLoading(true);
@@ -96,44 +101,42 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         approved: true
       };
       let res;
-      if (isEdit && formData?._id) {
-        res = await updateAgency(formData?._id,payload);
-        await queryClient.invalidateQueries({
-            queryKey:["agencyDetails",formData?.agencyId?.toString()],
-            refetchType:'all'
-        })
+      if (isEdit && tradeFormData?._id) {
+        res = await updateTradeTestCenter(tradeFormData?._id,payload);
+       
       } else {
-        res = await createAgency(payload);
-        await queryClient.invalidateQueries({
-          predicate: (query) => {
-            return query.queryKey.includes("agencies");
-          },
-          refetchType: "all",
-        });
+        res = await createTradeTestCenter(payload);
+       
       }
+      await queryClient.invalidateQueries({
+        predicate: (query) => {
+          return query.queryKey.includes('testCenters');
+        },
+        refetchType:'all'
+      })
       
-      if (selectedFile) {
-        resp = await getSignedUrl("agencyImage", selectedFile?.type!,"agencyId", res.agency?._id || formData?._id!);
-        if (resp) {
-          await uploadFile(resp.uploadurl, selectedFile!);
-        }
-        await updateAgency(res?.agency?._id! || formData?._id!, {profilePic: resp?.keyName});
-      }
-      toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
+     
+      toast.success(`Trade Center ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
     } catch (error) {
-      toast.error(`Error while ${isEdit?'updating':'creating'} agency. Please try again`)
+      toast.error(`Error while ${isEdit?'updating':'creating'} Trade Center. Please try again`)
       setLoading(false);
     }
   };
+
+  useEffect(()=>{
+    if(tradeFormData){
+      reset(tradeFormData)
+    }
+  },[tradeFormData])
 
   return (
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>
           {isEdit ? "Edit " : "Create "}
-          Agency (2/2)
+          Trade Center 
         </h2>
 
         <IoClose className={styles.closeButton} onClick={handleClose}></IoClose>
@@ -141,7 +144,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
       {
         loading ?  <div className={styles.popupContent}>
         <p className={styles.loadingContent}>
-          Your agency is {isEdit?"updating":"creating"} please wait
+          Your Trade Center is {isEdit?"updating":"creating"} please wait
         </p>
         <div className={styles.createSpinner}></div>
       </div> :    <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
@@ -153,7 +156,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
             type="text"
             placeholder="Enter name"
             className={styles.input}
-            defaultValue={formData?.name}
+            defaultValue={tradeFormData?.name}
             isInvalid={!!errors.name}
             {...register("name", {
               required: "Name is required",
@@ -163,113 +166,79 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
             <Form.Text className="error">{errors.name.message}</Form.Text>
           )}
         </Form.Group>
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Registration Number</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter registration no."
-            className={styles.input}
-            defaultValue={formData?.regNo}
-            isInvalid={!!errors.regNo}
-            {...register("regNo", {
-              required: "Registration No. is required",
-            })}
-          />
-          {errors.regNo && (
-            <Form.Text className="error">{errors.regNo.message}</Form.Text>
-          )}
-        </Form.Group>
-
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Contact Mobile Number</Form.Label>
-          <InputGroup className={`contact-field`}>
-            <Form.Select
-              className={styles.input}
-              {...register("countryCode", {
-                required: "Country code is required",
-              })}
-              defaultValue={formData?.countryCode}
-            >
-              {Object.values(COUNTRIES).map((country) => {
-                return (
-                  <option value={country.isdCode} key={country.isdCode}>
-                    {country.isdCode}
-                  </option>
-                );
-              })}
-            </Form.Select>
-            <Form.Control
-              defaultValue={formData?.contactNumber}
-              aria-label="Contact number"
-              {...register("contactNumber", {
-                required: "Contact number is required",
-                pattern: {
-                  value: phoneRegex,
-                  message: "Enter a valid contact number",
-                },
-              })}
-              isInvalid={!!errors.contactNumber}
-            />
-          </InputGroup>
-          {errors.contactNumber && (
-            <Form.Text className="error">
-              {errors.contactNumber.message}
-            </Form.Text>
-          )}
-        </Form.Group>
         
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Contact Email Address</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter email Id"
-            className={styles.input}
-            defaultValue={formData?.email}
-            isInvalid={!!errors.email}
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
-            })}
-          />
-          {errors.email && (
-            <Form.Text className="error">{errors.email.message}</Form.Text>
-          )}
-        </Form.Group>
-        <Form.Group className={styles.formGroup}>
-          <Form.Label>Website (Optional)</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter website"
-            className={styles.input}
-            defaultValue={formData?.website}
-            isInvalid={!!errors.website}
-            {...register("website", {
-              pattern: {
-                value:
-                  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi,
-                message: "Website should have proper format",
-              },
-            })}
-          />
-          {errors.website && (
-            <Form.Text className="error">{errors.website.message}</Form.Text>
-          )}
-        </Form.Group>
+
+       
+       
+     
         <Form.Group className={styles.formGroup}>
           <Form.Label>Address</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
-            defaultValue={formData?.address}
+            defaultValue={tradeFormData?.address}
             {...register("address", { required: true })}
           />
           {errors.address && (
             <Form.Text className="error">{errors.address.message}</Form.Text>
           )}
         </Form.Group>
+        <Row>
+            <Col md={6}>
+            <Form.Group className={styles.formGroup}>
+  <Form.Label>Latitude (Optional)</Form.Label>
+  <Form.Control
+    type="text"
+    placeholder="Enter Latitude"
+    className={styles.input}
+    defaultValue={tradeFormData?.latitude ?? "" as string}  
+    isInvalid={!!errors.latitude}
+    {...register("latitude", {
+      pattern: {
+        value: /^-?\d+(\.\d+)?$/, 
+        message: "Enter a valid numeric latitude"
+      },
+      validate: (value) =>
+        value === "" || 
+        (Number(value) >= -90 && Number(value) <= 90) ||  
+        "Latitude must be between -90 and 90"
+    })}
+  />
+  {errors.latitude && (
+    <Form.Text className="error">{errors.latitude.message}</Form.Text>
+  )}
+</Form.Group>
+</Col>
+            <Col md={6}>
+              <Form.Group className={styles.formGroup}>
+                <Form.Label>Longitude (Optional)</Form.Label>
+                <Form.Control
+                type="text"
+                placeholder="Enter Longitude"
+                className={styles.input}
+                defaultValue={tradeFormData?.longitude}
+                isInvalid={!!errors.longitude}
+                {...register("longitude", {
+                pattern: {
+                value: /^-?\d+(\.\d+)?$/,
+                message: "Enter a valid numeric longitude"
+               },
+               
+                validate: (value) =>
+                  value === "" || 
+                  (Number(value) >= -180 && Number(value) <= 180) ||  
+                  "Longitude must be between -180 and 180"
+              })}
+              />
+              {errors.longitude && (
+                  <Form.Text className="error">{errors.longitude.message}</Form.Text>
+                )}
+          </Form.Group>
+
+
+            </Col>
+          </Row>
+
         <Row>
             <Col md={6}>
               <Form.Group className={styles.formGroup}>
@@ -282,7 +251,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`state`]}
                     customStyles={{}}
                     options={stateList}
-                    defaultValue={formData?.state}
+                    defaultValue={tradeFormData?.state}
                     rules={{ required: "State is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -303,7 +272,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
                     error={errors[`city`]}
                     customStyles={{}}
                     options={cities}
-                    defaultValue={formData?.city}
+                    defaultValue={tradeFormData?.city}
                     rules={{ required: "City is required" }}
                     menuPortalTarget={
                       document.getElementsByClassName("modal")[0] as HTMLElement
@@ -317,19 +286,12 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
           </div>
         <div className={styles.actions}>
           <Button
-            type="button"
-            className={`outlined action-buttons`}
-            onClick={handleBackToPostJobClick}
-          >
-            Back
-          </Button>
-          <Button
             type="submit"
             className={`action-buttons ${isValid ? "" : styles.disabled}`}
             disabled={!isValid}
           >
             {isEdit ? "Edit " : "Create "}
-            Agency
+            Trade Center
           </Button>
         </div>
       </Form>
@@ -339,4 +301,4 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
   );
 };
 
-export default CreateAgencyScreen;
+export default CreateTradeScreen;
