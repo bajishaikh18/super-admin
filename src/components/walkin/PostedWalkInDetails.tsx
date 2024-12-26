@@ -7,6 +7,7 @@ import Image from "next/image";
 import styles from "../common/styles/Details.module.scss";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa6";
+import DeleteModal from "../common/delete/DeleteModal";
 import {
   Button,
   Card,
@@ -45,6 +46,16 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
   const {refreshImage} = usePostWalkinStore();
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
+   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+  
+    const handleOpenDeleteModal = () => {
+      setIsDeleteModalOpen(true);
+    };
+  
+    const handleCloseDeleteModal = () => {
+      setIsDeleteModalOpen(false);
+    };
   const { data, isLoading, isError } = useQuery({
     queryKey: ["walkinDetails", jobId],
     queryFn: () => {
@@ -106,6 +117,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
 
 
   const deletePost = useCallback(async ()=>{
+    setDeleteLoading(true);
     try{
         await updateInterview(_id,{isDeleted:true});
         router.push("/walk-in")
@@ -260,8 +272,13 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
                            
                           </Dropdown.Item>
                         }
-                      
-                        <Dropdown.Item className="danger" onClick={deletePost}>
+                        <DeleteModal
+        showModal={isDeleteModalOpen}
+        handleClose={handleCloseDeleteModal}
+        deleteLoading={deleteLoading}
+        handleDelete={deletePost}
+      />
+                         <Dropdown.Item className="danger" onClick={handleOpenDeleteModal}>
                            Delete Post
                         </Dropdown.Item>
                       </Dropdown.Menu>
