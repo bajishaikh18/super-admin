@@ -42,9 +42,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ showModal, handleClose, delet
               <h3>Are you sure you want to delete the Posted Job?</h3>
               <p>This action is irreversible.</p>
             </div>
+            
           )}
-        </div>
-        <div className={styles.actions}>
+            <div className={styles.actions}>
           <Button
             className={`action-buttons ${!deleteLoading ? "" : styles.disabled}`}
             onClick={async () => {
@@ -55,6 +55,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ showModal, handleClose, delet
             Delete
           </Button>
         </div>
+        </div>
+      
       </div>
     </Modal>
   );

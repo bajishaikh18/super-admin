@@ -296,8 +296,7 @@ const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
           <p>This action is irreversible.</p>
         </div>
       )}
-    </div>
-    <div className={styles.actions}>
+       <div className={styles.actions}>
       <Button
         className={`action-buttons ${!deleteLoading ? "" : styles.disabled}`}
         onClick={async () => {
@@ -310,6 +309,8 @@ const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
         Delete
       </Button>
     </div>
+    </div>
+   
   </div>
 </Modal>
 
