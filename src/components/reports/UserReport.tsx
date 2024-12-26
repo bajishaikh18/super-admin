@@ -42,6 +42,11 @@ const industryOptions = [
     return { value: key, label: val };
   }),
 ];
+function getExperienceRange(value: number): string {
+  const start = value;
+  const end = start + 1;
+  return `${start}-${end}`;
+}
 
 function UserReport() {
   const [reportData, setReportData] = useState<any[]>([]);
@@ -84,8 +89,6 @@ function UserReport() {
         header: "Job title",
         cell: (info) => (info.renderValue() as any)?.title || "N/A",
       }),
-
-      
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => INDUSTRIES[info.getValue() as "oil_gas"] || info.renderValue() || "N/A",
@@ -108,8 +111,17 @@ function UserReport() {
           filterType: "number",
           classes: "f-7",
         },
-        cell: (info) =>
-          info.renderValue() ? `${info.renderValue()} Years` : "N/A",
+        cell: (info) => {
+          const value = info.renderValue();
+          if (value) {
+            const [start, end] = value.toString().split("-");
+            if (end) {
+              return `${start}-${end} Years`;
+            }
+            return getExperienceRange(Number(value));
+          }
+          return "N/A";
+        },
       }),
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
@@ -125,7 +137,7 @@ function UserReport() {
       }),
       columnHelper.accessor("resume", {
         cell: (info) => {
-          const [, extn] = info.getValue()?.keyName?.split("") || [];
+          const [, extn] = info.getValue()?.keyName?.split(".") || [];
           return info.getValue()?.keyName ? (
             <Link
               href={`javascript:;`}
@@ -207,6 +219,7 @@ function UserReport() {
     ],
     []
   );
+  
   const {
     control,
     handleSubmit,
