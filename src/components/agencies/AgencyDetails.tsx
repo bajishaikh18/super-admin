@@ -6,6 +6,7 @@ import styles from "../common/styles/Details.module.scss";
 import agencyStyles from "./Agency.module.scss";
 import Image from "next/image";
 import { FaChevronLeft } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
 import {
   Button,
   Card,
@@ -40,6 +41,11 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
   const { refreshImage } = usePostJobStore();
   const router = useRouter();
   const [openEdit, setOpenEdit] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+ const [deleteLoading, setDeleteLoading] = useState(false);
+const handleOpenDeleteModal = () => setIsDeleteModalOpen(true);
+const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["agencyDetails", agencyId],
     queryFn: () => {
@@ -262,9 +268,55 @@ const AgencyDetails: React.FC<PostedJobDetailsProps> = ({ agencyId }) => {
                         </Dropdown.Item>
                       )}
 
-                      <Dropdown.Item className="danger" onClick={deleteAgency}>
-                        Delete Agency
-                      </Dropdown.Item>
+<Modal
+  show={isDeleteModalOpen}
+  onHide={handleCloseDeleteModal}
+  centered
+  backdrop="static"
+>
+  <div className={styles.modalContainer}>
+    <div className={styles.modal}>
+      <div className={styles.modalHeader}>
+        <h2>Delete Agency</h2>
+        <IoClose
+          className={styles.closeButton}
+          onClick={handleCloseDeleteModal}
+        />
+      </div>
+      {deleteLoading ? (
+        <div className={styles.popupContent}>
+          <p className={styles.loadingContent}>
+            Your Agency is deleting, please wait.
+          </p>
+          <div className={styles.createSpinner}></div>
+        </div>
+      ) : (
+        <div className={styles.deletePrompt}>
+          <h3>Are you sure you want to delete the Agency?</h3>
+          <p>This action is irreversible.</p>
+        </div>
+      )}
+    </div>
+    <div className={styles.actions}>
+      <Button
+        className={`action-buttons ${!deleteLoading ? "" : styles.disabled}`}
+        onClick={async () => {
+          setDeleteLoading(true);
+          await deleteAgency();
+          setDeleteLoading(false);
+          handleCloseDeleteModal();
+        }}
+      >
+        Delete
+      </Button>
+    </div>
+  </div>
+</Modal>
+
+<Dropdown.Item className="danger" onClick={handleOpenDeleteModal}>
+  Delete Agency
+</Dropdown.Item>
+
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
