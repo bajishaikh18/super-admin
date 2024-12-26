@@ -8,6 +8,7 @@ import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
+import { generateExperienceRanges } from"@/helpers//experience";
 import {
   Duration,
   GenerateReportText,
@@ -42,11 +43,6 @@ const industryOptions = [
     return { value: key, label: val };
   }),
 ];
-function getExperienceRange(value: number): string {
-  const start = value;
-  const end = start + 1;
-  return `${start}-${end}`;
-}
 
 function UserReport() {
   const [reportData, setReportData] = useState<any[]>([]);
@@ -89,6 +85,8 @@ function UserReport() {
         header: "Job title",
         cell: (info) => (info.renderValue() as any)?.title || "N/A",
       }),
+
+      
       columnHelper.accessor("industry", {
         header: "Industry",
         cell: (info) => INDUSTRIES[info.getValue() as "oil_gas"] || info.renderValue() || "N/A",
@@ -110,19 +108,20 @@ function UserReport() {
         meta: {
           filterType: "number",
           classes: "f-7",
+          filterOptions: generateExperienceRanges(1, 10),  
         },
         cell: (info) => {
           const value = info.renderValue();
-          if (value) {
-            const [start, end] = value.toString().split("-");
-            if (end) {
-              return `${start}-${end} Years`;
-            }
-            return `${getExperienceRange(Number(value))} years`;
+          const experienceRange = generateExperienceRanges(1, 10).find(range => range.value === value?.toString());
+      
+          if (experienceRange) {
+            return experienceRange.label; 
           }
-          return "N/A";
+          
+          return value ? `${value} Years` : "N/A"; 
         },
       }),
+      
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
         meta: {
@@ -137,7 +136,7 @@ function UserReport() {
       }),
       columnHelper.accessor("resume", {
         cell: (info) => {
-          const [, extn] = info.getValue()?.keyName?.split(".") || [];
+          const [, extn] = info.getValue()?.keyName?.split("") || [];
           return info.getValue()?.keyName ? (
             <Link
               href={`javascript:;`}
@@ -219,7 +218,6 @@ function UserReport() {
     ],
     []
   );
-  
   const {
     control,
     handleSubmit,
