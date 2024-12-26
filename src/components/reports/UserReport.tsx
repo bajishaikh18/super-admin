@@ -118,7 +118,7 @@ function UserReport() {
             if (end) {
               return `${start}-${end} Years`;
             }
-            return getExperienceRange(Number(value));
+            return `${getExperienceRange(Number(value))} years`;
           }
           return "N/A";
         },
