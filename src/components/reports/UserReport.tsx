@@ -8,6 +8,7 @@ import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
+import { generateExperienceRanges } from"@/helpers//experience";
 import {
   Duration,
   GenerateReportText,
@@ -107,10 +108,20 @@ function UserReport() {
         meta: {
           filterType: "number",
           classes: "f-7",
+          filterOptions: generateExperienceRanges(1, 10),  
         },
-        cell: (info) =>
-          info.renderValue() ? `${info.renderValue()} Years` : "N/A",
+        cell: (info) => {
+          const value = info.renderValue();
+          const experienceRange = generateExperienceRanges(1, 10).find(range => range.value === value?.toString());
+      
+          if (experienceRange) {
+            return experienceRange.label; 
+          }
+          
+          return value ? `${value} Years` : "N/A"; 
+        },
       }),
+      
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
         meta: {
