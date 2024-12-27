@@ -7,6 +7,7 @@ import styles from "../common/styles/Details.module.scss";
 import Image from "next/image";
 import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa6";
+import DeleteModal from "../common/delete/DeleteModal";
 import {
   Button,
   Card,
@@ -42,6 +43,16 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   const {refreshImage} = usePostJobStore();
   const router = useRouter();
   const [openEdit,setOpenEdit ]= useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
   const { data, isLoading, isError } = useQuery({
     queryKey: ["jobDetails", jobId],
     queryFn: () => {
@@ -101,6 +112,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
 
 
   const deletePost = useCallback(async ()=>{
+    setDeleteLoading(true);
     try{
         await updateJob(_id,{isDeleted:true});
         router.push("/posted-jobs")
@@ -272,8 +284,13 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                            
                           </Dropdown.Item>
                         }
-                      
-                        <Dropdown.Item className="danger" onClick={deletePost}>
+                      <DeleteModal
+        showModal={isDeleteModalOpen}
+        handleClose={handleCloseDeleteModal}
+        deleteLoading={deleteLoading}
+        handleDelete={deletePost}
+      />
+                       <Dropdown.Item className="danger" onClick={handleOpenDeleteModal}>
                            Delete Post
                         </Dropdown.Item>
                       </Dropdown.Menu>
