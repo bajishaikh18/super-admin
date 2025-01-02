@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
 
-const ALLOWEDPATH = ['/login','/reset-password']
+const ALLOWEDPATH = ['/login','/reset-password','/register']
 export const AuthCheck = ({children}:{children:any})=>{
     const router = useRouter();
     const pathname = usePathname()

@@ -20,7 +20,7 @@ import { getUserNotifications } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 
 interface HeaderProps {}
-const HIDEPATHS = ["/login", "/reset-password"];
+const HIDEPATHS = ["/login", "/reset-password",'/register'];
 
 
 const Header: React.FC<HeaderProps> = () => {

@@ -13,6 +13,19 @@ export const login = async (data: object) => {
   }
 };
 
+
+export const registerUser = async (data: object) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/user/adduser`, data);
+    localStorage.setItem('authToken', response.data.token);
+    return response.data;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  } finally {
+  }
+};
+
 export const resetPassword = async (data: object) => {
   try {
     const response = await axios.post(`${BASE_URL}/user/resetpassword`, data, {

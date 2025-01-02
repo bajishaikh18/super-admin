@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
+import Link from 'next/link';
 
 interface FormValues {
   email: string;
@@ -117,6 +118,7 @@ function Page() {
                 {errors.password &&  <Form.Text className='error'>
                   {errors.password.message}                </Form.Text>}
               </Form.Group>
+              <div className={styles.actionLink}>
               <a
                 href="#"
                 onClick={(e) => { e.preventDefault(); handleForgotPassword(); }}
@@ -124,6 +126,13 @@ function Page() {
               >
                 Forgot Password?
               </a>
+              <Link
+                href='/register'
+                className={styles.forgotPassword}
+              >
+                Register as agency
+              </Link>
+              </div>
             <Button
               type="submit"
               className={`btn ${loading ? 'btn-loading' : ''} ${styles.button}`}
