@@ -95,7 +95,7 @@ const Header: React.FC<HeaderProps> = () => {
   const logout = () => {
     localStorage.clear();
     setAuthUser(null);
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   if (HIDEPATHS.includes(pathname)) {
