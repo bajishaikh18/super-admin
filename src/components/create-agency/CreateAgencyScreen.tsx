@@ -12,6 +12,7 @@ import { IoClose } from "react-icons/io5";
 interface CreateAgencyScreenProps {
   countries?: string[]; // Make the countries prop optional
   isEdit?: boolean;
+  isSelfSignup?:boolean;
   handleContinueClick: () => void;
   handleClose: () => void;
   handleBackToPostJobClick: () => void;
@@ -26,12 +27,14 @@ import {
   GetState,
 } from "react-country-state-city";
 import { CITIES } from "@/helpers/stateList";
+import { updateDetails } from "@/apis/auth";
 
 const phoneRegex = /^[0-9]{10}$/;
 
 const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
   countries = [], // Provide a default value of an empty array
   isEdit,
+  isSelfSignup,
   handleContinueClick,
   handleClose,
   handleBackToPostJobClick,
@@ -110,6 +113,9 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
           },
           refetchType: "all",
         });
+        if(isSelfSignup){
+          await updateDetails({agencyId:res.agency?._id || formData?._id!});
+        }
       }
       
       if (selectedFile) {
@@ -119,6 +125,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
         }
         await updateAgency(res?.agency?._id! || formData?._id!, {profilePic: resp?.keyName});
       }
+    
       toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
@@ -135,8 +142,9 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
           {isEdit ? "Edit " : "Create "}
           Agency (2/2)
         </h2>
-
-        <IoClose className={styles.closeButton} onClick={handleClose}></IoClose>
+        {
+          !isSelfSignup && <IoClose className={styles.closeButton} onClick={handleClose}></IoClose>
+        }
       </div>
       {
         loading ?  <div className={styles.popupContent}>

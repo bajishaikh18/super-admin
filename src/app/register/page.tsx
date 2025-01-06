@@ -70,12 +70,12 @@ function Page() {
         localStorage.setItem("token", response.token);
         const resp = await getUserDetails();
         setAuthUser(resp.userDetails as AuthUser);
-        setIsOtpVerification(true);
+        router.push('/verify')
       }
     } catch (error: any) {
       setLoading(false);
       if ([400, 404].includes(error.status)) {
-        toast.error("Looks like your credentials are wrong");
+        toast.error("Looks like the email is already used. Please contact your agency");
       } else {
         toast.error("Something went wrong! Please try again later");
       }
@@ -86,21 +86,10 @@ function Page() {
     setShowPassword((prev) => !prev);
   };
 
-  const handleOtpSuccess = () => {
-    toast.success("OTP Verified Successfully!");
-    router.push("/create-agency");
-  };
 
   return (
     <Container>
       <div className={styles.container}>
-        {isOtpVerification ? (
-          <Otpverification
-            email={watch("email")}
-          
-            onVerificationSuccess={handleOtpSuccess}
-          />
-        ) : !showForgotPassword ? (
           <Card className={styles.card}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <CardHeader className={styles.cardHeader}>
@@ -347,9 +336,6 @@ function Page() {
             </CardBody>
           </Form>
         </Card>
-      ) : (
-        <Forgot setShowForgotPassword={setShowForgotPassword} />
-      )}
     </div>
   </Container>
 );

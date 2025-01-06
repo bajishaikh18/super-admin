@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Card } from "react-bootstrap";
 import styles from "./Otpverification.module.scss";
+import { resendOtp, verifyEmail } from "@/apis/auth";
+import { getUserDetails } from "@/apis/user";
+import { AuthUser, useAuthUserStore } from "@/stores/useAuthUserStore";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface OtpVerificationProps {
   email: string;
@@ -16,9 +21,9 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState<number>(90);
   const [isVerifying, setIsVerifying] = useState(false);
-
+  const {setAuthUser} = useAuthUserStore();
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
+ const router = useRouter();
   useEffect(() => {
     let countdown: NodeJS.Timeout;
     if (isResendDisabled && timer > 0) {
@@ -42,23 +47,37 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
     }
   };
 
-  const handleResend = () => {
-    setTimer(90);
-    setIsResendDisabled(true);
-    alert("OTP resent to your email!");
+  const handleResend = async () => {
+    try{
+      await resendOtp({email:email})
+      setTimer(90);
+      setIsResendDisabled(true);
+      toast.success("OTP resent successfully")
+
+    }catch(e){
+      toast.error("Error while resending otp. try again")
+    }
   };
 
-  const handleSubmit = () => {
-    const enteredOtp = otp.join("");
-    setIsVerifying(true);
-    setTimeout(() => {
-      if (enteredOtp === "123456") {
-        onVerificationSuccess();
-      } else {
-        alert("Invalid OTP");
+  const handleSubmit = async () => {
+    try{
+      const enteredOtp = otp.join("");
+      setIsVerifying(true);
+      await verifyEmail({email: email, otp:enteredOtp});
+      const resp = await getUserDetails();
+      setAuthUser(resp.userDetails as AuthUser)
+      toast.success("Email verified successfully")
+      setIsVerifying(false);
+      router.push("/posted-jobs")
+    }catch(e:any){
+      if(e.status === 401){
+        toast.error("Entered otp is invalid please try with valid otp");
+      }else{
+        toast.error("Something went wrong while verifiying email");
       }
       setIsVerifying(false);
-    }, 1000); 
+    }
+    
   };
 
   return (
@@ -109,18 +128,11 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
         </div>
         <div className={styles.jobActions}>
           <Button
-            className={styles.CancelButton}
-            variant="secondary"
-            onClick={() => alert("OTP verification canceled!")}
-          >
-            Cancel
-          </Button>
-          <Button
             className={styles.CreateButton}
             onClick={handleSubmit}
             disabled={isVerifying || otp.some((digit) => digit === "")}
           >
-            {isVerifying ? "Verifying..." : "Verify Email"}
+            {isVerifying ? <div className={styles.spinner}></div> : "Verify Email"}
           </Button>
         </div>
       </Card>

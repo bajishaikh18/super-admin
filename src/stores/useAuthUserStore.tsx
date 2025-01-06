@@ -7,6 +7,7 @@ export interface AuthUser {
     phone: string;
     _id: string;
     country: string;
+    emailVerified:boolean;
     firstName: string;
     lastName: string;
     agencyId:string;

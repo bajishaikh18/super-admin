@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
 import Link from 'next/link';
+import { ROLE } from '@/helpers/constants';
 
 interface FormValues {
   email: string;
@@ -35,21 +36,17 @@ function Page() {
       console.log("Response", response);
 
       if (response.token) {
-        localStorage.setItem('token', response.token);
-
-       
-        if (!response.isEmailVerified) {
-          setUserEmail(data.email); 
-          setShowOtpVerification(true); 
-          setLoading(false);
-          return;
-        }
-
-      
+        localStorage.setItem('token', response.token);      
         const resp = await getUserDetails();
+        console.log(resp);
         setAuthUser(resp.userDetails as AuthUser);
-        router.prefetch('/');
-        router.push("/");
+        if(resp?.userDetails?.emailVerified || resp.userDetails.role !== ROLE.employer){
+          router.prefetch('/');
+          router.push("/");
+        }else{
+          router.prefetch('/verify');
+          router.push("/verify");
+        }
         setLoading(false);
       }
     } catch (error: any) {
