@@ -23,13 +23,14 @@ import {
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { BsThreeDots } from "react-icons/bs";
-import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
+import { COUNTRIES, FACILITIES_IMAGES, IMAGE_BASE_URL, ROLE, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
 import CreateJob from "../create-job/CreateJob";
 import toast from "react-hot-toast";
 import usePostJobStore from "@/stores/usePostJobStore";
 import { LuExpand } from "react-icons/lu";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
 
 type PostedJobDetailsProps = {
   jobId: string;
@@ -45,7 +46,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
   const [openEdit,setOpenEdit ]= useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-
+  const {shouldVisible, authUser} = useAuthUserStore();
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
@@ -77,6 +78,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
     numberofApplications,
     viewed,
     status,
+    jobCreator,
     description,
     savedBy,
     amenities,
@@ -267,6 +269,9 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                   </div>
                 </div>
                 <div className={styles.actionContainer}>
+                   {
+                    (shouldVisible([ROLE.superAdmin]) ||
+                                      jobCreator === authUser?._id) && <>
                   <Button className={`action-buttons ${styles.editButton}`} onClick={()=>setOpenEdit(true)}>
                     Edit Post
                   </Button>
@@ -276,6 +281,8 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu>
+            {shouldVisible([ROLE.superAdmin]) && (
+                        <>
                         {
                           status != 'expired' &&  <Dropdown.Item onClick={changePostStatus}>
                           {
@@ -284,6 +291,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                            
                           </Dropdown.Item>
                         }
+                      </>)}
                       <DeleteModal
         showModal={isDeleteModalOpen}
         handleClose={handleCloseDeleteModal}
@@ -295,6 +303,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
+                    </>}
                 </div>
               </CardHeader>
               <CardBody className={styles.detailsCardBody}>

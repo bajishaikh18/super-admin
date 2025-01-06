@@ -13,12 +13,13 @@ interface FirstWalkInScreenProps {
   handleClose: () => void;
   handleBackToPostWalkInClick: () => void;
 }
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, ROLE } from "@/helpers/constants";
 import { CustomDatePicker } from "../common/form-fields/DatePicker";
 import { debounce } from "lodash";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
 import { SelectOption } from "@/helpers/types";
 import { DateTime } from "luxon";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
 interface FormValues {
   agency: SelectOption;
   location: string;
@@ -36,12 +37,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
   // Zustand store management
   const { selectedFacilities, handleFacilityClick, setFormData, formData } =
     usePostWalkinStore();
-  const agencies = [
-    { label: "Agency 1", value: "5f2c6e02e4b0a914d4a9fcb8" },
-    { label: "Agency 2", value: "5f2c6e02e4b0a914d4a9fcb5" },
-    { label: "Agency 3", value: "5f2c6e02e4b0a914d4a9fcb6" },
-    { label: "Agency 4", value: "5f2c6e02e4b0a914d4a9fcb7" },
-  ];
+  const {shouldVisible, role} = useAuthUserStore();
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
@@ -98,7 +94,8 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
       </div>
       <Form className={"post-form"} onSubmit={handleSubmit(onSubmit)}>
         {/* Agency Selection */}
-        <Form.Group className={styles.formGroup}>
+        {
+          shouldVisible([ROLE.admin,ROLE.superAdmin]) && <Form.Group className={styles.formGroup}>
           <Form.Label>Agency</Form.Label>
           <MultiSelectAsync
                          name="agency"
@@ -114,6 +111,8 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
                         />
          
         </Form.Group>
+        }
+       
 
         <Form.Group className={styles.formGroup}>
           <Form.Label>Work Location</Form.Label>

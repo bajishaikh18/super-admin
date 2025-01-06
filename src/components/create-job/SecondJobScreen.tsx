@@ -9,13 +9,14 @@ import { IoClose } from "react-icons/io5";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { createJob, updateJob } from "@/apis/job";
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, ROLE } from "@/helpers/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
 import { UploadPositions } from "../common/UploadPositions";
 import { FaPlus } from "react-icons/fa6";
 import { generateExperienceRanges } from"@/helpers//experience";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
 interface JobPosition {
   title: {
     value:string,
@@ -50,6 +51,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
   handleClose
 }) => {
   const queryClient = useQueryClient();
+  const { role, authUser } = useAuthUserStore();
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
@@ -204,8 +206,9 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       if(data.altContactNumber && data.altCountryCode){
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
+      const agencyId = role===ROLE.employer ? authUser?.agencyId : formData?.agency?.value;
       const jobData = {
-        agencyId: formData?.agency?.value,
+        agencyId: agencyId,
         location: formData?.location,
         expiry: formData?.expiry,
         positions: data?.jobPositions.filter(x=>x && x.title?.value).map(position => ({
@@ -252,7 +255,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
           })
         }
       }
-      setFormData({_id: res.job?._id,...data});
+      setFormData({_id: res.job?._id,...data,agency:{value:agencyId||"",label:"Test"}});
       setNewlyCreatedJob(res.job)
       toast.success(`Job ${isEdit?'updated':'created'} successfully`)
       handleCreateJobClick();

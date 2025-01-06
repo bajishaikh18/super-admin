@@ -5,8 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
 import PostedJobsTable from "./PostedjobsTable";
 import { getJobSummary } from "@/apis/job";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
+import { ROLE } from "@/helpers/constants";
 
 const PostedJobs = () => {
+  const {shouldVisible} = useAuthUserStore();
   const {
     data: summaryData,
     isLoading: summaryLoading,
@@ -35,14 +38,16 @@ const PostedJobs = () => {
       value: summaryData?.expiredCount || "0",
       image: "/users.png",
     },
+    shouldVisible([ROLE.admin,ROLE.superAdmin])?
     {
       label: "Agencies",
       value: summaryData?.agenciesCount || "0",
       image: "/employers.png",
       link: '/agency'
-    },
+    } : null,
   ];
 
+  
   return (
     <>
       <main className="main-section">

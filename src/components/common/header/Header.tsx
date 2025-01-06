@@ -95,7 +95,7 @@ const Header: React.FC<HeaderProps> = () => {
   const logout = () => {
     localStorage.clear();
     setAuthUser(null);
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   if (HIDEPATHS.includes(pathname)) {
@@ -157,30 +157,33 @@ const Header: React.FC<HeaderProps> = () => {
                 title="Users"
                 className={`${styles.navListItem} nav-list-item`}
               >
-                <NavDropdown.Item
-                   className={`${styles.navListItem} ${
-                    pathname.includes("/users?type=app") ? styles.active : ""
-                  }`}
-                  href="/users?type=app"
-                >
-                Registered app users
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                   className={`${styles.navListItem} ${
-                    pathname.includes("/users?type=admin") ? styles.active : ""
-                  }`}
-                  href="/users?type=admin"
-                >
-               Internal users
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                   className={`${styles.navListItem} ${
-                    pathname.includes("/agency") ? styles.active : ""
-                  }`}
-                  href="/agency"
-                >
-                 Agencies / Trade centers
-                </NavDropdown.Item>
+                {
+                  shouldVisible([ROLE.superAdmin, ROLE.admin]) && <> <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                   pathname.includes("/users?type=app") ? styles.active : ""
+                 }`}
+                 href="/users?type=app"
+               >
+               Registered app users
+               </NavDropdown.Item>
+               <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                   pathname.includes("/users?type=admin") ? styles.active : ""
+                 }`}
+                 href="/users?type=admin"
+               >
+              Internal users
+               </NavDropdown.Item>
+               <NavDropdown.Item
+                  className={`${styles.navListItem} ${
+                   pathname.includes("/agency") ? styles.active : ""
+                 }`}
+                 href="/agency"
+               >
+                Agencies / Trade centers
+               </NavDropdown.Item></>
+                }
+               
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
                     pathname == "/employers" ? styles.active : ""
