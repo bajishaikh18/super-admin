@@ -9,7 +9,7 @@ import { IoClose } from "react-icons/io5";
 import { getSignedUrl, uploadFile } from "@/apis/common";
 import toast from "react-hot-toast";
 import { createInterview, updateInterview } from "@/apis/walkin";
-import { COUNTRIES } from "@/helpers/constants";
+import { COUNTRIES, ROLE } from "@/helpers/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
@@ -23,6 +23,7 @@ import {
 import { CITIES } from "@/helpers/stateList";
 import { FaPlus } from "react-icons/fa6";
 import { UploadPositions } from "../common/UploadPositions";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
 interface JobPosition {
   title: {
     value:string,
@@ -63,6 +64,7 @@ const SecondWalkInScreen: React.FC<SecondWalkInScreenProps> = ({
   handleClose
 }) => {
   const queryClient = useQueryClient();
+  const { role, authUser } = useAuthUserStore();
   const [jobPositions, setJobPositions] = useState<JobPosition[]>([
     { title: {value:"",label:""}, experience: "0", salary: "" },
   ]);
@@ -249,9 +251,9 @@ const createWalkInMutation = useMutation({
       if (data.altContactNumber && data.altCountryCode) {
         contacts.push(`${data.altCountryCode}-${data.altContactNumber}`);
       }
-
+      const agencyId = role===ROLE.employer ? authUser?.agencyId : formData?.agency?.value;
       const jobData = {
-        agencyId: formData?.agency?.value,
+        agencyId:agencyId,
         location: formData?.location,
         expiry: formData?.expiry,
         positions: data?.jobPositions
@@ -303,7 +305,7 @@ const createWalkInMutation = useMutation({
           });
         }
       }
-      setFormData({_id: res.interview?._id,...data});
+      setFormData({_id: res.interview?._id,...data,agency:{value:agencyId||"",label:"Test"}});
       setNewlyCreatedWalkin(res.interview);
       toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
       handleCreateWalkinClick();

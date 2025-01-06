@@ -5,8 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader, NotFound } from "../common/Feedbacks";
 import PostedWalkInTable from "./PostedWalkIn";
 import { getInterviewSummary } from "@/apis/walkin";
+import { useAuthUserStore } from "@/stores/useAuthUserStore";
+import { ROLE } from "@/helpers/constants";
 
 const WalkIn = () => {
+  const {shouldVisible} = useAuthUserStore();
   const {
     data: summaryData,
     isLoading: summaryLoading,
@@ -28,12 +31,13 @@ const WalkIn = () => {
       value: summaryData?.expiredCount || "0",
       image: "/users.png",
     },
-    {
-      label: "Agencies",
-      value: summaryData?.agenciesCount || "0",
-      image: "/employers.png",
-      link: '/agency'
-    },
+     shouldVisible([ROLE.admin,ROLE.superAdmin])?
+        {
+          label: "Agencies",
+          value: summaryData?.agenciesCount || "0",
+          image: "/employers.png",
+          link: '/agency'
+        } : null,
   ];
 
   return (
