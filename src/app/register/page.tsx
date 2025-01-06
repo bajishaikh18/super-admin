@@ -88,7 +88,7 @@ function Page() {
 
   const handleOtpSuccess = () => {
     toast.success("OTP Verified Successfully!");
-    router.push("/");
+    router.push("/create-agency");
   };
 
   return (
