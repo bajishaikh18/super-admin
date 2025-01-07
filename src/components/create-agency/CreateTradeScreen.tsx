@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import usePostJobStore from "@/stores/usePostJobStore";
+import React, {  useEffect, useState } from "react";
+
 import styles from "./CreateAgency.module.scss";
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
-import { FieldError, useForm } from "react-hook-form";
+import { Button, Col, Form,Row } from "react-bootstrap";
+import {  useForm } from "react-hook-form";
 import {
   MultiSelect,
-  MultiSelectAsync,
+
 } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
@@ -20,10 +20,10 @@ interface CreateTradeScreenProps {
   
  
 }
-import { COUNTRIES } from "@/helpers/constants";
+
 import useAgencyStore, {CreateTradeFormData } from "@/stores/useAgencyStore";
 
-import { createTradeTestCenter,updateTradeTestCenter } from "@/apis/trade-test-center";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -31,16 +31,16 @@ import {
 } from "react-country-state-city";
 import { CITIES } from "@/helpers/stateList";
 
-const phoneRegex = /^[0-9]{10}$/;
+
 
 const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
-  countries = [], // Provide a default value of an empty array
+  // Provide a default value of an empty array
   isEdit,
  
   handleContinueClick,
   handleClose,
 }) => {
-  const { tradeFormData, setTradeFormData} = useAgencyStore();
+  const { tradeFormData} = useAgencyStore();
   const [loading, setLoading] = useState(false);
   const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
@@ -89,23 +89,19 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
     retry: 3,
   });
 
-  const onSubmit = async (data: CreateTradeFormData) => {
+  const onSubmit = async () => {
     try {
-      let resp;
+     
       setLoading(true);
      
-      const contactNo = `${data.countryCode}-${data.contactNumber}`;
-      const payload = {
-        ...data,
-        phone: contactNo,
-        approved: true
-      };
-      let res;
+     
+     
+    
       if (isEdit && tradeFormData?._id) {
-        res = await updateTradeTestCenter(tradeFormData?._id,payload);
+       
        
       } else {
-        res = await createTradeTestCenter(payload);
+      
        
       }
       await queryClient.invalidateQueries({
@@ -119,7 +115,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
       toast.success(`Trade Center ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
-    } catch (error) {
+    } catch  {
       toast.error(`Error while ${isEdit?'updating':'creating'} Trade Center. Please try again`)
       setLoading(false);
     }

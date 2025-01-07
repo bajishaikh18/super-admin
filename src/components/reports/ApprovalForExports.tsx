@@ -11,7 +11,7 @@ import { getApprovals, updateApprovalStatus } from "@/apis/approval";
 
 type TabType = "Approved" | "Pending"| "Completed";
 
-const fetchSize = 50;
+
 
 export type JobType = {
   _id: string; 
@@ -37,9 +37,9 @@ const ApprovalRequest: React.FC = () => {
   const [sortingApproved, setSortingApproved] = useState<SortingState>([]);
   const [sortingPending, setSortingPending] = useState<SortingState>([]);
   const [sortingCompleted, setSortingCompleted] = useState<SortingState>([]);
-  const [searchApproved, setSearchApproved] = useState<string>(""); 
-  const [searchPending, setSearchPending] = useState<string>("");
-  const [searchCompleted, setSearchCompleted] = useState<string>(""); 
+  const [searchApproved] = useState<string>(""); 
+  const [searchPending] = useState<string>("");
+  const [searchCompleted] = useState<string>(""); 
   const [approvedEmployers, setApprovedEmployers] = useState<JobType[]>([]);
   const [pendingEmployers, setPendingEmployers] = useState<JobType[]>([]);
   const [completedEmployers, setCompletedEmployers] = useState<JobType[]>([]);
@@ -140,7 +140,7 @@ const ApprovalRequest: React.FC = () => {
         refetchType:'all'
       })
       toast.success("Employer approved successfully!");
-    } catch (error) {
+    } catch  {
       toast.error("Failed to approve employer.");
     }
   };
@@ -155,7 +155,7 @@ const ApprovalRequest: React.FC = () => {
         },
         refetchType:'all'
       })
-    } catch (error) {
+    } catch  {
       toast.error("Failed to reject employer.");
     }
   };

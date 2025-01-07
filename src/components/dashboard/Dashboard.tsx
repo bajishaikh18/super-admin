@@ -9,16 +9,13 @@ import { getSummary } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";
 
 const Dashboard = () => {
-  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [notificationVisible] = useState(false);
   const {
     data: summaryData,
     isLoading: summaryLoading,
     error: summaryError,
   } = useQuery({ queryKey: ["summary", "dashboard"], queryFn: getSummary,retry:3 });
-  const toggleNotification = () => {
-    setNotificationVisible(!notificationVisible);
-  };
-
+ 
   const dashboardSummary = [
     {
       label: "Jobs Posted",

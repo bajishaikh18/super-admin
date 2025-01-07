@@ -10,7 +10,7 @@ export const isTokenValid = () => {
             return false
         const currentTime = Date.now() / 1000;
         return (decodedToken.exp||0) > currentTime;
-    }catch(e){
+    }catch{
         return false;
     }  
   };
@@ -22,7 +22,7 @@ export const getTokenClaims = ()=>{
             return null;
         const user = jwtDecode(token);
         return user;
-    }catch(e){
+    }catch{
         return null;
     }  
   };

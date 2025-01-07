@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import html2canvas from "html2canvas";
 import styles from "./CreateWalkIn.module.scss";
 import Image from "next/image";
-import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+import { AiFillCloseCircle } from "react-icons/ai";
 import usePostWalkinStore, {
   PostWalkinFormData,
 } from "@/stores/usePostWalkinStore";
@@ -15,7 +15,7 @@ import {
 } from "@/helpers/constants";
 import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { HexColorPicker } from "react-colorful";
-import { createInterview, updateInterview } from "@/apis/walkin";
+import {  updateInterview } from "@/apis/walkin";
 import { IoClose } from "react-icons/io5";
 import { IoIosColorPalette } from "react-icons/io";
 import { getSignedUrl, uploadFile } from "@/apis/common";
@@ -639,7 +639,7 @@ const PostWalkInScreen: React.FC<FourthWalkInScreenProps> = ({
         setRefreshImage(true);
       }
       setLoading(false);
-    } catch (error: unknown) {
+    } catch  {
       toast.error("Error while posting walkin. Please try again");
       setLoading(false);
     }

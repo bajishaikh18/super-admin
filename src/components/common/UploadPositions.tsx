@@ -3,7 +3,7 @@ import styles from "./Common.module.scss";
 import { useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
-import { difference, result, set } from "lodash";
+
 
 const CSVColumns = ["Position", "Experience", "Salary"];
 

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
-import { MultiSelect } from "../common/form-fields/MultiSelect";
+import { Form, Button, Row, Col,  Spinner } from "react-bootstrap";
+
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import styles from "./JobPosted.module.scss";
@@ -9,7 +9,7 @@ import dataTableStyles from "../../components/common/table/DataTable.module.scss
 import { getReports } from "@/apis/dashboard";
 import { debounce } from "lodash";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
-import { COUNTRIES, DURATION_OPTIONS, INDUSTRIES } from "@/helpers/constants";
+import { COUNTRIES,  INDUSTRIES } from "@/helpers/constants";
 import { Duration, GenerateReportText, NoReportText, ReportTypeSelect } from "./CommonElements";
 import {
   MultiSelectAsyncWithCheckbox,
@@ -239,7 +239,7 @@ function JobPosted() {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors},
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {

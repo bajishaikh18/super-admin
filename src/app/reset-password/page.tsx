@@ -1,5 +1,5 @@
 'use client';
-import React, { Suspense, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { resetPassword } from "@/apis/auth";
 import { useRouter, useSearchParams } from "next/navigation";

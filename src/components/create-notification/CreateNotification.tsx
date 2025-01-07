@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from "./CreateNotification.module.scss";
 import { IoClose } from "react-icons/io5";
@@ -31,10 +31,10 @@ function CreateNotification({
   handleModalClose: () => void;
 }) {
   const queryClient = useQueryClient();
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit] = useState(false);
   const { formData } = useNotificationStore();
   const [loading, setLoading] = useState(false);
-  const [jobTitles, setJobTitles] = useState<{ title: string }[]>([]);
+  
 
   // const selectOption: SelectOption[] = jobTitles.map((jobTitle) => ({
   //   value: jobTitle.title,
@@ -82,7 +82,7 @@ function CreateNotification({
         queryKey:["notifications"],
         refetchType:'all'
       });     
-    }catch(e){
+    }catch{
       toast.error("Error while adding notification");
       setLoading(false);
     }

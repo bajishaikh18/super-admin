@@ -14,10 +14,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { debounce, flatten } from "lodash";
 import { generateExperienceRanges } from"@/helpers//experience";
-import { CustomDatePicker, CustomDateTimePicker } from "../common/form-fields/DatePicker";
-import { DateTime } from "luxon";
+import {  CustomDateTimePicker } from "../common/form-fields/DatePicker";
+
 import {
-  GetCity,
+ 
   GetState,
 } from "react-country-state-city";
 import { CITIES } from "@/helpers/stateList";
@@ -310,7 +310,7 @@ const createWalkInMutation = useMutation({
       toast.success(`Interview ${isEdit ? "updated" : "created"} successfully`);
       handleCreateWalkinClick();
       setLoading(false);
-    } catch (error) {
+    } catch {
       toast.error(`Error while ${isEdit ? "updating" : "creating"} Interview. Please try again.`);
       setLoading(false);
     }

@@ -64,7 +64,7 @@ export const updateTradeTestCenter = async (id:string,data: object) => {
     }
   };
   
-  export const deleteTradeTestCenterAPI = async (id: string, _p0: { isDeleted: boolean; }) => {
+  export const deleteTradeTestCenterAPI = async (id: string) => {
     try {
       const response = await apiClient.delete(`${basePath}/${id}`);
       return response.data;

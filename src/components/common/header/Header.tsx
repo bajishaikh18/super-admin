@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Navbar, Nav, NavDropdown, Modal, Badge } from "react-bootstrap";
 import styles from "./Header.module.scss";
 import Image from "next/image";
@@ -9,7 +9,7 @@ import CreateJob from "@/components/create-job/CreateJob";
 import Link from "next/link";
 import { AuthHeader } from "./AuthHeader";
 import usePostJobStore from "@/stores/usePostJobStore";
-import usePostWalkinStore from "@/stores/usePostWalkinStore";
+
 import CreateAgency from "@/components/create-agency/CreateAgency";
 import useAgencyStore from "@/stores/useAgencyStore";
 import { getTokenClaims, isTokenValid } from "@/helpers/jwt";
@@ -25,7 +25,7 @@ const HIDEPATHS = ["/login", "/reset-password"];
 
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
-  const router = useRouter();
+
   const ref = useRef<any>(null);
   const [showNotification, setShowNotification] = useState(false);
   const { setShowPostJob, showPostJob } = usePostJobStore();

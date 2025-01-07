@@ -14,7 +14,7 @@ export const downloadMedia = async (key:string,name:string)=>{
         document.body.removeChild(link);
         toast.dismiss(loading);
         toast.success("Resume downloaded successfully")
-    }catch(e){
+    }catch{
         toast.dismiss(loading);
         toast.error("Something went wrong while creating a secured download link")
     }   

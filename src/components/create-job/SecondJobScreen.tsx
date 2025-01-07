@@ -260,7 +260,7 @@ const SecondJobScreen: React.FC<SecondJobScreenProps> = ({
       toast.success(`Job ${isEdit?'updated':'created'} successfully`)
       handleCreateJobClick();
       setLoading(false);
-    } catch (error) {
+    } catch  {
       toast.error(`Error while ${isEdit?'updating':'creating'} job. Please try again`)
       setLoading(false);
     } finally {

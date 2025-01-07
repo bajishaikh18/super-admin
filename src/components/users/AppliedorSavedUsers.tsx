@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, {  useMemo } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import { User } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
@@ -21,7 +21,6 @@ import { useParams, useSearchParams } from "next/navigation";
 import { getUsersBasedOnType } from "@/apis/user";
 
 
-type TabType = "admin" | "app";
 
 const columnHelper = createColumnHelper<User>();
 

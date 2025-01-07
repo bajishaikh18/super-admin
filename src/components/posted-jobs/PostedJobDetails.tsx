@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getJobDetails, updateJob } from "@/apis/job";
 import styles from "../common/styles/Details.module.scss";
 import Image from "next/image";
-import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+
 import { FaChevronLeft } from "react-icons/fa6";
 import DeleteModal from "../common/delete/DeleteModal";
 import {
@@ -17,7 +17,7 @@ import {
   Container,
   Dropdown,
   Modal,
-  NavDropdown,
+  
   Row,
 } from "react-bootstrap";
 import { DateTime } from "luxon";
@@ -106,7 +106,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
         })
       }
       toast.success("Job status changed successfully");
-    }catch(e){
+    }catch{
       toast.error("Error while deleting job. Please try again");
       return
     }
@@ -123,7 +123,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
           refetchType:'all'
         })
       toast.success("Job deleted changed successfully");
-    }catch(e){
+    }catch{
       toast.error("Error while deleting job. Please try again");
       return
     }
@@ -336,7 +336,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                             experience: string;
                             salary: string;
                           },
-                          index: number
+                          
                         ) => (
                           <tr key={position.jobTitleId}>
                             <td className={styles.title}>{position.title}</td>

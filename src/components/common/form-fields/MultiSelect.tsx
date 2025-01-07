@@ -1,8 +1,8 @@
 import { SelectOption } from "@/helpers/types";
-import { useVirtualizer } from "@tanstack/react-virtual";
+
 import { Form } from "react-bootstrap";
 import { Control, Controller, FieldError, RegisterOptions } from "react-hook-form";
-import Select, { GroupBase, StylesConfig } from "react-select";
+import Select from "react-select";
 import AsyncSelect from 'react-select/async';
 
 export const MultiSelect = ({
@@ -54,7 +54,7 @@ export const MultiSelect = ({
               },
             })}
             styles={{
-              option:(baseStyles, state)=>({
+              option:(baseStyles)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
               }),
@@ -76,11 +76,11 @@ export const MultiSelect = ({
                   boxShadow:'none'
                 }
               }),
-              menuList:(baseStyles, state) =>({...baseStyles,
+              menuList:(baseStyles) =>({...baseStyles,
                 ...menuListStyles
                
               }),
-              valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
+              valueContainer:(baseStyles) =>({...baseStyles,...valueContainerStyles}),
               indicatorSeparator: () => ({ display: "none" }),
 
             }}
@@ -144,7 +144,7 @@ export const MultiSelectAsync = ({
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange } }) => (
           <AsyncSelect
             isMulti={isMulti}
             cacheOptions
@@ -164,7 +164,7 @@ export const MultiSelectAsync = ({
               },
             })}
             styles={{
-              option:(baseStyles, state)=>({
+              option:(baseStyles)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
               }),
@@ -187,13 +187,13 @@ export const MultiSelectAsync = ({
                 }
               }),
               
-              menuList:(baseStyles, state) =>({...baseStyles,
+              menuList:(baseStyles) =>({...baseStyles,
                 ...menuListStyles,
               }),
-              menu:(baseStyles, state) =>({...baseStyles,
+              menu:(baseStyles) =>({...baseStyles,
                 ...menuListStyles,
               }),
-              valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
+              valueContainer:(baseStyles) =>({...baseStyles,...valueContainerStyles}),
               indicatorSeparator: () => ({ display: "none" }),
 
             }}

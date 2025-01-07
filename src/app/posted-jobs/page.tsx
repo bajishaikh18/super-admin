@@ -1,5 +1,5 @@
 'use client'
-import { ReactQueryProvider } from '../react-quuery-provider';
+
 import PostedJobs from '@/components/posted-jobs/PostedJobs';
 
 const DashboardPage = () => {

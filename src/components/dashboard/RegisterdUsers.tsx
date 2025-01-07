@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
 import { User } from "../../stores/useUserStore";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
@@ -373,8 +373,7 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
 
   const {
     data: summaryData,
-    isLoading: summaryLoading,
-    error: summaryError,
+   
   } = useQuery({
     queryKey: ["summary", "dashboard"],
     queryFn: getSummary,

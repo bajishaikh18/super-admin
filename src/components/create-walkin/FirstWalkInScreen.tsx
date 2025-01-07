@@ -28,7 +28,7 @@ interface FormValues {
 }
 
 const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
-  countries = [], // Provide a default value of an empty array
+ // Provide a default value of an empty array
   isEdit,
   handleContinueClick,
   handleClose,
@@ -37,7 +37,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
   // Zustand store management
   const { selectedFacilities, handleFacilityClick, setFormData, formData } =
     usePostWalkinStore();
-  const {shouldVisible, role} = useAuthUserStore();
+  const {shouldVisible} = useAuthUserStore();
 
   const loadOptionsDebounced = useCallback(
     debounce((inputValue: string, callback: (options: any) => void) => {
@@ -58,7 +58,7 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
     }));
   const {
     control,
-    register,
+   
     handleSubmit,
     
     formState: { errors,isValid },
@@ -68,12 +68,12 @@ const FirstWalkInScreen: React.FC<FirstWalkInScreenProps> = ({
     try {
       setFormData(data);
       handleContinueClick();
-    } catch (error) {
+    } catch{
     } finally {
     }
   };
 
-  const isContinueButtonEnabled = selectedFacilities.length > 0;
+
 
   return (
     <div className={styles.modal}>

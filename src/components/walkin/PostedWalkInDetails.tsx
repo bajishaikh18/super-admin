@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getInterviewDetails, updateInterview } from "@/apis/walkin";
 import Image from "next/image";
 import styles from "../common/styles/Details.module.scss";
-import { AiFillCloseCircle, AiOutlineExpand } from "react-icons/ai";
+
 import { FaChevronLeft } from "react-icons/fa6";
 import DeleteModal from "../common/delete/DeleteModal";
 import {
@@ -17,11 +17,10 @@ import {
   Container,
   Dropdown,
   Modal,
-  NavDropdown,
+ 
   Row,
 } from "react-bootstrap";
 import { DateTime } from "luxon";
-import Link from "next/link";
 import { BsThreeDots } from "react-icons/bs";
 import {
   COUNTRIES,
@@ -34,7 +33,7 @@ import { FullScreenImage } from "../common/FullScreenImage";
 import { Loader, NotFound } from "../common/Feedbacks";
 import CreateWalkIn from "../create-walkin/CreateWalkIn";
 import toast from "react-hot-toast";
-import usePostJobStore from "@/stores/usePostJobStore";
+
 import { LuExpand } from "react-icons/lu";
 import usePostWalkinStore from "@/stores/usePostWalkinStore";
 import { useAuthUserStore } from "@/stores/useAuthUserStore";
@@ -46,7 +45,7 @@ type PostedWalkInDetailsProps = {
 
 const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
   jobId,
-  onClose,
+ 
 }) => {
   const queryClient = useQueryClient();
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -121,7 +120,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
         });
       }
       toast.success("walkin status changed successfully");
-    } catch (e) {
+    } catch  {
       toast.error("Error while deleting walkin. Please try again");
       return;
     }
@@ -137,7 +136,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
         refetchType: "all",
       });
       toast.success("Walk-In deleted changed successfully");
-    } catch (e) {
+    } catch  {
       toast.error("Error while deleting Walk-In. Please try again");
       return;
     }
@@ -369,7 +368,7 @@ const PostedWalkInDetails: React.FC<PostedWalkInDetailsProps> = ({
                             experience: string;
                             salary: string;
                           },
-                          index: number
+                         
                         ) => (
                           <tr key={position.jobTitleId}>
                             <td className={styles.title}>{position.title}</td>
