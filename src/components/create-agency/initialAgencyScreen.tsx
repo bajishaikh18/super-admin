@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styles from "./CreateAgency.module.scss";
-import Image from "next/image";
+
 import { Button } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import { IoClose } from "react-icons/io5";

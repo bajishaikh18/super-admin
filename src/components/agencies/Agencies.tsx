@@ -3,10 +3,10 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import useAgencyStore, {
   AgencyType,
   Trade,
-  TradeType,
+  
 } from "@/stores/useAgencyStore";
 import styles from "../create-agency/CreateAgency.module.scss";
-import { Button, Card, Modal, ModalHeader } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import { SelectOption } from "@/helpers/types";
 import { TableFilter } from "@/components/common/table/Filter";
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
@@ -27,8 +27,8 @@ import agencyStyles from "./Agency.module.scss";
 import { getTradeTestCenters } from "@/apis/trade-test-center";
 import { INDIAN_STATES } from "@/helpers/stateList";
 import { deleteTradeTestCenterAPI } from "@/apis/trade-test-center";
-import { AiFillDelete, AiFillEdit } from "react-icons/ai";
-import { LuDelete, LuFileEdit } from "react-icons/lu";
+import { AiFillDelete } from "react-icons/ai";
+
 import { BsPencilFill } from "react-icons/bs";
 import CreateTradeCenter from "../create-agency/CreateTradeTestCenter";
 import { IoClose } from "react-icons/io5";
@@ -128,7 +128,7 @@ const Agencies: React.FC = () => {
     async () => {
       try {
         setDeleteLoading(true);
-        await deleteTradeTestCenterAPI(deleteId, { isDeleted: true });
+        await deleteTradeTestCenterAPI(deleteId);
         await queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey.includes("testCenters");
@@ -137,7 +137,7 @@ const Agencies: React.FC = () => {
         });
         setDeleteId("");
         toast.success("TradeCenter deleted successfully");
-      } catch (e) {
+      } catch  {
         toast.error("Error while deleting TradeCenter. Please try again");
       }
       setDeleteLoading(false);

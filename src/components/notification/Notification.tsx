@@ -2,7 +2,7 @@
 
 import {
   NotificationType,
-  useNotificationStore,
+ 
 } from "@/stores/useNotificationStore";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
@@ -30,7 +30,7 @@ const Notification: React.FC = () => {
     label: "Title",
   } as SelectOption);
 
-  const { data, isFetching, isLoading, isError, fetchNextPage } =
+  const { data, isFetching, isLoading,  fetchNextPage } =
     useInfiniteQuery<{ notifications: NotificationType[]; totalCount: number }>(
       {
         queryKey: ["notifications", search, field],
@@ -92,7 +92,7 @@ const Notification: React.FC = () => {
     []
   );
 
-  const { setShowCreateNotification } = useNotificationStore();
+
 
   return (
     <>

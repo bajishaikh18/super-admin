@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
-import { useUserStore } from "../../stores/useUserStore";
+
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
@@ -9,29 +9,19 @@ import {
   useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
-import { Button, Card, Modal } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
 import { getJobs, getJobSummary } from "@/apis/job";
 import { DateTime } from "luxon";
-import { COUNTRIES, IMAGE_BASE_URL } from "@/helpers/constants";
+import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
-import Image from "next/image";
-import { IoClose } from "react-icons/io5";
+
 import { FullScreenImage } from "../common/FullScreenImage";
 import usePostJobStore from "@/stores/usePostJobStore";
 
 type TabType = "Active" | "Pending" | "Expired";
-type Person = {
-  jobId: string;
-  agencyName: string;
-  location: string;
-  amenities: string[];
-  noOfPositions: number;
-  imageUrl: string;
-  postedDate: string;
-  expiry: string;
-};
+
 
 const fetchSize = 100;
 
@@ -81,8 +71,7 @@ const PostedJobsTable: React.FC = () => {
 
   const {
     data: summaryData,
-    isLoading: summaryLoading,
-    error: summaryError,
+   
   } = useQuery({
     queryKey: ["summary", "jobs"],
     queryFn: getJobSummary,

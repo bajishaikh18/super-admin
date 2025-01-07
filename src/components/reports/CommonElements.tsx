@@ -1,4 +1,4 @@
-import { Col, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import styles from "./JobPosted.module.scss";
 import { usePathname } from "next/navigation";
 import Select from "react-select";
@@ -8,7 +8,7 @@ import { DURATION_OPTIONS } from "@/helpers/constants";
 import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { Control, FieldError, UseFormWatch } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { CustomDatePicker, CustomDateRangePicker } from "../common/form-fields/DatePicker";
+
 import DatePicker from "react-datepicker";
 import { DateTime } from "luxon";
 
@@ -54,7 +54,7 @@ export const ReportTypeSelect = () => {
           },
         })}
         styles={{
-          option: (baseStyles, state) => ({
+          option: (baseStyles) => ({
             ...baseStyles,
             borderBottom: "1px solid rgba(217, 217, 217, 1)",
           }),

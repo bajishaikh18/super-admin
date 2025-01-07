@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState} from "react";
 import { Button, Form } from "react-bootstrap";
 import styles from "../common/Modal.module.scss";
 import { IoClose } from "react-icons/io5";
@@ -10,14 +10,12 @@ import {
 import { FieldError, useForm } from "react-hook-form";
 import {
     MultiSelect,
-  MultiSelectAsync,
+
 } from "../common/form-fields/MultiSelect";
 import { SelectOption } from "@/helpers/types";
-import { debounce } from "lodash";
-import { getFormattedJobTitles } from "@/helpers/asyncOptions";
-import { createNotification } from "@/apis/notification";
+
 import toast from "react-hot-toast";
-import { useQueryClient } from "@tanstack/react-query";
+
 import { reportTypeOptions } from "./CommonElements";
 import { createApproval } from "@/apis/approval";
 
@@ -38,7 +36,7 @@ function RequestMore({
   filters:string[] | null
   maxQuantity:number
 }) {
-  const queryClient = useQueryClient();
+ 
   const { formData } = useNotificationStore();
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +66,7 @@ function RequestMore({
       toast.success("Your request has been sent to super admin")
       setLoading(false);
       handleClose();
-    }catch(e){
+    }catch{
       toast.error("Error while submitting request");
       setLoading(false);
     }

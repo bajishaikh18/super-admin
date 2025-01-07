@@ -1,10 +1,10 @@
 import { SelectOption } from "@/helpers/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Button, Dropdown, Form, InputGroup } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import DatePicker from "react-datepicker";
-import { BsCalendar2, BsFilter, BsSearch } from "react-icons/bs";
-import Select, { components, GroupBase, SelectInstance } from "react-select";
+import { BsCalendar2, BsSearch } from "react-icons/bs";
+import Select, { components,  SelectInstance } from "react-select";
 
 const Option = (props: any) => {
   return (
@@ -129,7 +129,7 @@ export const TableFilter = ({
                 })}
                 maxMenuHeight={400}
                 styles={{
-                  option: (baseStyles, state) => ({
+                  option: (baseStyles) => ({
                     ...baseStyles,
                     borderBottom: "1px solid rgba(217, 217, 217, 1)",
                   }),
@@ -162,11 +162,11 @@ export const TableFilter = ({
                     padding:"0px 3px"
                   }),
                   indicatorSeparator: () => ({ display: "none" }),
-                  menuList: (baseStyles, state) => ({
+                  menuList: (baseStyles) => ({
                     ...baseStyles,
                     fontSize: "12px",
                   }),
-                  menu:(baseStyles, state) => ({
+                  menu:(baseStyles) => ({
                     ...baseStyles,
                     zIndex: 2,     
                                })
@@ -278,14 +278,14 @@ export const TableFilter = ({
             },
           })}
           styles={{
-            option: (baseStyles, state) => ({
+            option: (baseStyles) => ({
               ...baseStyles,
               borderBottom: "1px solid rgba(217, 217, 217, 1)",
             }),
-            control: (baseStyles, state) => ({
+            control: () => ({
               display: "none",
             }),
-            menuList: (baseStyles, state) => ({
+            menuList: () => ({
               fontSize: "12px",
             }),
           }}

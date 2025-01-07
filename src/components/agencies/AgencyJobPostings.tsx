@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Loader, NotFound } from "../common/Feedbacks";
 import agencyStyles from "./Agency.module.scss";
-import { Button, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import {  Col, Row} from "react-bootstrap";
 import { JobType } from "../posted-jobs/PostedjobsTable";
 import Image from "next/image";
 import {

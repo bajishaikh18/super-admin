@@ -1,6 +1,5 @@
 "use client";
-import { ReactQueryProvider } from "@/app/react-quuery-provider";
-import Header from "@/components/common/header/Header";
+
 import PostedWalkInDetails from "@/components/walkin/PostedWalkInDetails";
 import React, { useState, useEffect } from "react";
 

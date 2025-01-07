@@ -1,9 +1,8 @@
 'use client'
-import { isTokenValid } from '@/helpers/jwt';
+
 import styles from './AuthHeader.module.scss'; 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuthUserStore } from '@/stores/useAuthUserStore';
+import { isTokenValid } from '@/helpers/jwt';
 export const AuthHeader = ()=>{
   const { setAuthUser} = useAuthUserStore();
   const loggedIn = isTokenValid();

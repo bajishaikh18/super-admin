@@ -15,7 +15,7 @@ import {
 } from "./CommonElements";
 import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
 import { getStartAndEndDate } from "@/helpers/date";
-import { DURATION_OPTIONS } from "@/helpers/constants";
+
 import { createColumnHelper } from "@tanstack/react-table";
 import Link from "next/link";
 import { downloadMedia } from "@/helpers/mediaDownload";
@@ -177,7 +177,7 @@ function ApplicationReceived() {
     handleSubmit,
     register,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {

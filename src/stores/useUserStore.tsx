@@ -37,7 +37,7 @@ interface UserStore {
     fetchUsers: () => Promise<void>;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserStore>(() => ({
     appUsers: [],
     adminUsers: [],
     fetchUsers: async () => {

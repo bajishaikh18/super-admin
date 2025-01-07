@@ -36,7 +36,7 @@ interface EmployerStore {
     fetchUsers: () => Promise<void>;
 }
 
-export const useEmployerStore = create<EmployerStore>((set) => ({
+export const useEmployerStore = create<EmployerStore>(() => ({
     active: [],
     pending: [],
     fetchUsers: async () => {

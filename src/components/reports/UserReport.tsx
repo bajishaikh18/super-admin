@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
-import { MultiValue, ActionMeta } from "react-select";
-import { MultiSelect } from "../common/form-fields/MultiSelect";
-import { useRouter } from "next/navigation";
+import { Form, Button, Row, Col,  Spinner } from "react-bootstrap";
+
 import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
@@ -222,7 +220,7 @@ function UserReport() {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors},
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {

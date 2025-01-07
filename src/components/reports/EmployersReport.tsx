@@ -1,9 +1,8 @@
 import React, { useCallback, useState } from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
+import { Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import ReportTable from "./ReportTable";
-import { useRouter } from "next/navigation";
-import { MultiSelect } from "../common/form-fields/MultiSelect";
+
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
@@ -13,7 +12,7 @@ import {
   GenerateReportText,
   ReportTypeSelect,
 } from "./CommonElements";
-import { DURATION_OPTIONS } from "@/helpers/constants";
+
 import { MultiSelectAsyncWithCheckbox } from "../common/form-fields/MultiSelectWithCheckbox";
 import { debounce } from "lodash";
 import { getFormattedAgencies } from "@/helpers/asyncOptions";
@@ -161,7 +160,7 @@ function EmployersReport() {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors},
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {

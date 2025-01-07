@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState} from "react";
 import { Card, Dropdown, Modal } from "react-bootstrap";
-import { createColumnHelper, SortingState } from "@tanstack/react-table";
+import {  SortingState } from "@tanstack/react-table";
 import { DataTable } from "../common/table/DataTable";
 import { DateTime } from "luxon";
 import styles from "./JobPosted.module.scss";
@@ -34,7 +34,7 @@ type ReportTableProps = {
 const ReportTable: React.FC<ReportTableProps> = ({ data,type, columns, exportPayload,exportFileName,showImage,imageUrl,totalCount,filters,resetLinkClick }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [requestMore, setRequestMore] = useState(false);
-  const [selectedFormat, setSelectedFormat] =
+  const [selectedFormat] =
     useState<string>("Download Report");
   const { role } = useAuthUserStore();
 
