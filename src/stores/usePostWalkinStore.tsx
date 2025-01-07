@@ -106,7 +106,7 @@ const usePostWalkinStore = create<PostWalkinStoreState>((set) => ({
   handleFileChange: (file) => {
     set({ selectedFile: file });
   },
-  setFacilities: (facilities) => set((state) => ({
+  setFacilities: (facilities) => set(() => ({
     selectedFacilities: facilities
   })),
   handleFacilityClick: (facility) => set((state) => ({

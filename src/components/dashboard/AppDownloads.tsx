@@ -38,7 +38,7 @@ ChartJS.register(
   BarController,
   ChartDataLabels
 );
-import useDashboardStore from "../../stores/useDashboardStore";
+
 import { MultiSelect } from "../common/form-fields/MultiSelect";
 import { useForm } from "react-hook-form";
 import { getGradient } from "@/helpers/graph";
@@ -61,17 +61,12 @@ const downloadDuration = [
 ];
 
 const AppDownloads: React.FC = () => {
-  const { insightsData } = useDashboardStore((state) => ({
-    insightsData: state.insightsData,
-  }));
-
+ 
   const {
-    register,
-    handleSubmit,
-    getValues,
+    
     control,
-    setValue,
-    formState: { errors, isValid },
+    
+   
   } = useForm<FormValues>();
 
   const appDownloadsData = {

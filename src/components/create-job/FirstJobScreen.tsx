@@ -28,7 +28,7 @@ interface FormValues {
 }
 
 const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
-  countries = [], // Provide a default value of an empty array
+  // Provide a default value of an empty array
   isEdit,
   handleContinueClick,
   handleClose,
@@ -57,7 +57,7 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
   }));
   const {
     control,
-    register,
+   
     handleSubmit,
     
     formState: { errors,isValid },
@@ -67,12 +67,12 @@ const FirstJobScreen: React.FC<FirstJobScreenProps> = ({
     try {
       setFormData(data);
       handleContinueClick();
-    } catch (error) {
+    } catch {
     } finally {
     }
   };
 
-  const isContinueButtonEnabled = selectedFacilities.length > 0;
+ 
 
   return (
     <div className={styles.modal}>

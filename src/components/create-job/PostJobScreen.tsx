@@ -556,7 +556,7 @@ const PostJobScreen: React.FC<FourthJobScreenProps> = ({
         setRefreshImage(true)
       }
       setLoading(false);
-    } catch (error: unknown) {
+    } catch  {
       toast.error("Error while posting job. Please try again");
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styles from "./JobPosted.module.scss";
-import { Form, Button, Row, Col, Image, Spinner } from "react-bootstrap";
+import { Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
@@ -152,7 +152,7 @@ function JobApplied() {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {

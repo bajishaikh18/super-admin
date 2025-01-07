@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import dataTableStyles from "../../components/common/table/DataTable.module.scss";
-import { useUserStore } from "../../stores/useUserStore";
+
 import { createColumnHelper, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/table/DataTable";
 import Link from "next/link";
 import {
   keepPreviousData,
   useInfiniteQuery,
-  useQuery,
+  
 } from "@tanstack/react-query";
 import { Button, Card, Modal } from "react-bootstrap";
 import { TableFilter } from "@/components/common/table/Filter";
@@ -17,7 +17,7 @@ import { COUNTRIES } from "@/helpers/constants";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SelectOption } from "@/helpers/types";
 import { FullScreenImage } from "../common/FullScreenImage";
-import usePostWalkinStore from "@/stores/usePostWalkinStore";
+
 import CreateWalkIn from "../create-walkin/CreateWalkIn";
 
 type TabType = "Active" | "Pending" | "Expired";
@@ -120,7 +120,7 @@ const PostedWakInTable: React.FC = () => {
     getNextPageParam: (_lastGroup, groups) => groups.length,
     placeholderData: keepPreviousData,
   });
-  const {setShowPostWalkin} = usePostWalkinStore();
+  
 
   const {
     data: pendingWalkinData,

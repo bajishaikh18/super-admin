@@ -219,7 +219,7 @@ const EmployersList: React.FC = () => {
         refetchType:'all'
       })
       toast.success("Employer approved successfully!");
-    } catch (error) {
+    } catch  {
       toast.error("Failed to approve employer.");
     }
   };
@@ -234,7 +234,7 @@ const EmployersList: React.FC = () => {
         },
         refetchType:'all'
       })
-    } catch (error) {
+    } catch  {
       toast.error("Failed to reject employer.");
     }
   };

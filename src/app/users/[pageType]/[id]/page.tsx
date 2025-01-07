@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import styles from "../../../../components/common/table/DataTable.module.scss";
+
 import { Authorize } from '@/components/common/Authorize';
 import { ROLE } from '@/helpers/constants';
 import AppliedOrSavedUsers from '@/components/users/AppliedorSavedUsers';

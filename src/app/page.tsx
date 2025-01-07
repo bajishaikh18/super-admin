@@ -1,6 +1,6 @@
 'use client'
 import Dashboard from '@/components/dashboard/Dashboard';
-import { ReactQueryProvider } from './react-quuery-provider';
+
 import { ROLE } from '@/helpers/constants';
 import { Authorize } from '@/components/common/Authorize';
 

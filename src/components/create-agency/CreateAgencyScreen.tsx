@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import usePostJobStore from "@/stores/usePostJobStore";
+import React, {  useState } from "react";
+
 import styles from "./CreateAgency.module.scss";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
-import { FieldError, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   MultiSelect,
-  MultiSelectAsync,
+ 
 } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
@@ -30,13 +30,13 @@ import { CITIES } from "@/helpers/stateList";
 const phoneRegex = /^[0-9]{10}$/;
 
 const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
-  countries = [], // Provide a default value of an empty array
+  // Provide a default value of an empty array
   isEdit,
   handleContinueClick,
   handleClose,
   handleBackToPostJobClick,
 }) => {
-  const { formData, setFormData, selectedFile } = useAgencyStore();
+  const { formData, selectedFile } = useAgencyStore();
   const [loading, setLoading] = useState(false);
   const [stateList,setStateList] = useState([]);
   const queryClient = useQueryClient();
@@ -122,7 +122,7 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
       toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
-    } catch (error) {
+    } catch {
       toast.error(`Error while ${isEdit?'updating':'creating'} agency. Please try again`)
       setLoading(false);
     }

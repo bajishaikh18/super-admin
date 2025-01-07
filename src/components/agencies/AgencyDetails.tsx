@@ -88,7 +88,7 @@ const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
         });
       }
       toast.success("Agency status changed successfully");
-    } catch (e) {
+    } catch {
       toast.error("Error while deactivating agency. Please try again");
       return;
     }
@@ -97,14 +97,14 @@ const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
   
   const deleteAgency = useCallback(async () => {
     try {
-      await deleteAgencyAPI(_id, { isDeleted: true });
+      await deleteAgencyAPI(_id); 
       router.push("/agency");
       await queryClient.invalidateQueries({
         queryKey: ["agencyDetails", agencyId],
         refetchType: "all",
       });
       toast.success("Agency deleted successfully");
-    } catch (e) {
+    } catch {
       toast.error("Error while deleting agency. Please try again");
       return;
     }

@@ -200,7 +200,7 @@ const CreateEmployerForm: React.FC<CreateEmployerProps> = ({ onCancel }) => {
                       onChange: () => trigger("mobileCountryCode"),
                     })}
                   >
-                    {Object.values(COUNTRIES).map((country, i) => {
+                    {Object.values(COUNTRIES).map((country) => {
                       return (
                         <option value={country.isdCode} key={country.isdCode}>
                           {country.isdCode}

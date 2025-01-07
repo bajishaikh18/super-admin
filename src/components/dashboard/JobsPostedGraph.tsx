@@ -38,7 +38,7 @@ ChartJS.register(
   ChartDataLabels
 );
 import { MultiSelect } from "../common/form-fields/MultiSelect";
-import { Control, useForm, UseFormWatch } from "react-hook-form";
+import { Control, UseFormWatch } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { getJobCount } from "@/apis/dashboard";
 import { Loader, NotFound } from "../common/Feedbacks";

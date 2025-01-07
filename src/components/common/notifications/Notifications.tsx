@@ -1,13 +1,13 @@
 import { truncateText } from "@/helpers/common";
 import styles from "./Notifications.module.scss";
 import { useQueryClient } from "@tanstack/react-query";
-import { markNotificationAsRead, updateNotification } from "@/apis/notification";
+import { markNotificationAsRead } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 import { Loader, NotFound } from "../Feedbacks";
 import { DateTime } from "luxon";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
-import Link from "next/link";
+
 import { FaPlus } from "react-icons/fa6";
 import { useRouter } from "nextjs-toploader/app";
 
@@ -63,7 +63,7 @@ export const Notifications = ({
     async (notification: Notification,e:any) => {
       try {
         await markAsRead([notification._id]);
-      } catch (e) {}
+      } catch {}
       if (notification.data) {
         handleClose(e);
         router.push(notification.data);

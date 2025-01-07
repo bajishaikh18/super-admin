@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { useState } from "react";
 import { Form } from "react-bootstrap";
-import { Control, Controller, FieldError, RegisterOptions, UseFormSetValue } from "react-hook-form";
+import { Control, Controller, FieldError, RegisterOptions} from "react-hook-form";
 import Select, { components } from "react-select";
 import AsyncSelect from 'react-select/async';
 
@@ -87,7 +87,7 @@ export const MultiSelectWithCheckbox = ({
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange } }) => (
           <Select
             menuPortalTarget={menuPortalTarget}
             menuPosition={menuPosition}
@@ -108,11 +108,11 @@ export const MultiSelectWithCheckbox = ({
               },
             })}
             styles={{
-              option:(baseStyles, state)=>({
+              option:(baseStyles)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
               }),
-              multiValue:(base, props) =>({
+              multiValue:(base) =>({
                 ...base,
                 background:'rgba(183, 182, 252, 1)'
               }),
@@ -134,12 +134,12 @@ export const MultiSelectWithCheckbox = ({
                   boxShadow:'none'
                 }
               }),
-              menuList:(baseStyles, state) =>({...baseStyles,
+              menuList:(baseStyles) =>({...baseStyles,
                 ...menuListStyles,
                 fontSize:'13px'
                
               }),
-              valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
+              valueContainer:(baseStyles) =>({...baseStyles,...valueContainerStyles}),
               indicatorSeparator: () => ({ display: "none" }),
 
             }}
@@ -212,7 +212,7 @@ export const MultiSelectAsyncWithCheckbox = ({
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange} }) => (
           <AsyncSelect
             isMulti={isMulti}
             cacheOptions
@@ -236,11 +236,11 @@ export const MultiSelectAsyncWithCheckbox = ({
               },
             })}
             styles={{
-              option:(baseStyles, state)=>({
+              option:(baseStyles)=>({
                 ...baseStyles,
                 borderBottom:'1px solid rgba(217, 217, 217, 1)'
               }),
-              multiValue:(base, props) =>({
+              multiValue:(base) =>({
                 ...base,
                 background:'rgba(183, 182, 252, 1)'
               }),
@@ -263,14 +263,14 @@ export const MultiSelectAsyncWithCheckbox = ({
                 }
               }),
               
-              menuList:(baseStyles, state) =>({...baseStyles,
+              menuList:(baseStyles) =>({...baseStyles,
                 ...menuListStyles,
                 fontSize:'13px'
               }),
-              menu:(baseStyles, state) =>({...baseStyles,
+              menu:(baseStyles) =>({...baseStyles,
                 ...menuListStyles,
               }),
-              valueContainer:(baseStyles, state) =>({...baseStyles,...valueContainerStyles}),
+              valueContainer:(baseStyles) =>({...baseStyles,...valueContainerStyles}),
               indicatorSeparator: () => ({ display: "none" }),
 
             }}

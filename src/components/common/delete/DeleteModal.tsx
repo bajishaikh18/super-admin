@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+
 import { Modal, Button } from 'react-bootstrap';
 import { IoClose } from 'react-icons/io5';
 import styles from './Delete.module.scss';

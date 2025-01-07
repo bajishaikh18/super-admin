@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Dashboard.module.scss";
-import { Bar, Doughnut } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  ChartOptions,
+ 
   BarController,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
