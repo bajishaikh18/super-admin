@@ -6,7 +6,7 @@ import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
 import { ROLE } from '@/helpers/constants';
 
-const ALLOWEDPATH = ['/login','/reset-password','/register']
+const ALLOWEDPATH = ['/login','/register']
 export const AuthCheck = ({children}:{children:any})=>{
     const router = useRouter();
     const pathname = usePathname()
