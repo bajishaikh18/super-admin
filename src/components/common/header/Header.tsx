@@ -336,6 +336,15 @@ const Header: React.FC<HeaderProps> = () => {
                 id="super-admin-dropdown"
                 align="end"
               >
+                {
+                   shouldVisible([ROLE.employer]) && <>
+                    <NavDropdown.Item href="/profile">
+                      Edit Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Item href="/">
+                      Edit Agency Details
+                    </NavDropdown.Item>
+                </>}
                 <NavDropdown.Item onClick={changePassword}>
                   Change Password
                 </NavDropdown.Item>

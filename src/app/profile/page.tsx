@@ -6,9 +6,10 @@ import {
 import RegisterForm from "@/components/register/RegisterForm";
 
 function Page() {
+  
   return (
     <Container>
-      <RegisterForm/>
+      <RegisterForm isEdit={true}/>
   </Container>
 );
 }

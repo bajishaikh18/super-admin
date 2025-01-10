@@ -4,7 +4,8 @@ import {create} from 'zustand';
 
 export interface AuthUser {
     email: string;
-    phone: string;
+    mobile: string;
+    landline: string;
     _id: string;
     country: string;
     emailVerified:boolean;

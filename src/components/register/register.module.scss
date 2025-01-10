@@ -1,4 +1,4 @@
-@import "../variables";
+@import "../../app//variables";
 
 .container {
     display: flex;
@@ -20,7 +20,7 @@
 }
   
 .button{
-  margin: 16px 0px;
+  margin: 32px 0px 16px 0px;
 }
 .actionLink{
   display: flex;
@@ -44,7 +44,7 @@
   color: $color-dark-grey;
   text-decoration: none;
   font-size: 14px;
-  margin: 16px 0px;
+  margin: 8px 0px;
 }
 
 
