@@ -23,8 +23,8 @@ function Page() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showOtpVerification, setShowOtpVerification] = useState(false);
-  const [userEmail, setUserEmail] = useState<string>(''); 
+  const [showOtpVerification] = useState(false);
+  const [userEmail] = useState<string>(''); 
   const { setAuthUser } = useAuthUserStore();
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
   const router = useRouter();
@@ -53,7 +53,9 @@ function Page() {
       setLoading(false);
       if ([400, 404].includes(error.status)) {
         toast.error('Looks like your credentials are wrong');
-      } else {
+      } else  if ([412].includes(error.status)){
+        toast.error('Your account is not approved yet. Our team will approve it shortly');
+      }else{
         toast.error('Something went wrong! Please try again later');
       }
     }

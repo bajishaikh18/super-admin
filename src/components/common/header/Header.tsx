@@ -341,7 +341,7 @@ const Header: React.FC<HeaderProps> = () => {
                     <NavDropdown.Item href="/profile">
                       Edit Profile
                     </NavDropdown.Item>
-                    <NavDropdown.Item href="/">
+                    <NavDropdown.Item href="/edit-agency">
                       Edit Agency Details
                     </NavDropdown.Item>
                 </>}

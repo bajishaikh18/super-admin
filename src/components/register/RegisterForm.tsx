@@ -178,7 +178,7 @@ function RegisterForm({isEdit}:{isEdit?:boolean}) {
                           onChange: () => trigger("mobileCountryCode"),
                         })}
                       >
-                        {Object.values(COUNTRIES).map((country, i) => {
+                        {Object.values(COUNTRIES).map((country) => {
                           return (
                             <option
                               value={country.isdCode}

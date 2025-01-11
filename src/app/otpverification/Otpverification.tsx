@@ -10,17 +10,15 @@ import { useRouter } from "next/navigation";
 interface OtpVerificationProps {
   email: string;
   onVerificationSuccess: () => void;
-  
 }
 
 const Otpverification: React.FC<OtpVerificationProps> = ({
-  email,
-  onVerificationSuccess,
-}) => {
+  email}) => {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState<number>(90);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showActivationMessage, setShowActivationMessage] = useState(false);
   const {setAuthUser} = useAuthUserStore();
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
  const router = useRouter();
@@ -65,10 +63,15 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
       setIsVerifying(true);
       await verifyEmail({email: email, otp:enteredOtp});
       const resp = await getUserDetails();
-      setAuthUser(resp.userDetails as AuthUser)
       toast.success("Email verified successfully")
       setIsVerifying(false);
-      router.push("/posted-jobs")
+      if(resp.status === "active"){
+        setAuthUser(resp.userDetails as AuthUser)
+        router.push("/posted-jobs")
+      }else{
+        setAuthUser(null)
+        setShowActivationMessage(true);
+      }
     }catch(e:any){
       if(e.status === 401){
         toast.error("Entered otp is invalid please try with valid otp");
@@ -80,62 +83,82 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
     
   };
 
+  const handleBackToLogin = ()=>{
+    router.push("/login")
+  }
+
   return (
     <div className={styles.container}>
-      <Card className={styles.card}>
-        <h2 className={styles.title}>OTP Verification</h2>
-        <p className={styles.description}>
-          Please enter the OTP sent to the company registered email ID
-        </p>
-        <p className={styles.email}>{email}</p>
-        <div className={styles["otp-inputs"]}>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <input
-              key={index}
-              type="text"
-              maxLength={1}
-              className={styles["otp-input"]}
-              value={otp[index]}
-              ref={(el) => {
-                otpInputRefs.current[index] = el;
-              }}
-              
-              onChange={(e) => handleChange(e.target.value, index)}
-            />
-          ))}
-        </div>
-        <div className="text-center">
-          <p className={`${styles.resendText}`}>
-            <span>Didn't get the OTP?</span>
-            <span style={{ marginLeft: "10px" }}>
-              {isResendDisabled ? (
-                <span className={styles.disableResent}>
-                
-                  Resend {timer}s
-                </span>
-              ) : (
-                <span
-                  className={styles.resendLink}
-                  onClick={handleResend}
-                  style={{ color: "blue" }}
-                 
-                >
-                  Resend
-                </span>
-              )}
-            </span>
+      
+        {
+          showActivationMessage ? <Card className={`${styles.card} ${styles.cardReview}`}>
+            <h2 className={styles.title}>Under Review</h2>
+            <p className={styles.description}>
+            Your account is under review. You will be able to login only after approval.
           </p>
-        </div>
-        <div className={styles.jobActions}>
-          <Button
-            className={styles.CreateButton}
-            onClick={handleSubmit}
-            disabled={isVerifying || otp.some((digit) => digit === "")}
-          >
-            {isVerifying ? <div className={styles.spinner}></div> : "Verify Email"}
-          </Button>
-        </div>
-      </Card>
+          <p className={styles.description}> Once approved you will be notified on your registered email regarding next steps.</p>
+          <div className={styles.jobActions}>
+            <Button
+              className={styles.CreateButton}
+              onClick={handleBackToLogin}
+            >
+              Back to login
+            </Button>
+          </div>
+          </Card>:<Card className={styles.card}><h2 className={styles.title}>OTP Verification</h2>
+          <p className={styles.description}>
+            Please enter the OTP sent to the company registered email ID
+          </p>
+          <p className={styles.email}>{email}</p>
+          <div className={styles["otp-inputs"]}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength={1}
+                className={styles["otp-input"]}
+                value={otp[index]}
+                ref={(el) => {
+                  otpInputRefs.current[index] = el;
+                }}
+                
+                onChange={(e) => handleChange(e.target.value, index)}
+              />
+            ))}
+          </div>
+          <div className="text-center">
+            <p className={`${styles.resendText}`}>
+              <span>Didn&apos;t get the OTP?</span>
+              <span style={{ marginLeft: "10px" }}>
+                {isResendDisabled ? (
+                  <span className={styles.disableResent}>
+                  
+                    Resend {timer}s
+                  </span>
+                ) : (
+                  <span
+                    className={styles.resendLink}
+                    onClick={handleResend}
+                    style={{ color: "blue" }}
+                   
+                  >
+                    Resend
+                  </span>
+                )}
+              </span>
+            </p>
+          </div>
+          <div className={styles.jobActions}>
+            <Button
+              className={styles.CreateButton}
+              onClick={handleSubmit}
+              disabled={isVerifying || otp.some((digit) => digit === "")}
+            >
+              {isVerifying ? <div className={styles.spinner}></div> : "Verify Email"}
+            </Button>
+          </div></Card>
+        }
+       
     </div>
   );
 };

@@ -128,10 +128,8 @@ const CreateAgencyScreen: React.FC<CreateAgencyScreenProps> = ({
     
       toast.success(`Agency ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
-      setLoading(false);
     } catch {
       toast.error(`Error while ${isEdit?'updating':'creating'} agency. Please try again`)
-      setLoading(false);
     }
   };
 

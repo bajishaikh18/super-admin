@@ -5,7 +5,6 @@ import styles from "./CreateAgency.module.scss";
 import InitialAgencyScreen from "@/components/create-agency/initialAgencyScreen";
 import  { Agency, useAgencyStore } from "@/stores/useAgencyStore"; // Import Zustand store
 import CreateAgencyScreen from "./CreateAgencyScreen";
-import { useRouter } from "next/navigation";
 
 
 function CreateAgency({
@@ -23,7 +22,6 @@ function CreateAgency({
   const [isEdit, setIsEdit] = useState(false);
   const { selectedFile, handleFileChange, resetData,setFormData } = useAgencyStore();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const router = useRouter();
   useEffect(()=>{
     console.log("AGENCY",agencyDetails);
     if(agencyDetails){
