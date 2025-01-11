@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "../../app/login/page.module.scss";
-
+import { forgotPassword } from "@/apis/auth";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardHeader, Container, Form } from 'react-bootstrap';
 import Image from "next/image";
@@ -20,7 +20,6 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
   const [emailSent, setEmailSent] = useState(false);
   const router = useRouter()
   const [email, setEmail] = useState("");
-
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -33,7 +32,7 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
     setLoading(true);
     try {
       localStorage.setItem("forgotPasswordEmail", data.email);
-      
+      await forgotPassword(data);
       setEmailSent(true);
     } catch (error:any) {    
       if(error.status === 400){
@@ -52,9 +51,9 @@ function Forgot({ setShowForgotPassword }: ForgotProps) {
 
   const handleGoToEmail = () => {
     const resetCode = 766778;
-    router.push(`/reset-password?code=${resetCode}`);
+    router.push(`/change-password?code=${resetCode}`);
   };
-  
+
   
   return  (
     <Container>

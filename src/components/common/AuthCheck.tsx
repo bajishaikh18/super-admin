@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
+import { ROLE } from '@/helpers/constants';
 
-const ALLOWEDPATH = ['/login','/reset-password']
+const ALLOWEDPATH = ['/login','/register']
 export const AuthCheck = ({children}:{children:any})=>{
     const router = useRouter();
     const pathname = usePathname()
-    const {authUser,setAuthUser}=  useAuthUserStore();
+    const {authUser,setAuthUser, role}=  useAuthUserStore();
     const isAuthenticated = isTokenValid();
     
     const getUser =async ()=>{
@@ -22,6 +23,19 @@ export const AuthCheck = ({children}:{children:any})=>{
         getUser()
       }
     },[])
+
+    useEffect(()=>{
+      if(authUser){
+        if(role === ROLE.employer && !authUser?.emailVerified){
+          router.push("/verify");
+          return;
+        }
+        if(role === ROLE.employer && !authUser?.agencyId){
+          router.push("/create-agency");
+          return;
+        }
+      }
+    },[router,authUser])
 
     useEffect(() => {
         if (!isAuthenticated && !ALLOWEDPATH.includes(pathname)) {

@@ -18,9 +18,11 @@ import { Notifications } from "../notifications/Notifications";
 import { useQuery } from "@tanstack/react-query";
 import { getUserNotifications } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
+import toast from "react-hot-toast";
+import { forgotPassword } from "@/apis/auth";
 
 interface HeaderProps {}
-const HIDEPATHS = ["/login", "/reset-password"];
+const HIDEPATHS = ["/login", "/change-password",'/register','/verify','/create-agency'];
 
 
 const Header: React.FC<HeaderProps> = () => {
@@ -91,6 +93,22 @@ const Header: React.FC<HeaderProps> = () => {
     },
     [role]
   );
+
+  const changePassword = async ()=>{
+    try{
+      const email = authUser?.email;
+      if(!email){
+        toast.error("Looks like your session is expired,please login again");
+        logout();
+        return;
+      }
+      await forgotPassword({email:email,type:"auth"})
+      toast.success("Instruction has been sent to your registered email to change password");
+    }catch(e){
+      toast.error("Looks like your session is expired,please login again");
+    }
+   
+  }
 
   const logout = () => {
     localStorage.clear();
@@ -318,9 +336,19 @@ const Header: React.FC<HeaderProps> = () => {
                 id="super-admin-dropdown"
                 align="end"
               >
-                <NavDropdown.Item href="#my-account">
-                  My Account
+                {
+                   shouldVisible([ROLE.employer]) && <>
+                    <NavDropdown.Item href="/profile">
+                      Edit Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Item href="/edit-agency">
+                      Edit Agency Details
+                    </NavDropdown.Item>
+                </>}
+                <NavDropdown.Item onClick={changePassword}>
+                  Change Password
                 </NavDropdown.Item>
+                
                 <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
               </NavDropdown>
             )}

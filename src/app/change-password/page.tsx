@@ -7,6 +7,7 @@ import { Button, Form, Container, Card, CardHeader } from 'react-bootstrap';
 import styles from './resetPassword.module.scss';
 import Image from 'next/image';
 import toast from "react-hot-toast";
+import { isTokenValid } from "@/helpers/jwt";
 
 
 interface FormValues {
@@ -29,7 +30,11 @@ function Reset() {
   const searchParams = useSearchParams()
   const codeParam = searchParams.get("code");
   const emailFromParams = searchParams.get("email");
+  const type = searchParams.get("type");
   const password = watch("password");  
+  const isAuthenticated = isTokenValid();
+  console.log(emailFromParams)
+ 
 
   useEffect(() => {
     if(codeParam){
@@ -58,7 +63,7 @@ function Reset() {
       const response = await resetPassword({
         otp: code,
         password: data.password,
-        email: email,
+        email: decodeURIComponent(email),
       });
       console.log("Password reset successful:", response.data);
       setResetSuccess(true);
@@ -75,7 +80,13 @@ function Reset() {
   };
 
   const handleBackToLogin = () => {
-    router.push('/login');  
+    if(type === 'auth'){
+      router.push('/');  
+
+    }else{
+      router.push('/login');  
+
+    }
   };
 
   if(!codeParam){
@@ -84,6 +95,10 @@ function Reset() {
 
   if (!codeParam){
     return null
+  }
+  if(isAuthenticated && type !='auth') {
+    router.push('/');
+    return null;
   }
   return (
       <Container>
@@ -103,7 +118,7 @@ function Reset() {
             disabled={loading}
             onClick={handleBackToLogin}
           >
-            {loading ? <div className={styles.spinner}></div> : 'Back to login'}
+            {loading ? <div className={styles.spinner}></div> :  `Back ${type==='auth' ? '' : "to Login"}`}
           </Button>
         </div>
       ) : (
@@ -173,7 +188,7 @@ function Reset() {
                   onClick={(e) => { e.preventDefault(); handleBackToLogin(); }}
                   className={styles.backLink}
                 >
-                  Back to Login
+                  Back {type==='auth' ? '' : "to Login"}
                 </a>
               </Form>
           )}

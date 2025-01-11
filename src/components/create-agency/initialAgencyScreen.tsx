@@ -10,6 +10,7 @@ interface InitialScreenProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
   selectedFile: File | null;
   isEdit?: boolean;
+  isSelfSignup?:boolean;
   handleCreateNowClick: () => void;
   handleClose: () => void;
 }
@@ -17,6 +18,7 @@ interface InitialScreenProps {
 const InitialAgencyScreen: React.FC<InitialScreenProps> = ({
   handleFileChange,
   isEdit,
+  isSelfSignup,
   handleClose,
   selectedFile,
   handleCreateNowClick,
@@ -44,10 +46,13 @@ const InitialAgencyScreen: React.FC<InitialScreenProps> = ({
     <div className={styles.modal}>
       <div className={styles.modalHeader}>
         <h2>{isEdit ? "Edit" : "Create "} Agency (1/2)</h2>
-        <IoClose
+        {
+          !isSelfSignup &&  <IoClose
           className={styles.closeButton}
           onClick={handleClose}
-        ></IoClose>{" "}
+        ></IoClose>
+        }
+      
       </div>
       <div className={styles.uploadSection} {...getRootProps()}>
         <input accept=".docx,.pdf" {...getInputProps()} />

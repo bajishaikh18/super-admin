@@ -14,7 +14,7 @@ const ValueContainer = (props:any) => {
   
     return (
       <components.ValueContainer {...props} className="value-container">
-        {length > 2 ? (
+        {length > 1 ? (
           <>
             {props.children[0][0]}
             <h6>+ {length - 1} More</h6>

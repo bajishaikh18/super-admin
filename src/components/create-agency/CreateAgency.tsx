@@ -10,15 +10,18 @@ import CreateAgencyScreen from "./CreateAgencyScreen";
 function CreateAgency({
   handleModalClose,
   agencyDetails,
+  isSelfSignup,
+  handleSubmitSuccess
 }: {
   handleModalClose: () => void;
   agencyDetails?: Agency;
+  isSelfSignup?: boolean
+  handleSubmitSuccess?:()=>void;
 }) {
   const [screen, setScreen] = useState(0);
   const [isEdit, setIsEdit] = useState(false);
   const { selectedFile, handleFileChange, resetData,setFormData } = useAgencyStore();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   useEffect(()=>{
     console.log("AGENCY",agencyDetails);
     if(agencyDetails){
@@ -59,6 +62,7 @@ function CreateAgency({
               handleFileChange={handleFileChange}
               fileInputRef={fileInputRef}
               selectedFile={selectedFile}
+              isSelfSignup={isSelfSignup}
               handleClose={handleClose}
               handleCreateNowClick={() => {
                 setScreen(1);
@@ -69,8 +73,13 @@ function CreateAgency({
             <CreateAgencyScreen
               isEdit={isEdit}
               handleClose={handleClose}
-              handleContinueClick={() => {
+              isSelfSignup={isSelfSignup}
+              handleContinueClick={async () => {
                 reset();
+                if(isSelfSignup && handleSubmitSuccess){
+                  handleSubmitSuccess();
+                 return
+                }
                 handleClose();
               }}
               handleBackToPostJobClick={() => setScreen(0)}

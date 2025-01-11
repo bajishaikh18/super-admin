@@ -1,4 +1,4 @@
-@import "../variables";
+@import "../../app//variables";
 
 .container {
     display: flex;
@@ -8,17 +8,19 @@
 }
 
 .card{
-  min-width: 400px;
+  min-width:700px;
   min-height: 480px; 
   margin-top: 30px;
 }
-
+.formRow{
+  margin-bottom: 20px;
+}
 .formGroup{
   margin-top: 24px;
 }
   
 .button{
-  margin: 16px 0px;
+  margin: 32px 0px 16px 0px;
 }
 .actionLink{
   display: flex;
@@ -42,7 +44,7 @@
   color: $color-dark-grey;
   text-decoration: none;
   font-size: 14px;
-  margin: 16px 0px;
+  margin: 8px 0px;
 }
 
 

@@ -44,6 +44,15 @@ export const getAgencyByAdminId = async (id: string) => {
   }
 };
 
+export const getAgencyByUser = async (id: string) => {
+  try {
+    const response = await apiClient.get(`${basePath}/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createAgency = async (data: object) => {
   try {
     const response = await apiClient.post(basePath, data);
