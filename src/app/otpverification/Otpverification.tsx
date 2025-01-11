@@ -65,11 +65,10 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
       const resp = await getUserDetails();
       toast.success("Email verified successfully")
       setIsVerifying(false);
-      if(resp.status === "active"){
+      if(resp.userDetails.status === "active"){
         setAuthUser(resp.userDetails as AuthUser)
         router.push("/posted-jobs")
       }else{
-        setAuthUser(null)
         setShowActivationMessage(true);
       }
     }catch(e:any){
@@ -84,6 +83,8 @@ const Otpverification: React.FC<OtpVerificationProps> = ({
   };
 
   const handleBackToLogin = ()=>{
+    localStorage.clear();
+    setAuthUser(null);
     router.push("/login")
   }
 

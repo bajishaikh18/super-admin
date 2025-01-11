@@ -140,12 +140,6 @@ function Page() {
                   >
                     Forgot Password?
                   </a>
-                  <Link
-                    href='/register'
-                    className={styles.forgotPassword}
-                  >
-                    Register as agency
-                  </Link>
                 </div>
                 <Button
                   type="submit"
