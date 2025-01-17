@@ -7,8 +7,8 @@ import { ReactQueryProvider } from "./react-quuery-provider";
 import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
-  title: "Wonderly Admin",
-  description: "Wonderly admin app",
+  title: "Boon.ai Employer",
+  description: "Boon.ai employer app",
 };
 
 export default function RootLayout({

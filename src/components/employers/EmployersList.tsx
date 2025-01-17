@@ -130,11 +130,7 @@ const EmployersList: React.FC = () => {
       },
       cell: (info) => {
         const value = info.getValue() || "N/A";
-        return (
-          <Link href={`/employers/${value}`}>
-            {value}
-          </Link>
-        );
+        return value
       },
     }),
     columnHelper.accessor("firstName", {

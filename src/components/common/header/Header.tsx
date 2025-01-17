@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = () => {
             className={styles.logo}
             alt="Logo"
             width={136}
-            height={27}
+            height={38}
           />
         </div>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
