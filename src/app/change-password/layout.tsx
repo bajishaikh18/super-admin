@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
         <Suspense>
-        <AuthCheck>{children}</AuthCheck>
+        {children}
         </Suspense>
   );
 }

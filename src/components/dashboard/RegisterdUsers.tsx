@@ -18,7 +18,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
-import { COUNTRIES, INDUSTRIES } from "@/helpers/constants";
+import { COUNTRIES, INDUSTRIES, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import CreateUserForm from "../users/CreateUsers";
 import { Button, Modal } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa6";
@@ -189,15 +189,23 @@ const RegisteredUsers: React.FC<RegisteredUsersProps> = ({ showButton }) => {
           })),
         },
       }),
-      columnHelper.accessor("totalExperience", {
-        header: "Experience",
-        meta: {
-          filterType: "number",
-          classes:"f-7"
-        },
-        cell: (info) =>
-          info.renderValue() ? `${info.renderValue()} Years` : "N/A",
-      }),
+       columnHelper.accessor("totalExperience", {
+              header: "Experience",
+              meta: {
+                filterType: "number",
+                classes: "f-7",
+              },
+              cell: (info) => {
+                const value = info.renderValue();
+                const experienceRange = YEARS_OF_EXPERIENCE_LABELS.find(range => range.value === value?.toString());
+            
+                if (experienceRange) {
+                  return experienceRange.label; 
+                }
+                
+                return value ? `${value} Years` : "N/A"; 
+              },
+            }),
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
         meta: {

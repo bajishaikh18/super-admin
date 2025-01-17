@@ -16,7 +16,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { TableFilter } from "../common/table/Filter";
 import { DateTime } from "luxon";
 import { SelectOption } from "@/helpers/types";
-import { INDUSTRIES } from "@/helpers/constants";
+import { INDUSTRIES, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { useParams, useSearchParams } from "next/navigation";
 import { getUsersBasedOnType } from "@/apis/user";
 
@@ -97,14 +97,22 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
         },
       }),
       columnHelper.accessor("totalExperience", {
-        header: "Experience",
-        meta: {
-          filterType: "number",
-          classes: "f-7",
-        },
-        cell: (info) =>
-          info.renderValue() ? `${info.renderValue()} Years` : "N/A",
-      }),
+                    header: "Experience",
+                    meta: {
+                      filterType: "number",
+                      classes: "f-7",
+                    },
+                    cell: (info) => {
+                      const value = info.renderValue();
+                      const experienceRange = YEARS_OF_EXPERIENCE_LABELS.find(range => range.value === value?.toString());
+                  
+                      if (experienceRange) {
+                        return experienceRange.label; 
+                      }
+                      
+                      return value ? `${value} Years` : "N/A"; 
+                    },
+                  }),
       columnHelper.accessor("gulfExperience", {
         header: "Gulf Exp.",
         meta: {

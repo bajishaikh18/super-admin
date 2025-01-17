@@ -6,7 +6,6 @@ import ReportTable from "./ReportTable";
 import { FieldError, useForm } from "react-hook-form";
 import { SelectOption } from "@/helpers/types";
 import { getReports } from "@/apis/dashboard";
-import { generateExperienceRanges } from"@/helpers//experience";
 import {
   Duration,
   GenerateReportText,
@@ -20,7 +19,7 @@ import {
 import { debounce } from "lodash";
 import { getFormattedJobTitles } from "@/helpers/asyncOptions";
 import { getStartAndEndDate } from "@/helpers/date";
-import { INDUSTRIES } from "@/helpers/constants";
+import { INDUSTRIES, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { createColumnHelper } from "@tanstack/react-table";
 import { User } from "@/stores/useUserStore";
 import Link from "next/link";
@@ -106,11 +105,11 @@ function UserReport() {
         meta: {
           filterType: "number",
           classes: "f-7",
-          filterOptions: generateExperienceRanges(1, 10),  
+          filterOptions: YEARS_OF_EXPERIENCE_LABELS,  
         },
         cell: (info) => {
           const value = info.renderValue();
-          const experienceRange = generateExperienceRanges(1, 10).find(range => range.value === value?.toString());
+          const experienceRange = YEARS_OF_EXPERIENCE_LABELS.find(range => range.value === value?.toString());
       
           if (experienceRange) {
             return experienceRange.label; 

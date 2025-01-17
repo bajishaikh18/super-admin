@@ -82,10 +82,8 @@ function Reset() {
   const handleBackToLogin = () => {
     if(type === 'auth'){
       router.push('/');  
-
     }else{
       router.push('/login');  
-
     }
   };
 

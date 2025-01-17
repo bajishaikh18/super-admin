@@ -5,7 +5,6 @@ import { Button, Col, Form,Row } from "react-bootstrap";
 import {  useForm } from "react-hook-form";
 import {
   MultiSelect,
-
 } from "../common/form-fields/MultiSelect";
 import { IoClose } from "react-icons/io5";
 
@@ -20,10 +19,9 @@ interface CreateTradeScreenProps {
   
  
 }
-
 import useAgencyStore, {CreateTradeFormData } from "@/stores/useAgencyStore";
 
-
+import { createTradeTestCenter,updateTradeTestCenter } from "@/apis/trade-test-center";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -32,9 +30,7 @@ import {
 import { CITIES } from "@/helpers/stateList";
 
 
-
 const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
-  // Provide a default value of an empty array
   isEdit,
  
   handleContinueClick,
@@ -89,20 +85,22 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
     retry: 3,
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: CreateTradeFormData) => {
     try {
-     
       setLoading(true);
      
-     
-     
-    
+      const contactNo = `${data.countryCode}-${data.contactNumber}`;
+      const payload = {
+        ...data,
+        phone: contactNo,
+        approved: true
+      };
+      let res;
       if (isEdit && tradeFormData?._id) {
-       
-       
+        res = await updateTradeTestCenter(tradeFormData?._id,payload);
+   
       } else {
-      
-       
+        res = await createTradeTestCenter(payload);
       }
       await queryClient.invalidateQueries({
         predicate: (query) => {
@@ -115,7 +113,7 @@ const CreateTradeScreen: React.FC<CreateTradeScreenProps> = ({
       toast.success(`Trade Center ${isEdit ? "updated" : "created"} successfully`);
       handleContinueClick();
       setLoading(false);
-    } catch  {
+    } catch (error) {
       toast.error(`Error while ${isEdit?'updating':'creating'} Trade Center. Please try again`)
       setLoading(false);
     }

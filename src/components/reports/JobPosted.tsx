@@ -343,7 +343,7 @@ function JobPosted() {
             />
           </Form.Group>
         </Col>
-        <Col md={2}>
+        {/* <Col md={2}>
           <Form.Group className={styles.selectField}>
             <Form.Label>Industry</Form.Label>
             <MultiSelectWithCheckbox
@@ -354,7 +354,7 @@ function JobPosted() {
               customStyles={{}}
             />
           </Form.Group>
-        </Col>
+        </Col> */}
         <Col md={2}>
           <Form.Group className={styles.selectField}>
             <Form.Label>Job status</Form.Label>

@@ -6,7 +6,7 @@ import { AuthUser, useAuthUserStore } from '@/stores/useAuthUserStore';
 import { getUserDetails } from '@/apis/user';
 import { ROLE } from '@/helpers/constants';
 
-const ALLOWEDPATH = ['/login','/register']
+const ALLOWEDPATH = ['/login','/register','/change-password']
 export const AuthCheck = ({children}:{children:any})=>{
     const router = useRouter();
     const pathname = usePathname()
@@ -41,7 +41,7 @@ export const AuthCheck = ({children}:{children:any})=>{
         if (!isAuthenticated && !ALLOWEDPATH.includes(pathname)) {
           router.push('/login');
         }
-        if(isAuthenticated && ALLOWEDPATH.includes(pathname)) {
+        if(isAuthenticated && pathname != '/change-password' && ALLOWEDPATH.includes(pathname) ) {
             router.push('/');
         }
       }, [router]);
