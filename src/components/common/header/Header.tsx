@@ -176,7 +176,7 @@ const Header: React.FC<HeaderProps> = () => {
                 className={`${styles.navListItem} nav-list-item`}
               >
                 {
-                  shouldVisible([ROLE.superAdmin, ROLE.admin]) && <> <NavDropdown.Item
+                  shouldVisible([ROLE.superAdmin]) && <> <NavDropdown.Item
                   className={`${styles.navListItem} ${
                    pathname.includes("/users?type=app") ? styles.active : ""
                  }`}
@@ -192,6 +192,9 @@ const Header: React.FC<HeaderProps> = () => {
                >
               Internal users
                </NavDropdown.Item>
+               </>}
+               {
+                  shouldVisible([ROLE.superAdmin, ROLE.admin]) &&<>
                <NavDropdown.Item
                   className={`${styles.navListItem} ${
                    pathname.includes("/agency") ? styles.active : ""
