@@ -39,7 +39,7 @@ const Dashboard = () => {
       label: "Employers",
       value: summaryData?.employers || "0",
       image: "/employers.png",
-      link: '/posted-jobs'
+      link: '/employers'
     },
   ];
   return (
