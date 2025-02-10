@@ -172,9 +172,9 @@ const ApprovalRequest: React.FC = () => {
     }
     }, [data]);
 
-  const filteredApprovedEmployers = approvedEmployers.filter(employer => employer.requestBy.toString().includes(searchApproved));
-  const filteredPendingEmployers = pendingEmployers.filter(employer => employer.requestBy.toString().includes(searchPending));
-  const filteredCompletedEmployers = completedEmployers.filter(employer => employer.requestBy.toString().includes(searchCompleted));
+  const filteredApprovedEmployers = approvedEmployers.filter(employer => employer?.requestBy?.toString().includes(searchApproved));
+  const filteredPendingEmployers = pendingEmployers.filter(employer => employer?.requestBy?.toString().includes(searchPending));
+  const filteredCompletedEmployers = completedEmployers.filter(employer => employer?.requestBy?.toString().includes(searchCompleted));
 
   const totalApprovedCount = filteredApprovedEmployers.length;
   const totalPendingCount = filteredPendingEmployers.length;
