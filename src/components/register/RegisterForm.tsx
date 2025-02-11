@@ -351,11 +351,12 @@ function RegisterForm({isEdit}:{isEdit?:boolean}) {
                 </Col>
               </Row>
               }
-            {
-                !isEdit && <Link href="/register" className={styles.forgotPassword}>
-                Login
+              <div className={styles.loginLink}>
+           Already have an account ? {
+                !isEdit &&  <Link href="/login" className={styles.forgotPassword}>
+                Login 
               </Link>
-            }
+            }</div>
              
               <Button
                 type="submit"

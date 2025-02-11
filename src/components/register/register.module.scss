@@ -27,6 +27,18 @@
   align-items: center;
   justify-content: space-between;
 }
+.loginLink{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  color: $color-dark-grey;
+  a{
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-brand-1;
+  }
+}
 
 .cardBody{
   padding-bottom: 32px !important;

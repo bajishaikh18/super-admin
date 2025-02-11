@@ -77,7 +77,7 @@ function Page() {
             <Form onSubmit={handleSubmit(onSubmit)}>
               <CardHeader className={styles.cardHeader}>
                 <Image src={'/admin.png'} alt='admin' width={80} height={80} />
-                <h5 className={styles.header}>SUPER ADMIN</h5>
+                <h5 className={styles.header}>BOON.AI</h5>
               </CardHeader>
               <CardBody className={styles.cardBody}>
                 <Form.Group>
@@ -140,6 +140,12 @@ function Page() {
                   >
                     Forgot Password?
                   </a>
+                  <Link
+                    href="/register"
+                    className={styles.forgotPassword}
+                  >
+                   Register
+                  </Link>
                 </div>
                 <Button
                   type="submit"
