@@ -270,7 +270,7 @@ const PostedJobDetails: React.FC<PostedJobDetailsProps> = ({
                 </div>
                 <div className={styles.actionContainer}>
                    {
-                    (shouldVisible([ROLE.superAdmin]) ||
+                    (shouldVisible([ROLE.superAdmin,ROLE.admin]) ||
                                       jobCreator === authUser?._id) && <>
                   <Button className={`action-buttons ${styles.editButton}`} onClick={()=>setOpenEdit(true)}>
                     Edit Post

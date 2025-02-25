@@ -19,6 +19,8 @@ import { SelectOption } from "@/helpers/types";
 import { INDUSTRIES, YEARS_OF_EXPERIENCE_LABELS } from "@/helpers/constants";
 import { useParams, useSearchParams } from "next/navigation";
 import { getUsersBasedOnType } from "@/apis/user";
+import { JobPositions } from "../common/FullScreenImage";
+import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 
 
 
@@ -29,6 +31,8 @@ const fetchSize = 100;
 const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [search, setSearch] = React.useState<string>("");
+  const [showPositions, setShowPositions] = React.useState(false);
+  const [positions, setPositions] = React.useState<string[]>([]);
   const [field, setField] = React.useState<SelectOption>({
     value: "email",
     label: "Email",
@@ -37,6 +41,7 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
   const {id} = useParams();
   const type = searchParams.get("type");
   const debouncedSearchTerm = useDebounce(search, 300);
+  
   const columns = useMemo(
     () => [
       columnHelper.accessor("firstName", {
@@ -81,8 +86,15 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
         },
       }),
       columnHelper.accessor("currentJobTitle", {
-        header: "Job title",
-        cell: (info) => info.renderValue() || "N/A",
+        header: pageType == "applied" ?  "Applied Postions":"Current Job Title",
+        cell: (info) => pageType == "applied"  ? <Link
+        href={`javascript:;`}
+        onClick={() => {
+          setPositions(info.getValue() as any);
+          setShowPositions(true);
+        }}
+        className={dataTableStyles.normalLink}
+      >{info.getValue().length} positions </Link> : info.renderValue() || "N/A",
       }),
       columnHelper.accessor("industry", {
         header: "Industry",
@@ -276,6 +288,13 @@ const AppliedOrSavedUsers = ({pageType}:{pageType:"applied" | "saved"}) => {
             isFetching={isFetching}
           />
         </Card>
+        <JobPositions
+                isOpen={showPositions}
+                handleClose={() => {
+                  setPositions([]), setShowPositions(false);
+                }}
+                positions={positions}
+              />
       </div>
     </main>
   );

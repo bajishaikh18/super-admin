@@ -201,6 +201,27 @@ a {
   }
 }
 
+.job-positions-modal{
+  svg{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+  h3{
+    font-size: 18px !important;
+    margin-bottom: 0px;
+  }
+  .modal-body{
+    padding: 30px !important;
+    ul{
+      padding-left: 10px;
+      display: flex;
+          flex-direction: column;
+          gap: 20px;      
+    }
+}
+}
+
 .post-form{
   text-align: left;
   .form-label{
