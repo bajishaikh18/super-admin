@@ -20,10 +20,15 @@ import { getUserNotifications } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 import toast from "react-hot-toast";
 import { forgotPassword } from "@/apis/auth";
-
+import '../../../../public/Stars.svg';
 interface HeaderProps {}
-const HIDEPATHS = ["/login", "/change-password",'/register','/verify','/create-agency'];
-
+const HIDEPATHS = [
+  "/login",
+  "/change-password",
+  "/register",
+  "/verify",
+  "/create-agency",
+];
 
 const Header: React.FC<HeaderProps> = () => {
   const pathname = usePathname();
@@ -33,20 +38,25 @@ const Header: React.FC<HeaderProps> = () => {
   const { setShowPostJob, showPostJob } = usePostJobStore();
   const { setShowCreateAgency, showCreateAgency } = useAgencyStore();
   const { authUser, setAuthUser, role, setRole } = useAuthUserStore();
-  const [notifCount,setNotifCount] = useState(0);
-  const [unReadCount,setUnReadCount] = useState(0);
+  const [notifCount, setNotifCount] = useState(0);
+  const [unReadCount, setUnReadCount] = useState(0);
   const loggedIn = isTokenValid();
   const {
-    data:notifications,
+    data: notifications,
     isLoading,
     error,
-  } = useQuery<Notification[]>({ queryKey: ["user-notifications",loggedIn], queryFn: async ()=>{
-    if(loggedIn){
-      const data = await getUserNotifications()
-      return data
-    }
-    return undefined;
-  },refetchInterval:10000, retry:1 });
+  } = useQuery<Notification[]>({
+    queryKey: ["user-notifications", loggedIn],
+    queryFn: async () => {
+      if (loggedIn) {
+        const data = await getUserNotifications();
+        return data;
+      }
+      return undefined;
+    },
+    refetchInterval: 10000,
+    retry: 1,
+  });
   const handleModalClose = () => {
     setShowPostJob(false);
     setShowCreateAgency(false);
@@ -55,19 +65,17 @@ const Header: React.FC<HeaderProps> = () => {
   useEffect(() => {
     document.addEventListener("mousedown", (e: any) => outsideClose(e));
     return () => {
-       document.removeEventListener("mousedown", (e: any) =>
-        outsideClose(e)
-       );
-     };
+      document.removeEventListener("mousedown", (e: any) => outsideClose(e));
+    };
   }, []);
-  
-  useEffect(()=>{
-    if(notifications){
-      const unread =notifications.filter(x=>!x.dismissed).length;
-      setUnReadCount(unread)
+
+  useEffect(() => {
+    if (notifications) {
+      const unread = notifications.filter((x) => !x.dismissed).length;
+      setUnReadCount(unread);
       setNotifCount(notifications.length);
     }
-  },[notifCount, notifications])
+  }, [notifCount, notifications]);
 
   const outsideClose = (e: any) => {
     let filterDiv = document.getElementById("notification-menu");
@@ -76,7 +84,7 @@ const Header: React.FC<HeaderProps> = () => {
       !filterDiv?.contains(e.target) &&
       ref?.current !== undefined
     ) {
-      setShowNotification(false)
+      setShowNotification(false);
     }
   };
 
@@ -94,21 +102,22 @@ const Header: React.FC<HeaderProps> = () => {
     [role]
   );
 
-  const changePassword = async ()=>{
-    try{
+  const changePassword = async () => {
+    try {
       const email = authUser?.email;
-      if(!email){
+      if (!email) {
         toast.error("Looks like your session is expired,please login again");
         logout();
         return;
       }
-      await forgotPassword({email:email,type:"auth"})
-      toast.success("Instruction has been sent to your registered email to change password");
-    }catch(e){
+      await forgotPassword({ email: email, type: "auth" });
+      toast.success(
+        "Instruction has been sent to your registered email to change password"
+      );
+    } catch (e) {
       toast.error("Looks like your session is expired,please login again");
     }
-   
-  }
+  };
 
   const logout = () => {
     localStorage.clear();
@@ -156,7 +165,7 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
 
-              {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
+            {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
                   pathname.includes("walk-in") ? styles.active : ""
@@ -167,53 +176,77 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
 
+            {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
+              <Link
+                className={`${styles.navListItem} ${
+                  pathname.includes("GAMCA") ? styles.active : ""
+                }`}
+                href="/GAMCA-Medical"
+              >
+                <div style={{ display: "inline-flex", alignItems: "flex-start", gap: "2px" }}>
+                  GAMCA
+                  <Image
+                    src="/Stars.svg"
+                    alt="star"
+                    width={20}
+                    height={20}
+                    style={{ marginTop: "-7px", marginRight: "-9px" }}
+                  />
+                </div>
+              </Link>
+            )}
 
-
-         
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
               <NavDropdown
                 title="Users"
                 className={`${styles.navListItem} nav-list-item`}
               >
-                {
-                  shouldVisible([ROLE.superAdmin]) && <> <NavDropdown.Item
-                  className={`${styles.navListItem} ${
-                   pathname.includes("/users?type=app") ? styles.active : ""
-                 }`}
-                 href="/users?type=app"
-               >
-               Registered app users
-               </NavDropdown.Item>
-               <NavDropdown.Item
-                  className={`${styles.navListItem} ${
-                   pathname.includes("/users?type=admin") ? styles.active : ""
-                 }`}
-                 href="/users?type=admin"
-               >
-              Internal users
-               </NavDropdown.Item>
-               </>}
-               {
-                  shouldVisible([ROLE.superAdmin, ROLE.admin]) &&<>
-               <NavDropdown.Item
-                  className={`${styles.navListItem} ${
-                   pathname.includes("/agency") ? styles.active : ""
-                 }`}
-                 href="/agency"
-               >
-                Agencies / Trade centers
-               </NavDropdown.Item></>
-                }
-               
+                {shouldVisible([ROLE.superAdmin]) && (
+                  <>
+                    {" "}
+                    <NavDropdown.Item
+                      className={`${styles.navListItem} ${
+                        pathname.includes("/users?type=app")
+                          ? styles.active
+                          : ""
+                      }`}
+                      href="/users?type=app"
+                    >
+                      Registered app users
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
+                      className={`${styles.navListItem} ${
+                        pathname.includes("/users?type=admin")
+                          ? styles.active
+                          : ""
+                      }`}
+                      href="/users?type=admin"
+                    >
+                      Internal users
+                    </NavDropdown.Item>
+                  </>
+                )}
+                {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
+                  <>
+                    <NavDropdown.Item
+                      className={`${styles.navListItem} ${
+                        pathname.includes("/agency") ? styles.active : ""
+                      }`}
+                      href="/agency"
+                    >
+                      Agencies / Trade centers
+                    </NavDropdown.Item>
+                  </>
+                )}
+
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
                     pathname == "/employers" ? styles.active : ""
                   }`}
                   href="/employers"
                 >
-                Employers
+                  Employers
                 </NavDropdown.Item>
-              
               </NavDropdown>
             )}
             {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
@@ -227,15 +260,15 @@ const Header: React.FC<HeaderProps> = () => {
                   }`}
                   href="/reports/jobs-posted"
                 >
-                Job Posted Report
+                  Job Posted Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
-                   className={`${styles.navListItem} ${
+                  className={`${styles.navListItem} ${
                     pathname == "/application-received" ? styles.active : ""
                   }`}
                   href="/reports/application-received"
                 >
-                Applications Received by Agency Report
+                  Applications Received by Agency Report
                 </NavDropdown.Item>
                 <NavDropdown.Item
                   className={`${styles.navListItem} ${
@@ -261,27 +294,47 @@ const Header: React.FC<HeaderProps> = () => {
                 >
                   Employers Report
                 </NavDropdown.Item>
-                {
-                  shouldVisible([ROLE.superAdmin]) &&<NavDropdown.Item
-                  className={`${styles.navListItem} ${
-                    pathname == "/approval-exports" ? styles.active : ""
-                  }`}
-                  href="/reports/approval-exports"
-                >
-                  Approval for Exports Report
-                </NavDropdown.Item>
-                }
-                
+                {shouldVisible([ROLE.superAdmin]) && (
+                  <NavDropdown.Item
+                    className={`${styles.navListItem} ${
+                      pathname == "/approval-exports" ? styles.active : ""
+                    }`}
+                    href="/reports/approval-exports"
+                  >
+                    Approval for Exports Report
+                  </NavDropdown.Item>
+                )}
               </NavDropdown>
             )}
           </Nav>
 
-
           <Nav className={styles.rightNavItems}>
-            <Nav.Link href="javascript:;" id='notification-menu' ref={ref} onClick={() => {setShowNotification(true)}} className={styles.notificationTrigger}>
+            <Nav.Link
+              href="javascript:;"
+              id="notification-menu"
+              ref={ref}
+              onClick={() => {
+                setShowNotification(true);
+              }}
+              className={styles.notificationTrigger}
+            >
               <Image src="/bell.png" alt="bell" width={16} height={19} />
-              {!!unReadCount && <Badge className={styles.notificationBadge}>{unReadCount}</Badge>}
-              {showNotification && <Notifications notifications={notifications} handleClose={(e) => {e.stopPropagation();setShowNotification(false)}} isLoading={isLoading} error={error}/>}
+              {!!unReadCount && (
+                <Badge className={styles.notificationBadge}>
+                  {unReadCount}
+                </Badge>
+              )}
+              {showNotification && (
+                <Notifications
+                  notifications={notifications}
+                  handleClose={(e) => {
+                    e.stopPropagation();
+                    setShowNotification(false);
+                  }}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              )}
             </Nav.Link>
             <Nav.Link
               onClick={() => setShowPostJob(true)}
@@ -339,19 +392,20 @@ const Header: React.FC<HeaderProps> = () => {
                 id="super-admin-dropdown"
                 align="end"
               >
-                {
-                   shouldVisible([ROLE.employer]) && <>
+                {shouldVisible([ROLE.employer]) && (
+                  <>
                     <NavDropdown.Item href="/profile">
                       Edit Profile
                     </NavDropdown.Item>
                     <NavDropdown.Item href="/edit-agency">
                       Edit Agency Details
                     </NavDropdown.Item>
-                </>}
+                  </>
+                )}
                 <NavDropdown.Item onClick={changePassword}>
                   Change Password
                 </NavDropdown.Item>
-                
+
                 <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
               </NavDropdown>
             )}
@@ -376,7 +430,6 @@ const Header: React.FC<HeaderProps> = () => {
           <CreateAgency handleModalClose={handleModalClose} />
         )}
       </Modal>
-   
     </>
   );
 };
