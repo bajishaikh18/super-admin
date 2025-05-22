@@ -133,13 +133,15 @@ const Header: React.FC<HeaderProps> = () => {
     <>
       <Navbar className={styles.header} expand="lg" fixed={"top"}>
         <div className={styles.logoContainer}>
-          <Image
-            src="/logo.png"
-            className={styles.logo}
-            alt="Logo"
-            width={136}
-            height={38}
-          />
+          <Link href="/posted-jobs">
+            <Image
+              src="/logo.png"
+              className={styles.logo}
+              alt="Logo"
+              width={136}
+              height={38}
+            />
+          </Link>
         </div>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -178,7 +180,6 @@ const Header: React.FC<HeaderProps> = () => {
 
             {/* Uncomment this code to show it on the Employer Page */}
 
-            
             {/* {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
