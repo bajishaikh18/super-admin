@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
-import Image from "next/image";
-import BackSvg from "../../../../public/Back.svg";
 
-// Define types for the TableRow component props
+import React, { useState, useCallback, useMemo } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+// Define types
 interface TableRowProps {
   data: string[];
   bg?: string;
@@ -13,8 +14,15 @@ interface TableRowProps {
   isLast?: boolean;
 }
 
-// Reusable TableRow component
-const TableRow: React.FC<TableRowProps> = ({
+interface TableSection {
+  title: string;
+  header: string[];
+  row: string[];
+  opacity: number[];
+}
+
+// Reusable TableRow component with optimizations
+const TableRow = React.memo<TableRowProps>(({
   data,
   bg = "white",
   border = false,
@@ -22,194 +30,240 @@ const TableRow: React.FC<TableRowProps> = ({
   isHeader = false,
   isLast = false,
 }) => {
-  const [copiedIdx, setCopiedIdx] = React.useState<number | null>(null);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-  const handleCopy = (text: string, idx: number) => {
-    if (!text) return;
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(text);
+  const handleCopy = useCallback(async (text: string, idx: number) => {
+    if (!text || typeof navigator === "undefined" || !navigator.clipboard) return;
+    
+    try {
+      await navigator.clipboard.writeText(text);
       setCopiedIdx(idx);
       setTimeout(() => setCopiedIdx(null), 700);
+    } catch (error) {
+      console.error("Failed to copy text:", error);
     }
-  };
+  }, []);
+
+  const rowStyle = useMemo(() => ({
+    alignSelf: "stretch" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "center" as const,
+    display: "inline-flex" as const,
+  }), []);
 
   return (
-    <div
-      style={{
-        alignSelf: "stretch",
-        justifyContent: "space-between",
-        alignItems: "center",
-        display: "inline-flex",
-      }}
-    >
-      {data.map((cell: string, idx: number) => (
-        <div
-          key={idx}
-          style={{
-            flex: "1 1 0",
-            height: 54.74,
-            paddingTop: 7.3,
-            paddingBottom: 7.3,
-            paddingLeft: 14.6,
-            paddingRight: 7.3,
-            background: bg,
-            borderRight:
-              border && idx !== data.length - 1
-                ? "0.73px #363636 solid"
-                : undefined,
-            opacity: opacityArr[idx] ?? 1,
-            justifyContent: isHeader ? "flex-start" : "space-between",
-            alignItems: "center",
-            gap: 7.3,
-            display: "flex",
-            position: "relative",
-          }}
-        >
+    <div style={rowStyle}>
+      {data.map((cell: string, idx: number) => {
+        const cellOpacity = opacityArr[idx] ?? 1;
+        const shouldShowBorder = border && idx !== data.length - 1;
+        
+        return (
           <div
+            key={`${cell}-${idx}`}
             style={{
-              textAlign: "center",
-              color: isHeader ? "#757575" : "black",
-              fontSize: 13.76,
-              fontFamily: "Inter",
-              fontWeight: isHeader ? "600" : "400",
-              wordWrap: "break-word",
+              flex: "1 1 0",
+              height: 54.74,
+              paddingTop: 7.3,
+              paddingBottom: 7.3,
+              paddingLeft: 14.6,
+              paddingRight: 7.3,
+              background: bg,
+              borderRight: shouldShowBorder ? "0.73px #363636 solid" : undefined,
+              opacity: cellOpacity,
+              justifyContent: isHeader ? "flex-start" : "space-between",
+              alignItems: "center",
+              gap: 7.3,
+              display: "flex",
+              position: "relative",
             }}
           >
-            {cell}
-          </div>
-          {/* Show icon except for header */}
-          {!isHeader && (
-            <span
+            <div
               style={{
-                position: "absolute",
-                right: 7.3,
-                top: "50%",
-                display: "flex",
-                alignItems: "center",
-                transform: "translateY(-50%)",
+                textAlign: "center",
+                color: isHeader ? "#757575" : "black",
+                fontSize: 13.76,
+                fontFamily: "Inter",
+                fontWeight: isHeader ? "600" : "400",
+                wordWrap: "break-word",
               }}
             >
-              <Image
-                src="/copy.svg"
-                alt="Copy"
-                width={19}
-                height={19}
+              {cell}
+            </div>
+            
+            {!isHeader && cellOpacity > 0 && (
+              <span
                 style={{
-                  opacity: opacityArr[idx] ?? 1,
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                  transform: copiedIdx === idx ? "scale(1.3)" : "scale(1)",
-                  filter:
-                    copiedIdx === idx ? "drop-shadow(0 0 4px #246BFC)" : "none",
+                  position: "absolute",
+                  right: 7.3,
+                  top: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  transform: "translateY(-50%)",
                 }}
-                onClick={() => handleCopy(String(cell), idx)}
-              />
-              {copiedIdx === idx && (
-                <span
+              >
+                <Image
+                  src="/copy.svg"
+                  alt="Copy"
+                  width={19}
+                  height={19}
+                  priority={false}
                   style={{
-                    marginLeft: 6,
-                    fontSize: 11,
-                    color: "#246BFC",
-                    fontWeight: 500,
-                    transition: "opacity 0.2s",
-                    opacity: 1,
+                    opacity: cellOpacity,
+                    cursor: "pointer",
+                    transition: "transform 0.2s",
+                    transform: copiedIdx === idx ? "scale(1.3)" : "scale(1)",
+                    filter: copiedIdx === idx ? "drop-shadow(0 0 4px #246BFC)" : "none",
                   }}
-                >
-                  Copied!
-                </span>
-              )}
-            </span>
-          )}
-        </div>
-      ))}
+                  onClick={() => handleCopy(String(cell), idx)}
+                />
+                {copiedIdx === idx && (
+                  <span
+                    style={{
+                      marginLeft: 6,
+                      fontSize: 11,
+                      color: "#246BFC",
+                      fontWeight: 500,
+                      transition: "opacity 0.2s",
+                      opacity: 1,
+                    }}
+                  >
+                    Copied!
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
-};
+});
 
-const Page: React.FC = () => {
-  // Table data arrays
-  const locationHeader: string[] = [
-    "Country",
-    "City",
-    "Country Traveling To",
-    "Order ID",
-    "Date",
-    "Time",
-    "Full Data",
-  ];
-  const locationRow: string[] = [
-    "India",
-    "Hyderabad",
-    "Bahrain",
-    "45456",
-    "19-Mar-2025",
-    "15:30",
-    "View",
-  ];
-  const locationOpacity: number[] = [1, 1, 1, 0, 0, 0, 0];
+TableRow.displayName = "TableRow";
 
-  const candidateHeader: string[] = [
-    "First Name",
-    "Last Name",
-    "Date of Birth",
-    "Nationality",
-    "Gender",
-    "Marital status",
-    "Full Data",
-  ];
-  const candidateRow: string[] = [
-    "Khadar",
-    "Shaik",
-    "25-04-2002",
-    "Indian",
-    "Male",
-    "Unmarried",
-    "View",
-  ];
-  const candidateOpacity: number[] = [1, 1, 1, 1, 1, 1, 0];
-
-  const docHeader: string[] = [
-    "Passport number",
-    "Passport Issue Place",
-    "Passport Issue Date",
-    "Passport Expiry Date",
-    "Visa Type",
-    "Email ID",
-    "Phone No",
-    "National ID",
-    "Position applied for",
-  ];
-  const docRow: string[] = [
-    "G121212",
-    "Vijayawada",
-    "25-04-2002",
-    "25-04-2002",
-    "Indian",
-    "Khadar20@gmail.com",
-    "8340816098",
-    "454545454",
-    "Engineer",
-  ];
-
-  return (
+// Section Header Component
+const SectionHeader = React.memo<{ title: string }>(({ title }) => (
+  <div
+    style={{
+      alignSelf: "stretch",
+      background: "white",
+      borderTopLeftRadius: 7.3,
+      borderTopRightRadius: 7.3,
+      borderBottom: "0.73px rgba(128.34, 127.05, 127.05, 0.50) solid",
+      justifyContent: "flex-start",
+      alignItems: "center",
+      display: "inline-flex",
+    }}
+  >
     <div
       style={{
-        marginTop: "6rem",
-        marginRight: "2rem",
-        marginLeft: "2rem",
+        width: 172.26,
+        height: 54.74,
+        paddingTop: 10.95,
+        paddingBottom: 7.3,
+        paddingLeft: 7.3,
+        paddingRight: 7.3,
+        background: "white",
+        borderTopLeftRadius: 7.3,
+        borderBottom: "3.65px var(--Primary, #246BFC) solid",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 7.3,
+        display: "flex",
       }}
     >
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "2rem",
-          gap: "1rem",
-          justifyContent: "space-between",
+          textAlign: "center",
+          color: "black",
+          fontSize: 13.76,
+          fontFamily: "Inter",
+          fontWeight: "500",
+          wordWrap: "break-word",
+          whiteSpace: "nowrap",
         }}
       >
+        {title}
+      </div>
+    </div>
+  </div>
+));
+
+SectionHeader.displayName = "SectionHeader";
+
+// Table Section Component
+const TableSection = React.memo<{ section: TableSection }>(({ section }) => (
+  <>
+    <SectionHeader title={section.title} />
+    <TableRow data={section.header} isHeader opacityArr={section.opacity} />
+    <TableRow
+      data={section.row}
+      bg="#E2E2E2"
+      border
+      opacityArr={section.opacity}
+      isLast
+    />
+  </>
+));
+
+TableSection.displayName = "TableSection";
+
+// Main Page Component
+const MedicalTestDataPage: React.FC = () => {
+  const router = useRouter();
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  // Memoized table data
+  const tableSections = useMemo<TableSection[]>(() => [
+    {
+      title: "Location",
+      header: ["Country", "City", "Country Traveling To", "Order ID", "Date", "Time", "Full Data"],
+      row: ["India", "Hyderabad", "Bahrain", "45456", "19-Mar-2025", "15:30", "View"],
+      opacity: [1, 1, 1, 0, 0, 0, 0],
+    },
+    {
+      title: "Candidate's information",
+      header: ["First Name", "Last Name", "Date of Birth", "Nationality", "Gender", "Marital status", "Full Data"],
+      row: ["Khadar", "Shaik", "25-04-2002", "Indian", "Male", "Unmarried", "View"],
+      opacity: [1, 1, 1, 1, 1, 1, 0],
+    },
+    {
+      title: "Documents and Contact",
+      header: ["Passport number", "Passport Issue Place", "Passport Issue Date", "Passport Expiry Date", "Visa Type", "Email ID", "Phone No", "National ID", "Position applied for"],
+      row: ["G121212", "Vijayawada", "25-04-2002", "25-04-2002", "Indian", "Khadar20@gmail.com", "8340816098", "454545454", "Engineer"],
+      opacity: Array(9).fill(1),
+    },
+  ], []);
+
+  const handleBack = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const handleCompletedChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsCompleted(e.target.checked);
+  }, []);
+
+  const containerStyle = useMemo(() => ({
+    marginTop: "6rem",
+    marginRight: "2rem",
+    marginLeft: "2rem",
+  }), []);
+
+  const headerStyle = useMemo(() => ({
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "2rem",
+    gap: "1rem",
+    justifyContent: "space-between",
+  }), []);
+
+  return (
+    <div style={containerStyle}>
+      {/* Header Section */}
+      <header style={headerStyle}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <button
+            type="button"
             style={{
               background: "none",
               border: "none",
@@ -218,12 +272,18 @@ const Page: React.FC = () => {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={() => window.history.back()}
+            onClick={handleBack}
             aria-label="Go back"
           >
-            <Image src={BackSvg} alt="Back" width={32} height={32} />
+            <Image 
+              src="/Back.svg" 
+              alt="Back" 
+              width={32} 
+              height={32}
+              priority
+            />
           </button>
-          <h2
+          <h1
             style={{
               margin: 0,
               fontSize: "1.5rem",
@@ -232,8 +292,9 @@ const Page: React.FC = () => {
             }}
           >
             Medical Test Data : Khadar
-          </h2>
+          </h1>
         </div>
+        
         {/* Completed Checkbox */}
         <label
           style={{
@@ -249,17 +310,22 @@ const Page: React.FC = () => {
         >
           <input
             type="checkbox"
+            checked={isCompleted}
+            onChange={handleCompletedChange}
             style={{
               width: 18,
               height: 18,
               accentColor: "#246BFC",
               margin: 0,
             }}
+            aria-label="Mark as completed"
           />
           Completed
         </label>
-      </div>
-      <div
+      </header>
+
+      {/* Main Content */}
+      <main
         style={{
           width: "100%",
           height: "100%",
@@ -269,166 +335,12 @@ const Page: React.FC = () => {
           display: "inline-flex",
         }}
       >
-        {/* Location Section */}
-        <div
-          style={{
-            alignSelf: "stretch",
-            background: "white",
-            borderTopLeftRadius: 7.3,
-            borderTopRightRadius: 7.3,
-            borderBottom: "0.73px rgba(128.34, 127.05, 127.05, 0.50) solid",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            display: "inline-flex",
-          }}
-        >
-          <div
-            style={{
-              width: 172.26,
-              height: 54.74,
-              paddingTop: 10.95,
-              paddingBottom: 7.3,
-              paddingLeft: 7.3,
-              paddingRight: 7.3,
-              background: "white",
-              borderTopLeftRadius: 7.3,
-              borderBottom: "3.65px var(--Primary, #246BFC) solid",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 7.3,
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                color: "black",
-                fontSize: 13.76,
-                fontFamily: "Inter",
-                fontWeight: "500",
-                wordWrap: "break-word",
-              }}
-            >
-              Location
-            </div>
-          </div>
-        </div>
-        <TableRow data={locationHeader} isHeader opacityArr={locationOpacity} />
-        <TableRow
-          data={locationRow}
-          bg="#E2E2E2"
-          border
-          opacityArr={locationOpacity}
-          isLast
-        />
-
-        {/* Candidate's Information Section */}
-        <div
-          style={{
-            alignSelf: "stretch",
-            background: "white",
-            borderTopLeftRadius: 7.3,
-            borderTopRightRadius: 7.3,
-            borderBottom: "0.73px rgba(128.34, 127.05, 127.05, 0.50) solid",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            display: "inline-flex",
-          }}
-        >
-          <div
-            style={{
-              width: 172.26,
-              height: 54.74,
-              paddingTop: 10.95,
-              paddingBottom: 7.3,
-              paddingLeft: 7.3,
-              paddingRight: 7.3,
-              background: "white",
-              borderTopLeftRadius: 7.3,
-              borderBottom: "3.65px var(--Primary, #246BFC) solid",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 7.3,
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                color: "black",
-                fontSize: 13.76,
-                fontFamily: "Inter",
-                fontWeight: "500",
-                wordWrap: "break-word",
-              }}
-            >
-              Candidate's information
-            </div>
-          </div>
-        </div>
-        <TableRow
-          data={candidateHeader}
-          isHeader
-          opacityArr={candidateOpacity}
-        />
-        <TableRow
-          data={candidateRow}
-          bg="#E2E2E2"
-          border
-          opacityArr={candidateOpacity}
-          isLast
-        />
-
-        {/* Documents and Contact Section */}
-        <div
-          style={{
-            alignSelf: "stretch",
-            background: "white",
-            borderTopLeftRadius: 7.3,
-            borderTopRightRadius: 7.3,
-            borderBottom: "0.73px rgba(128.34, 127.05, 127.05, 0.50) solid",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            display: "inline-flex",
-          }}
-        >
-          <div
-            style={{
-              width: 172.26,
-              height: 54.74,
-              paddingTop: 10.95,
-              paddingBottom: 7.3,
-              paddingLeft: 7.3,
-              paddingRight: 7.3,
-              background: "white",
-              borderTopLeftRadius: 7.3,
-              borderBottom: "3.65px var(--Primary, #246BFC) solid",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 7.3,
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                color: "black",
-                fontSize: 13.76,
-                fontFamily: "Inter",
-                fontWeight: "500",
-                wordWrap: "break-word",
-                whiteSpace: "nowrap", // Ensure text stays on one line
-              }}
-            >
-              Documents and Contact
-            </div>
-          </div>
-        </div>
-        <TableRow data={docHeader} isHeader />
-        <TableRow data={docRow} bg="#E2E2E2" border isLast />
-      </div>
+        {tableSections.map((section, index) => (
+          <TableSection key={`${section.title}-${index}`} section={section} />
+        ))}
+      </main>
     </div>
   );
 };
 
-export default Page;
+export default MedicalTestDataPage;

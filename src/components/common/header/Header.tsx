@@ -20,7 +20,7 @@ import { getUserNotifications } from "@/apis/notification";
 import { Notification } from "@/stores/useNotificationStore";
 import toast from "react-hot-toast";
 import { forgotPassword } from "@/apis/auth";
-import '../../../../public/Stars.svg';
+import "../../../../public/Stars.svg";
 interface HeaderProps {}
 const HIDEPATHS = [
   "/login",
@@ -176,7 +176,10 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
 
-            {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
+            {/* Uncomment this code to show it on the Employer Page */}
+
+            
+            {/* {shouldVisible([ROLE.superAdmin, ROLE.admin, ROLE.employer]) && (
               <Link
                 className={`${styles.navListItem} ${
                   pathname.includes("GAMCA") ? styles.active : ""
@@ -184,6 +187,32 @@ const Header: React.FC<HeaderProps> = () => {
                 href="/GAMCA-Medical"
               >
                 <div style={{ display: "inline-flex", alignItems: "flex-start", gap: "2px" }}>
+                  GAMCA
+                  <Image
+                    src="/Stars.svg"
+                    alt="star"
+                    width={20}
+                    height={20}
+                    style={{ marginTop: "-7px", marginRight: "-9px" }}
+                  />
+                </div>
+              </Link>
+            )} */}
+
+            {shouldVisible([ROLE.superAdmin, ROLE.admin]) && (
+              <Link
+                className={`${styles.navListItem} ${
+                  pathname.includes("GAMCA") ? styles.active : ""
+                }`}
+                href="/GAMCA-Medical"
+              >
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "flex-start",
+                    gap: "2px",
+                  }}
+                >
                   GAMCA
                   <Image
                     src="/Stars.svg"
